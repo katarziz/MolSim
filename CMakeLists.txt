@@ -39,6 +39,9 @@ target_link_libraries(MolSim
         # stuff that is used in headers and source files
         PUBLIC
             xerces-c
+            #flag -lxerces-c
+
+
 )
 
 # activate all compiler warnings. Clean up your code :P

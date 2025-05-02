@@ -38,8 +38,7 @@ double end_time = 1000;
 double delta_t = 0.014;
 
 // TODO: what data structure to pick?
-//Particle Container?
-std::list<Particle> particles;
+ParticleContainer particles;
 
 
 int writer_flag=0;
@@ -49,7 +48,6 @@ int main(int argc, char *argsv[]) {
   int help_flag = 0;
   char *input_file = nullptr;
 
-  //add options for I/O, Force calc here
   option long_options[] = {
     {"help", no_argument, &help_flag, 1},
     {"input_file", required_argument, nullptr, 'i'},
@@ -164,12 +162,6 @@ int main(int argc, char *argsv[]) {
 }
 
 void calculateF() {
-  // TODO what was the intention here?
-  /*
-  std::list<Particle>::iterator iterator;
-  iterator = particles.begin();
-  */
-
   for (auto &p1 : particles) {
     std::array<double, 3> force = {0,0,0};
     for (auto &p2 : particles) {
@@ -236,6 +228,3 @@ void plotParticles(int iteration) {
     }
     writer.writeFile(out_name, iteration);
   }
-
-
-}

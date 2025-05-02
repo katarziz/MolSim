@@ -59,11 +59,19 @@ public:
 
   const std::array<double, 3> &getX() const;
 
+  void setX(const std::array<double, 3> &x_arg);
+
   const std::array<double, 3> &getV() const;
+
+  void setV(const std::array<double, 3> &v_arg);
 
   const std::array<double, 3> &getF() const;
 
+  void setF(const std::array<double, 3> &f_arg);
+
   const std::array<double, 3> &getOldF() const;
+
+  void setOldF(const std::array<double, 3> &old_f_arg);
 
   double getM() const;
 

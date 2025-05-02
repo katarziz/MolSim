@@ -38,7 +38,7 @@ double end_time = 1000;
 double delta_t = 0.014;
 
 // TODO: what data structure to pick?
-std::list<Particle> particles;
+ParticleContainer particles;
 
 int main(int argc, char *argsv[]) {
 
@@ -145,12 +145,6 @@ int main(int argc, char *argsv[]) {
 }
 
 void calculateF() {
-  // TODO what was the intention here?
-  /*
-  std::list<Particle>::iterator iterator;
-  iterator = particles.begin();
-  */
-
   for (auto &p1 : particles) {
     std::array<double, 3> force = {0,0,0};
     for (auto &p2 : particles) {

@@ -38,23 +38,29 @@ double end_time = 1000;
 double delta_t = 0.014;
 
 // TODO: what data structure to pick?
+//Particle Container?
 std::list<Particle> particles;
+
+
+int writer_flag=0;
 
 int main(int argc, char *argsv[]) {
 
   int help_flag = 0;
   char *input_file = nullptr;
 
+  //add options for I/O, Force calc here
   option long_options[] = {
     {"help", no_argument, &help_flag, 1},
     {"input_file", required_argument, nullptr, 'i'},
     {"delta_t", optional_argument, nullptr, 'd'},
     {"t_end",optional_argument, nullptr, 't'},
+    {"writer",optional_argument,nullptr,'w'},
     {nullptr}
   };
 
   while (true) {
-    int options = getopt_long(argc, argsv, "hi:d:t:", long_options, nullptr);
+    int options = getopt_long(argc, argsv, "hi:d:t:w:", long_options, nullptr);
 
     if (options == -1) {
       break;
@@ -91,6 +97,17 @@ int main(int argc, char *argsv[]) {
         }
         break;
       }
+    case 'w': {
+          if (strcmp(optarg, "xyz")==0)
+          { writer_flag=1;
+          }else if (strcmp(optarg, "vtk")==0){
+            writer_flag=0;
+          }else {
+            std::cout << "passed string is not a valid writer." << std::endl;
+            exit(-1);
+          }
+          break;
+        }
       case '?': {
         // TODO fail
         std::cout << "unknown option" << std::endl;
@@ -111,6 +128,8 @@ int main(int argc, char *argsv[]) {
     std::cout << "optional arguments:" << std::endl;
     std::cout << "-d or --delta_t DELTA_T : pass the time step of the simulation" << std::endl;
     std::cout << "-t or --t_end T_END : pass the last time to be simulated" << std::endl;
+    std::cout << "-w or --writer WRITER : pass a string representation of the desired output writer. Currently 'xyz' and 'vtk' are supported." << std::endl;
+
   }
 
   std::cout << "Hello from MolSim for PSE!" << std::endl;
@@ -206,16 +225,17 @@ void plotParticles(int iteration) {
 
   std::string out_name("MD_vtk");
 
-  // TODO remove use of XYZWriter
-  /*
-  outputWriter::XYZWriter writer;
-  writer.plotParticles(particles, out_name, iteration);
-  */
-
-  outputWriter::VTKWriter writer;
-  writer.initializeOutput(static_cast<int>(particles.size()));
-  for (auto &p : particles) {
-    writer.plotParticle(p);
+  if (writer_flag==1)  {
+    outputWriter::XYZWriter writer;
+    writer.plotParticles(particles, out_name, iteration);
+  } else {
+    outputWriter::VTKWriter writer;
+    writer.initializeOutput(static_cast<int>(particles.size()));
+    for (auto &p : particles) {
+      writer.plotParticle(p);
+    }
+    writer.writeFile(out_name, iteration);
   }
-  writer.writeFile(out_name, iteration);
+
+
 }

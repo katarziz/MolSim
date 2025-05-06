@@ -53,3 +53,21 @@ target_compile_options(MolSim
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
 include(doxygen)
+#Option to build Documentation. Can be disabled by calling cmake -D BUILD_DOC=OFF ..
+option(BUILD_DOC "Build documentation" ON)
+
+#Check if Doxygen is installed
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+    # create doxygen target
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+    doxygen_add_docs(doc_doxygen
+            ${CMAKE_CURRENT_SOURCE_DIR}/src
+            COMMENT "Building HTML Documentation"
+            CONFIG_FILE Doxyfile)
+
+
+
+else (DOXYGEN_FOUND)
+    message("Doxygen need to be installed to generate the doxygen documentation.")
+endif (DOXYGEN_FOUND)

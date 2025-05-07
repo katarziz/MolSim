@@ -214,7 +214,6 @@ void calculateV() {
 }
 
 void plotParticles(int iteration) {
-
   std::string out_name("MD_vtk");
 
   if (writer_flag==1)  {
@@ -228,3 +227,4 @@ void plotParticles(int iteration) {
     }
     writer.writeFile(out_name, iteration);
   }
+}

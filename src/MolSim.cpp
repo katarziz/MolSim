@@ -11,38 +11,38 @@
 
 /**** forward declaration of the calculation functions ****/
 
-/**
- * calculate the force for all particles
- */
+//! function to calculate and update the velocity of the particles
 void calculateF();
 
-/**
- * calculate the position for all particles
- */
+//! function to calculate and update the position of the particles
 void calculateX();
 
-/**
- * calculate the position for all particles
- */
+//! function to calculate and update the velocity of the particles
 void calculateV();
 
 
-/**
- * plot the particles using the output writer
- */
+//! function to plot the particles using the output writer
+/*!
+\param iteration int representing the number of the current iteration
+*/
 void plotParticles(int iteration);
-
+//! constant double representing the start time of the simulation.
 constexpr double start_time = 0;
+//! double representing the end time of the simulation. Default:1000
 double end_time = 1000;
+//! double representing the timestep of the simulation. Default:0.014
 double delta_t = 0.014;
-
+//! ParticleContainer containing all particles in the simulation
 ParticleContainer particles;
 
-
+//! int representation of the output writer being used
+/*!
+*writer_flag=0 -> vtk writer
+*writer_flag=1 -> xyz  writer
+*/
 int writer_flag=0;
-
+//! main function of the Molecular Simulation
 int main(int argc, char *argsv[]) {
-
   int help_flag = 0;
   char *input_file = nullptr;
 

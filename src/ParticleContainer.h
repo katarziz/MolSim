@@ -36,5 +36,4 @@ public:
 
     std::vector<Particle>::const_iterator end() const;
 
-    // TODO iterator over vec<pair<Particle,Particle>>
 };

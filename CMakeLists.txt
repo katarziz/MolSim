@@ -60,7 +60,6 @@ option(BUILD_DOC "Build documentation" ON)
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
     # create doxygen target
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
     doxygen_add_docs(doc_doxygen
             ${CMAKE_CURRENT_SOURCE_DIR}/src
             COMMENT "Building HTML Documentation"

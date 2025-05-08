@@ -1,6 +1,5 @@
 
 #include "FileReader.h"
-// TODO XYZWriter not currently in use
 #include "outputWriter/XYZWriter.h"
 #include "outputWriter/VTKWriter.h"
 #include "utils/ArrayUtils.h"
@@ -27,9 +26,9 @@ void calculateX();
  */
 void calculateV();
 
-// TODO update description
+
 /**
- * plot the particles to a xyz-file
+ * plot the particles using the output writer
  */
 void plotParticles(int iteration);
 
@@ -37,7 +36,6 @@ constexpr double start_time = 0;
 double end_time = 1000;
 double delta_t = 0.014;
 
-// TODO: what data structure to pick?
 ParticleContainer particles;
 
 

@@ -43,6 +43,8 @@ ParticleContainer particles;
 int writer_flag=0;
 //! main function of the Molecular Simulation
 int main(int argc, char *argsv[]) {
+
+  // handle options and arguments passed to the executable using getopt
   int help_flag = 0;
   char *input_file = nullptr;
 
@@ -76,7 +78,6 @@ int main(int argc, char *argsv[]) {
         errno = 0;
         delta_t = strtod(optarg, &endptr);
         if (endptr == optarg || *endptr != '\0' || errno != 0) {
-          // TODO fail
           std::cout << "failed to parse delta_t into a valid double" << std::endl;
           exit(-1);
         }
@@ -87,7 +88,6 @@ int main(int argc, char *argsv[]) {
         errno = 0;
         end_time = strtod(optarg, &endptr);
         if (endptr == optarg || *endptr != '\0' || errno != 0) {
-          // TODO fail
           std::cout << "failed to parse t_end into a valid double" << std::endl;
           exit(-1);
         }
@@ -105,7 +105,6 @@ int main(int argc, char *argsv[]) {
           break;
         }
       case '?': {
-        // TODO fail
         std::cout << "unknown option" << std::endl;
         exit(-1);
       }
@@ -115,8 +114,8 @@ int main(int argc, char *argsv[]) {
     }
   }
 
+  // prints available options and arguments in case the user invoked --help
   if (help_flag) {
-    // TODO better usage explanation
     std::cout << "options:" << std::endl;
     std::cout << "-h or --help : print this usage explanation" << std::endl;
     std::cout << "required arguments:" << std::endl;
@@ -125,7 +124,7 @@ int main(int argc, char *argsv[]) {
     std::cout << "-d or --delta_t DELTA_T : pass the time step of the simulation" << std::endl;
     std::cout << "-t or --t_end T_END : pass the last time to be simulated" << std::endl;
     std::cout << "-w or --writer WRITER : pass a string representation of the desired output writer. Currently 'xyz' and 'vtk' are supported." << std::endl;
-
+    exit(0);
   }
 
   std::cout << "Hello from MolSim for PSE!" << std::endl;
@@ -169,6 +168,7 @@ void calculateF() {
 
       // F_{ij} = m_i m_j (||x_i - x_j||_2)^{-3} (x_j - x_i)
       // only (x_j - x_i) changes for each vector entry
+      // factor calculates m_i m_j (||x_i - x_j||_2)^{-3}
       double factor = 0.0;
       for (int i = 0; i < 3; ++i) {
         const double diff = (p1.getX()[i] - p2.getX()[i]);
@@ -183,7 +183,6 @@ void calculateF() {
         force[i] += factor * (p2.getX()[i] - p1.getX()[i]);
       }
     }
-    // TODO: are references good here?
     p1.setOldF(p1.getF());
     p1.setF(force);
   }
@@ -192,10 +191,10 @@ void calculateF() {
 void calculateX() {
   for (auto &p : particles) {
     std::array<double, 3> x = p.getX();
+    //calculations according to Stoermer-Verlet
     for (int i = 0; i < 3; ++i) {
       x[i] += delta_t * p.getV()[i] + delta_t * delta_t * p.getF()[i] / (2 * p.getM());
     }
-    // TODO: are references good here?
     p.setX(x);
   }
 }
@@ -203,10 +202,10 @@ void calculateX() {
 void calculateV() {
   for (auto &p : particles) {
     std::array<double, 3> v = p.getV();
+    // calculations according to Stoermer-Verlet
     for (int i = 0; i < 3; ++i) {
       v[i] += delta_t * (p.getOldF()[i] + p.getF()[i]) / (2 * p.getM());
     }
-    // TODO: are references good here?
     p.setV(v);
   }
 }

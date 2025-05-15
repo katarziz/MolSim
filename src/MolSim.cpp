@@ -166,21 +166,21 @@ void calculateF() {
         continue;
       }
 
-      // F_{ij} = m_i m_j (||x_i - x_j||_2)^{-3} (x_j - x_i)
-      // only (x_j - x_i) changes for each vector entry
-      // factor calculates m_i m_j (||x_i - x_j||_2)^{-3}
-      double factor = 0.0;
+      // diff_x = x_i - x_j
+      std::array<double, 3> diff_x = {0,0,0};
       for (int i = 0; i < 3; ++i) {
-        const double diff = (p1.getX()[i] - p2.getX()[i]);
-        factor += diff * diff;
+        diff_x[i] = p1.getX()[i] - p2.getX()[i];
       }
-      // faster version of factor = p1.getM() * p2.getM() * std::pow(factor,-1.5)
-      factor = std::sqrt(factor);
-      factor = factor * factor * factor;
-      factor = p1.getM() * p2.getM() / (factor);
 
+      // l2_norm_x = ||diff_x||_2
+      const double l2_norm_x = ArrayUtils::L2Norm(diff_x);
+
+      // factor = m_i * m_j / (l2_norm_x)^3
+      const double factor = p1.getM() * p2.getM() / (l2_norm_x * l2_norm_x * l2_norm_x);
+
+      // F_ij = factor * (x_j - x_i) = factor * -1 * (x_i - x_j) = factor * -1 * diff_x
       for (int i = 0; i < 3; ++i) {
-        force[i] += factor * (p2.getX()[i] - p1.getX()[i]);
+        force[i] += factor * -diff_x[i];
       }
     }
     p1.setOldF(p1.getF());

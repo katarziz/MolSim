@@ -63,7 +63,6 @@ include(doxygen)
 #Check if Doxygen is installed
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
     # create doxygen target
     add_custom_target(doc_doxygen
             COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile

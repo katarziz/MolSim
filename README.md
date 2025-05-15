@@ -6,17 +6,37 @@ MolSim - GroupB
 
 ---
 
+### Building
+
+To build the project run:
+
+```shell
+mkdir build && cd build
+cmake ..
+cmake --build .
+```
+
+In case you prefer clang to your system's default compiler, in place of `cmake ..` run:
+
+```shell
+cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
+```
+
 ### Documentation
 
-To create the documentation for the project using Doxygen run `$make doc_doxygen`, the documentation can be found at ./docs/html/index.html
+In case your system does not have doxygen, please run `cmake -D BUILD_DOC=off ..` instead of `cmake ..`
 
-In case your system does not have Doxygen, please run `$cmake -D BUILD_DOC=off .` instead of `$cmake .`
+To create the documentation for the project using Doxygen run `cmake --build . --target doc_doxygen`
 
-### Building and Executing
+the documentation can be found at project_root/docs/html/index.html
 
-To build the project run `$cmake .` and `$make`
+### Executing
 
-To execute run `$./MolSim -i INPUT_FILE`
+To execute from within the build directory, run:
+
+```shell
+./MolSim -i INPUT_FILE
+```
 
 The input file has to have the following format:
 

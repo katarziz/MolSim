@@ -14,12 +14,12 @@ class Particle {
 
 private:
   /**
-   * Position of the particle.[R_earthorbit]
+   * Position of the particle
    */
   std::array<double, 3> x;
 
   /**
-   * Velocity of the particle[V_orb_earth]
+   * Velocity of the particle
    */
   std::array<double, 3> v;
 
@@ -34,7 +34,7 @@ private:
   std::array<double, 3> old_f;
 
   /**
-   * Mass of this particle [M_sol]
+   * Mass of this particle
    */
   double m;
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # define project name, version
-project(PSEMolDyn VERSION 0.0.1)
+project(PSEMolDyn_GroupB VERSION 0.0.1)
 
 # let ccmake and cmake-gui offer the default build type options
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
@@ -39,6 +39,9 @@ target_link_libraries(MolSim
         # stuff that is used in headers and source files
         PUBLIC
             xerces-c
+
+
+
 )
 
 # activate all compiler warnings. Clean up your code :P
@@ -52,4 +55,11 @@ target_compile_options(MolSim
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
-include(doxygen)
+#Option to build Documentation. Can be disabled by calling cmake -D BUILD_DOC=OFF ..
+option(BUILD_DOC "Build documentation" ON)
+
+if (BUILD_DOC)
+    include(${CMAKE_SOURCE_DIR}/cmake/modules/doxygen.cmake)
+else()
+    message(STATUS "Doxygen Documentation turned off")
+endif (BUILD_DOC)

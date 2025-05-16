@@ -39,9 +39,6 @@ target_link_libraries(MolSim
         # stuff that is used in headers and source files
         PUBLIC
             xerces-c
-
-
-
 )
 
 # activate all compiler warnings. Clean up your code :P
@@ -63,3 +60,12 @@ if (BUILD_DOC)
 else()
     message(STATUS "Doxygen Documentation turned off")
 endif (BUILD_DOC)
+
+#Option to build Tests. Can be disabled by calling cmake -D BUILD_Test=OFF ..
+option(BUILD_TEST "Build Tests" ON)
+
+if (BUILD_TEST)
+    include(${CMAKE_SOURCE_DIR}/cmake/modules/gtest.cmake)
+else()
+    message(STATUS "Tests turned off")
+endif (BUILD_TEST)

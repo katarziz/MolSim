@@ -20,5 +20,6 @@ TEST(InitTest, ParticleContainerTests) {
     {
         EXPECT_TRUE(particle_sem_eq(coll[i],con.getParticles()[i]));
     }
+
 }
 

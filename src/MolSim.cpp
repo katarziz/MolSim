@@ -5,7 +5,9 @@
 #include "utils/ArrayUtils.h"
 
 #include <iostream>
-#include <list>
+
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 #include  <getopt.h>
 
@@ -132,9 +134,26 @@ int main(int argc, char *argsv[]) {
   FileReader fileReader;
   fileReader.readFile(particles, input_file);
 
+  std::shared_ptr<spdlog::logger> logger = nullptr;
+  try {
+    logger = spdlog::basic_logger_mt("basic_logger", "logs/log.txt", true);
+  } catch (const spdlog::spdlog_ex &ex) {
+    spdlog::error("Could not create log file: {}", ex.what());
+  }
+
   double current_time = start_time;
 
   int iteration = 0;
+
+  spdlog::info("spdlog is included and running");
+  // set global default log level
+  spdlog::set_level(spdlog::level::debug);
+  // set logger default log level
+  logger->set_level(spdlog::level::debug);
+  // macro log levels can be set using CMake
+  SPDLOG_LOGGER_INFO(logger, "MACRO INFO");
+  SPDLOG_LOGGER_DEBUG(logger, "MACRO DEBUG");
+  logger->info("Starting simulation");
 
   // for this loop, we assume: current x, current f and current v are known
   while (current_time < end_time) {
@@ -148,6 +167,10 @@ int main(int argc, char *argsv[]) {
     iteration++;
     if (iteration % 10 == 0) {
       plotParticles(iteration);
+      logger->info("Iteration {} finished. FUNCTION. INFO", iteration);
+      logger->debug("Iteration {} finished. FUNCTION. DEBUG", iteration);
+      SPDLOG_LOGGER_INFO(logger, "Iteration {} finished. MACRO. INFO", iteration);
+      SPDLOG_LOGGER_DEBUG(logger, "Iteration {} finished. MACRO. DEBUG.", iteration);
     }
     std::cout << "Iteration " << iteration << " finished." << std::endl;
 

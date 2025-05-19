@@ -39,9 +39,8 @@ target_link_libraries(MolSim
         # stuff that is used in headers and source files
         PUBLIC
             xerces-c
-
-
-
+            fmt
+            spdlog
 )
 
 # activate all compiler warnings. Clean up your code :P
@@ -54,6 +53,12 @@ target_compile_options(MolSim
 )
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
+
+#Variable to set compile-time logging level.
+#Can be set with cmake -D SPDLOG_ACTIVE_LEVEL_DEFAULT=SPDLOG_LEVEL_${LEVEL} ..
+set(SPDLOG_ACTIVE_LEVEL_DEFAULT SPDLOG_LEVEL_INFO CACHE STRING "spdlog compile-time log level")
+
+target_compile_definitions(MolSim PUBLIC SPDLOG_ACTIVE_LEVEL=${SPDLOG_ACTIVE_LEVEL_DEFAULT})
 
 #Option to build Documentation. Can be disabled by calling cmake -D BUILD_DOC=OFF ..
 option(BUILD_DOC "Build documentation" ON)

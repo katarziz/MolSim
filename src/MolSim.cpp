@@ -141,6 +141,11 @@ int main(int argc, char *argsv[]) {
     spdlog::error("Could not create log file: {}", ex.what());
   }
 
+  SPDLOG_LOGGER_INFO(logger, "Particles generated:");
+  for (auto &p : particles) {
+    SPDLOG_LOGGER_INFO(logger, p.toString());
+  }
+
   double current_time = start_time;
 
   int iteration = 0;
@@ -167,10 +172,10 @@ int main(int argc, char *argsv[]) {
     iteration++;
     if (iteration % 10 == 0) {
       plotParticles(iteration);
-      logger->info("Iteration {} finished. FUNCTION. INFO", iteration);
-      logger->debug("Iteration {} finished. FUNCTION. DEBUG", iteration);
-      SPDLOG_LOGGER_INFO(logger, "Iteration {} finished. MACRO. INFO", iteration);
-      SPDLOG_LOGGER_DEBUG(logger, "Iteration {} finished. MACRO. DEBUG.", iteration);
+      // logger->info("Iteration {} finished. FUNCTION. INFO", iteration);
+      // logger->debug("Iteration {} finished. FUNCTION. DEBUG", iteration);
+      // SPDLOG_LOGGER_INFO(logger, "Iteration {} finished. MACRO. INFO", iteration);
+      // SPDLOG_LOGGER_DEBUG(logger, "Iteration {} finished. MACRO. DEBUG.", iteration);
     }
     std::cout << "Iteration " << iteration << " finished." << std::endl;
 

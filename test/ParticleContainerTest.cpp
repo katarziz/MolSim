@@ -1,7 +1,8 @@
-//
 // Created by cpsch on 12.05.2025.
 
 #include "ParticleContainerTest.h"
+#include <gtest/gtest.h>
+#include "../src/ParticleContainer.h"
 
 
 /*!Test initialization of an empty Particle container*/
@@ -20,6 +21,5 @@ TEST(InitTest, ParticleContainerTests) {
     {
         EXPECT_TRUE(particle_sem_eq(coll[i],con.getParticles()[i]));
     }
-
 }
 

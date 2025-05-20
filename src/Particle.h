@@ -54,7 +54,7 @@ public:
     //! Constructor for a Particle from properties
     /*!
      \param x_arg array of three doubles containing the x-,y-&z- position of the Particle
-     \param v_argarray of three doubles containing the x-,y-&z- velocity of the Particle
+     \param v_arg array of three doubles containing the x-,y-&z- velocity of the Particle
      \param m_arg double containing the mass of the particle
      \param type int denoting the particle's type
     */
@@ -138,3 +138,11 @@ public:
  \return Output Stream of the String representation of the Particle
 */
 std::ostream &operator<<(std::ostream &stream, Particle &p);
+
+//! Helper Function to determine semantic equality of two particles
+/*!
+ \param p1
+ \param p2
+ \returns bool to indicate weather the particles are semantically equal
+*/
+bool particle_sem_eq(const Particle& p1, const Particle& p2);

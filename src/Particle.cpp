@@ -6,7 +6,6 @@
  */
 
 #include "Particle.h"
-
 #include <iostream>
 #include "utils/ArrayUtils.h"
 
@@ -76,4 +75,22 @@ bool Particle::operator==(Particle &other) {
 std::ostream &operator<<(std::ostream &stream, Particle &p) {
   stream << p.toString();
   return stream;
+}
+
+bool particle_sem_eq(const Particle& p1, const Particle& p2)
+{   if ((p1.getM()!=p2.getM())||(p1.getType()!=p2.getType()))
+{
+  return false;
+}
+  for (int i=0;i<3;i++)
+  {
+    if ((p1.getX()[i]!=p2.getX()[i])||
+        (p1.getV()[i]!=p2.getV()[i])||
+        (p1.getV()[i]!=p2.getF()[i])||
+        (p1.getOldF()[i]!=p2.getOldF()[i]))
+    {
+      return false;
+    }
+  }
+  return true;
 }

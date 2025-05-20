@@ -14,6 +14,11 @@ file(GLOB_RECURSE MY_TEST
         "${PROJECT_SOURCE_DIR}/test/*.cpp"
         # header don't need to be included but this might be necessary for some IDEs
         "${PROJECT_SOURCE_DIR}/test/*.h"
+        "${PROJECT_SOURCE_DIR}/src/Particle*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/Particle*.h"
+        "${PROJECT_SOURCE_DIR}/src/LennardJones.cpp"
+        "${PROJECT_SOURCE_DIR}/src/LennardJones.h"
+
 )
 add_executable(Test ${MY_TEST})
 target_link_libraries(

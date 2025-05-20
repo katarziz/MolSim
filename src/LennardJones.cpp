@@ -22,7 +22,6 @@ void calculateF_LJ() {
       double xi=(sig/n_ij)*(sig/n_ij)*(sig/n_ij)*(sig/n_ij)*(sig/n_ij)*(sig/n_ij);
       std::array<double, 3> f_ij=-1*((24*eps)/(n_ij*n_ij))*(xi-2*xi*xi)*(i->getX()-j->getX());
       i->setF(i->getF()+f_ij);
-      std::cout << "F " << f_ij<< std::endl;
       j->setF(j->getF()-f_ij);
     }
   }

@@ -14,6 +14,33 @@
 #include "Grav.h"
 
 int main(int argc, char *argsv[]) {
+  std::shared_ptr<spdlog::logger> logger = nullptr;
+  try {
+    logger = spdlog::basic_logger_mt("default", "logs/log.txt", true);
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_TRACE
+    logger->set_level(spdlog::level::trace);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
+    logger->set_level(spdlog::level::debug);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
+    logger->set_level(spdlog::level::info);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_WARN
+    logger->set_level(spdlog::level::warn);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_ERROR
+    logger->set_level(spdlog::level::err); // or spdlog::level::error if your version uses it
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_CRITICAL
+    logger->set_level(spdlog::level::critical);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_OFF
+    logger->set_level(spdlog::level::off);
+#else
+    // Default to info if no match
+    logger->set_level(spdlog::level::info);
+#endif
+#pragma message SPDLOG_ACTIVE_LEVEL
+  } catch (const spdlog::spdlog_ex &ex) {
+    spdlog::error("Could not create log file: {}", ex.what());
+    std::cout << "bich broke" << std::endl;
+    exit(-1);
+  }
 
   // handle options and arguments passed to the executable using getopt
   int help_flag = 0;
@@ -50,7 +77,7 @@ int main(int argc, char *argsv[]) {
         errno = 0;
         delta_t = strtod(optarg, &endptr);
         if (endptr == optarg || *endptr != '\0' || errno != 0) {
-          std::cout << "failed to parse delta_t into a valid double" << std::endl;
+          SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"failed to parse delta_t into a valid double");
           exit(-1);
         }
         break;
@@ -60,7 +87,7 @@ int main(int argc, char *argsv[]) {
         errno = 0;
         end_time = strtod(optarg, &endptr);
         if (endptr == optarg || *endptr != '\0' || errno != 0) {
-          std::cout << "failed to parse t_end into a valid double" << std::endl;
+          SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"failed to parse t_end into a valid double");
           exit(-1);
         }
         break;
@@ -71,7 +98,7 @@ int main(int argc, char *argsv[]) {
           }else if (strcmp(optarg, "vtk")==0){
             writer_flag=0;
           }else {
-            std::cout << "passed string is not a valid writer." << std::endl;
+            SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"passed string is not a valid writer.");
             exit(-1);
           }
           break;
@@ -82,13 +109,13 @@ int main(int argc, char *argsv[]) {
           }else if (strcmp(optarg, "newton")==0){
             writer_flag=1;
           }else {
-            std::cout << "passed string is not a valid force calculation." << std::endl;
+            SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"passed string is not a valid force calculation.");
             exit(-1);
           }
           break;
         }
       case '?': {
-        std::cout << "unknown option" << std::endl;
+        SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"unknown option.");
         exit(-1);
       }
       default: {
@@ -111,36 +138,23 @@ int main(int argc, char *argsv[]) {
     exit(0);
   }
 
-  std::cout << "Hello from MolSim for PSE!" << std::endl;
-
   FileReader fileReader;
   fileReader.readFile(particles, input_file);
 
-  std::shared_ptr<spdlog::logger> logger = nullptr;
-  try {
-    logger = spdlog::basic_logger_mt("basic_logger", "logs/log.txt", true);
-  } catch (const spdlog::spdlog_ex &ex) {
-    spdlog::error("Could not create log file: {}", ex.what());
-  }
-
-  SPDLOG_LOGGER_INFO(logger, "Particles generated:");
+  SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");
+#if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG
   for (auto &p : particles) {
-    SPDLOG_LOGGER_INFO(logger, p.toString());
+    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), p.toString());
   }
+#endif
 
   double current_time = start_time;
 
   int iteration = 0;
 
-  spdlog::info("spdlog is included and running");
-  // set global default log level
-  spdlog::set_level(spdlog::level::debug);
-  // set logger default log level
-  logger->set_level(spdlog::level::debug);
-  // macro log levels can be set using CMake
-  SPDLOG_LOGGER_INFO(logger, "MACRO INFO");
-  SPDLOG_LOGGER_DEBUG(logger, "MACRO DEBUG");
-  logger->info("Starting simulation");
+  SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation started");
+  SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Simulation started");
+
 
   // for this loop, we assume: current x, current f and current v are known
   while (current_time < end_time) {
@@ -152,19 +166,15 @@ int main(int argc, char *argsv[]) {
     calculateV();
 
     iteration++;
-    if (iteration % 10 == 0) {
+    if (iteration % 50 == 0) {
       plotParticles(iteration);
-      // logger->info("Iteration {} finished. FUNCTION. INFO", iteration);
-      // logger->debug("Iteration {} finished. FUNCTION. DEBUG", iteration);
-      // SPDLOG_LOGGER_INFO(logger, "Iteration {} finished. MACRO. INFO", iteration);
-      // SPDLOG_LOGGER_DEBUG(logger, "Iteration {} finished. MACRO. DEBUG.", iteration);
+      SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
     }
-    std::cout << "Iteration " << iteration << " finished." << std::endl;
 
     current_time += delta_t;
   }
 
-  std::cout << "output written. Terminating..." << std::endl;
+  SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
   return 0;
 }
 

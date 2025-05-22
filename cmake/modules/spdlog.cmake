@@ -17,13 +17,14 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(spdlog)
 
 #Variable to set compile-time logging level.
-#Can be set with the flag SPDLOG_ACTIVE_LEVEL
+#Can be set with the flag -DLOG_LEVEL=
 #possible options are:
-# SPDLOG_LEVEL_OFF
-# SPDLOG_LEVEL_CRITICAL
-# SPDLOG_LEVEL_ERROR
-# SPDLOG_LEVEL_WARN
-# SPDLOG_LEVEL_INFO
-# SPDLOG_LEVEL_DEBUG
-# SPDLOG_LEVEL_TRACE
-add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+# OFF
+# CRITICAL
+# ERROR
+# WARN
+# INFO
+# DEBUG
+# TRACE
+set(LOG_LEVEL "INFO" CACHE STRING "Set compile-time log level")
+add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_${LOG_LEVEL})

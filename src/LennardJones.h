@@ -4,6 +4,7 @@
 
 #ifndef LENNARDJONES_H
 #define LENNARDJONES_H
-void calculateF_LJ();
+#include "ParticleContainer.h"
+void calculateF_LJ(ParticleContainer &particles);
 #endif //LENNARDJONES_H
 

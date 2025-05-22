@@ -184,7 +184,7 @@ void calculateF() {
     calculateF_G();
   }else
   {
-    calculateF_LJ();
+    calculateF_LJ(particles);
   }
 }
 

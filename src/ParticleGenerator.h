@@ -11,11 +11,12 @@
 
 #include "ParticleContainer.h"
 
+
 class ParticleGenerator {
 public:
     //! A constructor for a Particle Generator from given Parameters
     /*!
-     \param base_coordinates The coordinate of of the lower left front-side corner of the cuboid
+     \param base_coordinates The coordinate of the lower left front-side corner of the cuboid
      \param number_of_particles Number of particles per dimension N1 x N2 x N3
      \param spacing Distance h of the particle (mesh width of the grid)
      \param mass Mass m of one particle

@@ -47,3 +47,23 @@ std::vector<Particle>::const_iterator ParticleContainer::begin() const {
 std::vector<Particle>::const_iterator ParticleContainer::end() const {
     return particles.cend();
 }
+
+bool ParticleContainer::contains(ParticleContainer& particles, const Particle& p)
+{
+    for (auto it = particles.begin(); it != particles.end();++it)
+{
+    if (particle_sem_eq(p,*it))
+    {return true;}
+}
+    return false;
+}
+
+
+bool ParticleContainer::cont_sem_eq(ParticleContainer& c1, ParticleContainer& c2)
+{if (c1.size() != c2.size()){return false;}
+    for (auto it = c1.begin(); it != c1.end(); ++it){
+        if (!ParticleContainer::contains(c2,*it)){return false;}
+    }
+    return true;
+}
+

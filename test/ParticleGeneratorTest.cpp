@@ -2,16 +2,20 @@
 // Created by cpsch on 22.05.2025.
 //
 
-#include "ParticleGeneratonTest.h"
+#include "ParticleGeneratorTest.h"
 #include <gtest/gtest.h>
 
 
 
-TEST(Init2x2, ParticleGeneratorTests)
+TEST(SimpleCube, ParticleGeneratorTests)
 {
  ParticleContainer con= ParticleGenerator::generateParticleContainer({0.0,0.0,0.0},
   {2,2,2},1.0,1.0,{0.0,0.0,0.0},brown);
- //EXPECT_TRUE(ParticleContainer::cont_sem_eq(con,cube1));
+ EXPECT_TRUE(ParticleContainer::cont_sem_eq(con,cube1));
+ for (auto i=cube1.begin(); i != cube1.end(); ++i)
+ {
+  std::cout << (*i).toString() << std::endl;
+ }
  for (auto i=con.begin(); i != con.end(); ++i)
  {
   std::cout << (*i).toString() << std::endl;
@@ -19,7 +23,7 @@ TEST(Init2x2, ParticleGeneratorTests)
  }
 }
 
-TEST(Init2Cubes, ParticleGeneratorTests)
+TEST(TwoCubes, ParticleGeneratorTests)
 { ParticleContainer con= ParticleGenerator::generateParticleContainer({0.0,0.0,0.0},
  {2,2,2},1.0,1.0,{0.0,0.0,0.0},brown);
  con.addParticles(ParticleGenerator::generateParticleContainer({0.5,0.5,0.5},

@@ -3,10 +3,11 @@
 //
 #pragma once
 #include "../src/ParticleGenerator.h"
-//#include "../src/utils/MaxwellBoltzmannDistribution.h"
+#include "../src/utils/MaxwellBoltzmannDistribution.h"
 
 inline double brown=0.0;
-inline std::array<double, 3> v_b ={0,0,0};//maxwellBoltzmannDistributedVelocity(brown, 3);
+inline std::array<double, 3> v_b ={0,0,0};
+//inline std::array<double, 3> v_m=maxwellBoltzmannDistributedVelocity(brown,3);
 //! The x3 axis is considered to increase 'towards the viewer'
 inline Particle c1=Particle({0.0,0.0,0.0},v_b,1.0,0);
 inline Particle c2=Particle({0.0,0.0,-1.0},v_b,1.0,0);

@@ -35,7 +35,7 @@ int main(int argc, char *argsv[]) {
     // Default to info if no match
     logger->set_level(spdlog::level::info);
 #endif
-#pragma message SPDLOG_ACTIVE_LEVEL
+
   } catch (const spdlog::spdlog_ex &ex) {
     spdlog::error("Could not create log file: {}", ex.what());
     std::cout << "bich broke" << std::endl;

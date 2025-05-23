@@ -10,7 +10,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
-#collect test files
+#collect test and source files
 file(GLOB_RECURSE MY_TEST
         "${PROJECT_SOURCE_DIR}/test/*.cpp"
         # header don't need to be included but this might be necessary for some IDEs
@@ -18,9 +18,11 @@ file(GLOB_RECURSE MY_TEST
         "${PROJECT_SOURCE_DIR}/src/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/*.h"
 )
+#remove source files with main() methods
 list(REMOVE_ITEM MY_TEST "${PROJECT_SOURCE_DIR}/src/MolSim.cpp")
 list(REMOVE_ITEM MY_TEST "${PROJECT_SOURCE_DIR}/src/MolSim.h")
 add_executable(Test ${MY_TEST})
+#target setup similar to MolSim
 target_include_directories(Test
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd

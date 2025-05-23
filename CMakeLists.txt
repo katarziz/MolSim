@@ -53,6 +53,7 @@ target_compile_options(MolSim
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
+#Option to change logging level. Can be changed by calling cmake -D LOG_LEVEL={LEVEL} ..
 include(${CMAKE_SOURCE_DIR}/cmake/modules/spdlog.cmake)
 
 #Option to build Documentation. Can be disabled by calling cmake -D BUILD_DOC=OFF ..

@@ -1,4 +1,4 @@
-#fetch spdlog
+#fetch spdlog and fmt
 include(FetchContent)
 
 FetchContent_Declare(
@@ -8,6 +8,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmt)
 
+#force spdlog to use provided fmt, instead of included fmt
 set(SPDLOG_FMT_EXTERNAL ON CACHE BOOL "Use external fmt" FORCE)
 FetchContent_Declare(
         spdlog
@@ -17,8 +18,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(spdlog)
 
 #Variable to set compile-time logging level.
-#Can be set with the flag -DLOG_LEVEL=
-#possible options are:
+#Can be set with the flag -DLOG_LEVEL={LEVEL}
+#possible options for {LEVEL} are:
 # OFF
 # CRITICAL
 # ERROR

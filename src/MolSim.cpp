@@ -12,9 +12,11 @@
 #include  <getopt.h>
 #include "LennardJones.h"
 #include "Grav.h"
+#include "spdlog/sinks/stdout_sinks.h"
 
 int main(int argc, char *argsv[]) {
   std::shared_ptr<spdlog::logger> logger = nullptr;
+  std::shared_ptr<spdlog::logger> stdout_logger = spdlog::stdout_logger_mt("stdout");
   try {
     logger = spdlog::basic_logger_mt("default", "logs/log.txt", true);
 #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_TRACE
@@ -26,7 +28,7 @@ int main(int argc, char *argsv[]) {
 #elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_WARN
     logger->set_level(spdlog::level::warn);
 #elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_ERROR
-    logger->set_level(spdlog::level::err); // or spdlog::level::error if your version uses it
+    logger->set_level(spdlog::level::err);
 #elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_CRITICAL
     logger->set_level(spdlog::level::critical);
 #elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_OFF
@@ -38,7 +40,6 @@ int main(int argc, char *argsv[]) {
 
   } catch (const spdlog::spdlog_ex &ex) {
     spdlog::error("Could not create log file: {}", ex.what());
-    std::cout << "bich broke" << std::endl;
     exit(-1);
   }
 
@@ -153,7 +154,7 @@ int main(int argc, char *argsv[]) {
   int iteration = 0;
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation started");
-  SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Simulation started");
+  SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation started");
 
 
   // for this loop, we assume: current x, current f and current v are known
@@ -175,6 +176,7 @@ int main(int argc, char *argsv[]) {
   }
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
+  SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation finished. Terminating...");
   return 0;
 }
 

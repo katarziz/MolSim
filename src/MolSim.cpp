@@ -57,7 +57,7 @@ int main(int argc, char *argsv[]) {
   };
 
   while (true) {
-    int options = getopt_long(argc, argsv, "hi:d:t:w:", long_options, nullptr);
+    int options = getopt_long(argc, argsv, "hi:d:t:w:f:", long_options, nullptr);
 
     if (options == -1) {
       break;
@@ -105,9 +105,9 @@ int main(int argc, char *argsv[]) {
         }
     case 'f':   {
           if (strcmp(optarg, "lennard-jones")==0)
-          { writer_flag=0;
+          { force_flag=0;
           }else if (strcmp(optarg, "newton")==0){
-            writer_flag=1;
+            force_flag=1;
           }else {
             SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"passed string is not a valid force calculation.");
             exit(-1);
@@ -181,7 +181,7 @@ int main(int argc, char *argsv[]) {
 void calculateF() {
   if (force_flag==1)
   {
-    calculateF_G();
+    calculateF_G(particles);
   }else
   {
     calculateF_LJ(particles);

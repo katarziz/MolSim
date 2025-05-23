@@ -6,7 +6,7 @@
 #include "MolSim.h"
 #include "utils/ArrayUtils.h"
 
-void calculateF_G() {
+void calculateF_G(ParticleContainer &particles) {
     for (auto p1 = particles.begin(); p1 != particles.end(); ++p1) {
         std::array<double, 3> force = {0,0,0};
         for (auto p2 = particles.begin(); p1 != p2; ++p2) {

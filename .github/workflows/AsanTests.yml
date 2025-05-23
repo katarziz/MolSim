@@ -3,6 +3,7 @@ name: AsanTests
 on:
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 jobs:
   AsanTests:
@@ -13,7 +14,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Update System
-        run: sudo apt-get update && sudo apt-get install -y cmake make clang ctest
+        run: sudo apt-get update && sudo apt-get install -y cmake make clang libxerces-c-dev
 
       - name: Configure CMake
         run: |
@@ -24,5 +25,5 @@ jobs:
       - name: Build
         run: cmake --build .
 
-#      - name: Unit Tests
-#        run: ctest
+      - name: Unit Tests
+        run: ctest

@@ -27,7 +27,7 @@ public:
 
     //! A function to add a single Particle to a ParticleContainer
     /*!
-     \param p a reference to a Particles to be added to the ParticleContainer
+     \param particle a reference to a Particles to be added to the ParticleContainer
      */
     void addParticle(const Particle &particle);
 
@@ -72,4 +72,20 @@ public:
      \returns constant iterator to the element past the end of the ParticleContainer
      */
     std::vector<Particle>::const_iterator end() const;
+
+    ///! Function which checks whether a Particle is present in a PArticleContainer
+    /*!
+     \param particles ParticleContainer
+     \param p Particle
+     \returns bool that siginfies if a particle which is semantically equivalent to
+      p is present in particles
+    */
+    static bool contains(ParticleContainer &particles, const Particle &p);
+ ///! Function which checks whether two Particle containers contain the same Particles
+ /*!
+  \param c1 First Particle Container
+  \param c2 Second Particle Container
+  \returns bool which indicates whether the two ParticleContainers contain exactly the same Particles.
+  */
+   static bool cont_sem_eq(ParticleContainer &c1,ParticleContainer &c2);
 };

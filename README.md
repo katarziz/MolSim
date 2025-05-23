@@ -42,13 +42,21 @@ The input file has to have the following format:
 
 - Lines of comment start with '#' and are only allowed at the beginning of the file
 - Empty lines are not allowed.
-- The first line not being a comment has to be one integer, indicating the number of molecule data sets.
-- Every line following after contains one set of molecule data consisting of:
-    - xyz-coordinates (3 double values)
-    - velocities (3 double values)
-    - mass (1 double value)
+- The first line of a block has to denote the type: PARTICLES or CUBOID
+- PARTICLES data consists of
+  * num_particles (1 integer) - specifying how many particles to read
+  * the following {num_particles} line have to contain:
+  * xyz-coordinates (3 double values)
+  * velocities (3 double values)
+  * mass (1 double value)
+- CUBOID data consists of
+  * xyz-coordinates of the lower left front-side corner (3 double values)
+  * velocities (3 double values)
+  * mass of one particle (1 double value)
+  * number of particles per dimension (3 double values)
+  * distance of the particles (mesh width of the grid) (1 double value)
 
-Consider this example:
+Consider this example for PARTICLES:
 ```text
 # comment
 2
@@ -57,6 +65,14 @@ Consider this example:
 ```
 
 For further options and arguments supported by the executable, please refer to the output of `$./MolSim -h`
+
+### Logging
+
+logs are placed at project_root/build/logs
+
+the default level of logging is INFO and can be changed by running `cmake .. -DLOG_LEVEL={LEVEL}` instead of `cmake ..`
+
+available levels of logging are: `TRACE DEBUG INFO WARN ERROR CRITICAL OFF`
 
 ---
 

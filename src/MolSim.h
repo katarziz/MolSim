@@ -23,9 +23,9 @@ void plotParticles(int iteration);
 //! constant double representing the start time of the simulation.
 constexpr double start_time =0;
 //! double representing the end time of the simulation. Default:1000
-inline double end_time= 1000;
+inline double end_time= 5;
 //! double representing the timestep of the simulation. Default:0.014
-inline double delta_t= 0.014;
+inline double delta_t= 0.0002;
 //! ParticleContainer containing all particles in the simulation
 inline ParticleContainer particles;
 

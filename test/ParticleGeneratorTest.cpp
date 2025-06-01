@@ -12,14 +12,14 @@ TEST(SimpleCube, ParticleGeneratorTests)
  ParticleContainer con= ParticleGenerator::generateParticleContainer({0.0,0.0,0.0},
   {2,2,2},1.0,1.0,{0.0,0.0,0.0},brown);
  EXPECT_TRUE(ParticleContainer::cont_sem_eq(con,cube1));
- for (auto i=cube1.begin(); i != cube1.end(); ++i)
+ for (auto cube_it=cube1.begin(); cube_it != cube1.end(); ++cube_it)
  {
-  std::cout << (*i).toString() << std::endl;
+  std::cout << cube_it->toString() << std::endl;
  }
- for (auto i=con.begin(); i != con.end(); ++i)
+ for (auto cont_it=con.begin(); cont_it != con.end(); ++cont_it)
  {
-  std::cout << (*i).toString() << std::endl;
-  EXPECT_TRUE(ParticleContainer::contains(cube1,*i));
+  std::cout << cont_it->toString()<< std::endl;
+  EXPECT_TRUE(ParticleContainer::contains(cube1,*cont_it));
  }
 }
 

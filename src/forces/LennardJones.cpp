@@ -1,9 +1,9 @@
 //
 // Created by cpsch on 18.05.2025.
 //
-#include "utils/ArrayUtils.h"
+#include "../utils/ArrayUtils.h"
 #include "LennardJones.h"
-#include "MolSim.h"
+#include "../MolSim.h"
 #include <iostream>
 
 int eps = 5;

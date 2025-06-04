@@ -38,33 +38,86 @@ To execute from within the build directory, run:
 ./MolSim -i INPUT_FILE
 ```
 
-The input file has to have the following format:
+- The input file has to be an xml file following the schema denoted in input/input.xsd:
 
-- Lines of comment start with '#' and are only allowed at the beginning of the file
-- Empty lines are not allowed.
-- The first line of a block has to denote the type: PARTICLES or CUBOID
-- PARTICLES data consists of
-  * num_particles (1 integer) - specifying how many particles to read
-  * the following {num_particles} line have to contain:
-  * xyz-coordinates (3 double values)
-  * velocities (3 double values)
-  * mass (1 double value)
-- CUBOID data consists of
+```shell
+  * <?xml version="1.0" encoding="UTF-8"?>
+
+<Molsim_Input xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="input.xsd">
+
+[Parameters]
+<Particles>
+[Sequence of cuboids and particles]
+</Particles>
+
+</Molsim_Input>
+```
+- The document must contain single Parameters object, passing the parameters of the simulation:
+  * Parameters that are changed from the default value are set with `<param> new_value </param>`
+  * Parameters that remain at the default value are denoted with `<param/>`
+```shell
+<Parameters>
+        <delta_t/>
+        <t_end/>
+        <writer/>
+        <force/>
+        <output_name/>
+        <output_frequency/>
+    </Parameters>
+```
+- The Parameters object is followed by a Particles object, representing a seqence of cuboid and particle objects
+- - CUBOID data consists of
   * xyz-coordinates of the lower left front-side corner (3 double values)
   * velocities (3 double values)
   * mass of one particle (1 double value)
   * number of particles per dimension (3 double values)
   * distance of the particles (mesh width of the grid) (1 double value)
-
-Consider this example for PARTICLES:
-```text
-# comment
-2
-0.1 1.2 3.5  8.1 3.2 1.3  4.5
-1.2 4.8 1.6  3.2 6.4 1.2  8.2
+- Example cuboid:
+```shell
+ <cuboid>
+            <base_coordinates>
+                <x-coordinate>0.0</x-coordinate>
+                <y-coordinate>0.0</y-coordinate>
+                <z-coordinate>0.0</z-coordinate>
+            </base_coordinates>
+            <number_particles>
+                <x-number>40</x-number>
+                <y-number>8</y-number>
+                <z-number>1</z-number>
+            </number_particles>
+            <velocity>
+                <x-velocity>0.0</x-velocity>
+                <y-velocity>0.0</y-velocity>
+                <z-velocity>0.0</z-velocity>
+            </velocity>
+            <spacing>1.1225</spacing>
+            <mass>1.0</mass>
+            <brownian_vel>0.1</brownian_vel>
+        </cuboid>
+```
+- PARTICLE data consists of
+  * xyz-coordinates (3 double values)
+  * velocities (3 double values)
+  * mass (1 double value)
+- Example particle:
+```shell
+<particle>
+            <position>
+                <x-coordinate>30.0</x-coordinate>
+                <y-coordinate>15.0</y-coordinate>
+                <z-coordinate>0.0</z-coordinate>
+            </position>
+            <velocity>
+                <x-velocity>-5.0</x-velocity>
+                <y-velocity>-5.0</y-velocity>
+                <z-velocity>0.0</z-velocity>
+            </velocity>
+            <mass>2.0</mass>
+        </particle>
 ```
 
-For further options and arguments supported by the executable, please refer to the output of `$./MolSim -h`
+
 
 ### Logging
 

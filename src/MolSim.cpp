@@ -1,6 +1,6 @@
 
 #include "MolSim.h"
-#include "FileReader.h"
+#include "inputReader/FileReader.h"
 #include "outputWriter/XYZWriter.h"
 #include "outputWriter/VTKWriter.h"
 #include "utils/ArrayUtils.h"
@@ -10,8 +10,10 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include  <getopt.h>
-#include "LennardJones.h"
-#include "Grav.h"
+#include "forces/LennardJones.h"
+#include "forces/Grav.h"
+#include "inputReader/XMLReader.h"
+#include "inputReader/input.h"
 #include "spdlog/sinks/stdout_sinks.h"
 
 int main(int argc, char *argsv[]) {
@@ -53,7 +55,7 @@ int main(int argc, char *argsv[]) {
     {"delta_t", optional_argument, nullptr, 'd'},
     {"t_end",optional_argument, nullptr, 't'},
     {"writer",optional_argument,nullptr,'w'},
-        {"force",optional_argument,nullptr,'f' },
+       {"force",optional_argument,nullptr,'f' },
     {nullptr}
   };
 
@@ -139,8 +141,9 @@ int main(int argc, char *argsv[]) {
     exit(0);
   }
 
-  FileReader fileReader;
-  fileReader.readFile(particles, input_file);
+  //FileReader fileReader;
+  XMLReader fileReader;
+  fileReader.readFile(particles,input_file);
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG
@@ -167,7 +170,7 @@ int main(int argc, char *argsv[]) {
     calculateV();
 
     iteration++;
-    if (iteration % 50 == 0) {
+    if (iteration % out_freq == 0) {
       plotParticles(iteration);
       SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
     }
@@ -213,7 +216,6 @@ void calculateV() {
 }
 
 void plotParticles(int iteration) {
-  std::string out_name("MD_vtk");
 
   if (writer_flag==1)  {
     outputWriter::XYZWriter writer;

@@ -2,8 +2,8 @@
 
 #include "ParticleContainerTest.h"
 #include <gtest/gtest.h>
-#include "../src/ParticleContainer.h"
-#include "../src/utils/ArrayUtils.h"
+#include "../../src/particles/ParticleContainer.h"
+#include "../../src/utils/ArrayUtils.h"
 
 
 /*!Test initialization of an empty Particle container*/

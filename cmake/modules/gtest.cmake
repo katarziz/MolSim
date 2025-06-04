@@ -18,9 +18,8 @@ file(GLOB_RECURSE MY_TEST
         "${PROJECT_SOURCE_DIR}/src/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/*.h"
 )
-#remove source files with main() methods
+#remove source files with main() methods &XML Reader
 list(REMOVE_ITEM MY_TEST "${PROJECT_SOURCE_DIR}/src/MolSim.cpp")
-list(REMOVE_ITEM MY_TEST "${PROJECT_SOURCE_DIR}/src/MolSim.h")
 add_executable(Test ${MY_TEST})
 #target setup similar to MolSim
 target_include_directories(Test

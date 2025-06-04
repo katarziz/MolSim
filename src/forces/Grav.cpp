@@ -3,8 +3,8 @@
 //
 
 #include "Grav.h"
-#include "MolSim.h"
-#include "utils/ArrayUtils.h"
+#include "../MolSim.h"
+#include "../utils/ArrayUtils.h"
 
 void calculateF_G(ParticleContainer &particles) {
     for (auto p1 = particles.begin(); p1 != particles.end(); ++p1) {

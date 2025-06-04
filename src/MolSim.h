@@ -5,7 +5,7 @@
 #define MOLSIM_H
 /**** forward declaration of the calculation functions ****/
 
-#include "ParticleContainer.h"
+#include "particles/ParticleContainer.h"
 //! function to calculate and update the velocity of the particles
 void calculateF();
 
@@ -42,6 +42,10 @@ inline int writer_flag=0;
 *force_flag=1 -> newton
 */
 inline int force_flag=0;
+
+inline std::string out_name="MD_vtk";
+
+inline int64_t out_freq=50;
 
 //! main function of the Molecular Simulation
 int main(int argc, char *argsv[]);

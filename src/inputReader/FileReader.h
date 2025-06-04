@@ -6,8 +6,7 @@
  */
 
 #pragma once
-
-#include "ParticleContainer.h"
+#include "../particles/ParticleGenerator.h"
 
 class FileReader {
 

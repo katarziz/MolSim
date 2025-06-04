@@ -1,5 +1,5 @@
 #pragma once
-#include "../src/ParticleContainer.h"
+#include "../../src/particles/ParticleContainer.h"
 
 /**
  * Particle p1 to be used in Tests

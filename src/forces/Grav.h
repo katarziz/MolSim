@@ -4,7 +4,7 @@
 
 #ifndef GRAV_H
 #define GRAV_H
-#include "ParticleContainer.h"
+#include "../particles/ParticleContainer.h"
 //! A function to calculate the forces acting on a set of particles
 /*!
  \param particles a reference to the container of particles the forces will be applied to

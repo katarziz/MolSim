@@ -3,11 +3,11 @@
 //
 
 #include "ParticleGenerator.h"
-#include "utils/MaxwellBoltzmannDistribution.h"
+#include "../utils/MaxwellBoltzmannDistribution.h"
 
 ParticleContainer ParticleGenerator::generateParticleContainer(const std::array<double, 3> &base_coordinates,
-    const std::array<int64_t, 3> &number_of_particles, const double spacing, const double mass,
-    const std::array<double, 3> &velocity, const double brownian_motion_avg_velocity) {
+                                                               const std::array<int64_t, 3> &number_of_particles, const double spacing, const double mass,
+                                                               const std::array<double, 3> &velocity, const double brownian_motion_avg_velocity) {
     std::vector<Particle> particles;
     particles.reserve(number_of_particles[0]*number_of_particles[1]*number_of_particles[2]);
 

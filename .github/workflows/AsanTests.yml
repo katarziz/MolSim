@@ -1,0 +1,29 @@
+name: AsanTests
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  AsanTests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Update System
+        run: sudo apt-get update && sudo apt-get install -y cmake make clang libxerces-c-dev
+
+      - name: Configure CMake
+        run: |
+          cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_C_FLAGS="-fsanitize=address" -DCMAKE_CXX_FLAGS="-fsanitize=address" \
+            .
+
+      - name: Build
+        run: cmake --build .
+
+      - name: Unit Tests
+        run: ctest

@@ -17,9 +17,7 @@
 # * mass of one particle (1 double value)
 # * number of particles per dimension (3 double values)
 # * distance of the particles (mesh width of the grid) (1 double value)
-PARTICLES
-4
-0.0 0.0 0.0      0.0 0.0 0.0     1.0
-0.0 1.0 0.0     -1.0 0.0 0.0     3.0e-6
-0.0 5.36 0.0    -0.425 0.0 0.0   9.55e-4
-34.75 0.0 0.0    0.0 0.0296 0.0  1.0e-14
+CUBOID
+0   0   0   0   0   0   1   40  8   1   1.1225
+CUBOID
+15  15  0   0   -10 0   8   8   8   1   1.1225

@@ -1,48 +1,47 @@
 
+#include "MolSim.h"
 #include "FileReader.h"
 #include "outputWriter/XYZWriter.h"
 #include "outputWriter/VTKWriter.h"
 #include "utils/ArrayUtils.h"
 
 #include <iostream>
-#include <list>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 #include  <getopt.h>
+#include "LennardJones.h"
+#include "Grav.h"
+#include "spdlog/sinks/stdout_sinks.h"
 
-/**** forward declaration of the calculation functions ****/
-
-//! function to calculate and update the velocity of the particles
-void calculateF();
-
-//! function to calculate and update the position of the particles
-void calculateX();
-
-//! function to calculate and update the velocity of the particles
-void calculateV();
-
-
-//! function to plot the particles using the output writer
-/*!
-\param iteration int representing the number of the current iteration
-*/
-void plotParticles(int iteration);
-//! constant double representing the start time of the simulation.
-constexpr double start_time = 0;
-//! double representing the end time of the simulation. Default:1000
-double end_time = 1000;
-//! double representing the timestep of the simulation. Default:0.014
-double delta_t = 0.014;
-//! ParticleContainer containing all particles in the simulation
-ParticleContainer particles;
-
-//! int representation of the output writer being used
-/*!
-*writer_flag=0 -> vtk writer
-*writer_flag=1 -> xyz  writer
-*/
-int writer_flag=0;
-//! main function of the Molecular Simulation
 int main(int argc, char *argsv[]) {
+  std::shared_ptr<spdlog::logger> logger = nullptr;
+  std::shared_ptr<spdlog::logger> stdout_logger = spdlog::stdout_logger_mt("stdout");
+  try {
+    logger = spdlog::basic_logger_mt("default", "logs/log.txt", true);
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_TRACE
+    logger->set_level(spdlog::level::trace);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
+    logger->set_level(spdlog::level::debug);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
+    logger->set_level(spdlog::level::info);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_WARN
+    logger->set_level(spdlog::level::warn);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_ERROR
+    logger->set_level(spdlog::level::err);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_CRITICAL
+    logger->set_level(spdlog::level::critical);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_OFF
+    logger->set_level(spdlog::level::off);
+#else
+    // Default to info if no match
+    logger->set_level(spdlog::level::info);
+#endif
+
+  } catch (const spdlog::spdlog_ex &ex) {
+    spdlog::error("Could not create log file: {}", ex.what());
+    exit(-1);
+  }
 
   // handle options and arguments passed to the executable using getopt
   int help_flag = 0;
@@ -54,11 +53,12 @@ int main(int argc, char *argsv[]) {
     {"delta_t", optional_argument, nullptr, 'd'},
     {"t_end",optional_argument, nullptr, 't'},
     {"writer",optional_argument,nullptr,'w'},
+        {"force",optional_argument,nullptr,'f' },
     {nullptr}
   };
 
   while (true) {
-    int options = getopt_long(argc, argsv, "hi:d:t:w:", long_options, nullptr);
+    int options = getopt_long(argc, argsv, "hi:d:t:w:f:", long_options, nullptr);
 
     if (options == -1) {
       break;
@@ -78,7 +78,7 @@ int main(int argc, char *argsv[]) {
         errno = 0;
         delta_t = strtod(optarg, &endptr);
         if (endptr == optarg || *endptr != '\0' || errno != 0) {
-          std::cout << "failed to parse delta_t into a valid double" << std::endl;
+          SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"failed to parse delta_t into a valid double");
           exit(-1);
         }
         break;
@@ -88,7 +88,7 @@ int main(int argc, char *argsv[]) {
         errno = 0;
         end_time = strtod(optarg, &endptr);
         if (endptr == optarg || *endptr != '\0' || errno != 0) {
-          std::cout << "failed to parse t_end into a valid double" << std::endl;
+          SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"failed to parse t_end into a valid double");
           exit(-1);
         }
         break;
@@ -99,13 +99,24 @@ int main(int argc, char *argsv[]) {
           }else if (strcmp(optarg, "vtk")==0){
             writer_flag=0;
           }else {
-            std::cout << "passed string is not a valid writer." << std::endl;
+            SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"passed string is not a valid writer.");
+            exit(-1);
+          }
+          break;
+        }
+    case 'f':   {
+          if (strcmp(optarg, "lennard-jones")==0)
+          { force_flag=0;
+          }else if (strcmp(optarg, "newton")==0){
+            force_flag=1;
+          }else {
+            SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"passed string is not a valid force calculation.");
             exit(-1);
           }
           break;
         }
       case '?': {
-        std::cout << "unknown option" << std::endl;
+        SPDLOG_LOGGER_CRITICAL(spdlog::get("default"),"unknown option.");
         exit(-1);
       }
       default: {
@@ -124,17 +135,27 @@ int main(int argc, char *argsv[]) {
     std::cout << "-d or --delta_t DELTA_T : pass the time step of the simulation" << std::endl;
     std::cout << "-t or --t_end T_END : pass the last time to be simulated" << std::endl;
     std::cout << "-w or --writer WRITER : pass a string representation of the desired output writer. Currently 'xyz' and 'vtk' are supported." << std::endl;
+    std::cout << "-f or --force FORCE : pass a string representation of the desired force calculation. Currently 'newton' and 'lennard-jones' are supported." << std::endl;
     exit(0);
   }
-
-  std::cout << "Hello from MolSim for PSE!" << std::endl;
 
   FileReader fileReader;
   fileReader.readFile(particles, input_file);
 
+  SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");
+#if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG
+  for (auto &p : particles) {
+    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), p.toString());
+  }
+#endif
+
   double current_time = start_time;
 
   int iteration = 0;
+
+  SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation started");
+  SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation started");
+
 
   // for this loop, we assume: current x, current f and current v are known
   while (current_time < end_time) {
@@ -146,45 +167,26 @@ int main(int argc, char *argsv[]) {
     calculateV();
 
     iteration++;
-    if (iteration % 10 == 0) {
+    if (iteration % 50 == 0) {
       plotParticles(iteration);
+      SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
     }
-    std::cout << "Iteration " << iteration << " finished." << std::endl;
 
     current_time += delta_t;
   }
 
-  std::cout << "output written. Terminating..." << std::endl;
+  SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
+  SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation finished. Terminating...");
   return 0;
 }
 
 void calculateF() {
-  for (auto &p1 : particles) {
-    std::array<double, 3> force = {0,0,0};
-    for (auto &p2 : particles) {
-      if (p1 == p2) {
-        continue;
-      }
-
-      // diff_x = x_i - x_j
-      std::array<double, 3> diff_x = {0,0,0};
-      for (int i = 0; i < 3; ++i) {
-        diff_x[i] = p1.getX()[i] - p2.getX()[i];
-      }
-
-      // l2_norm_x = ||diff_x||_2
-      const double l2_norm_x = ArrayUtils::L2Norm(diff_x);
-
-      // factor = m_i * m_j / (l2_norm_x)^3
-      const double factor = p1.getM() * p2.getM() / (l2_norm_x * l2_norm_x * l2_norm_x);
-
-      // F_ij = factor * (x_j - x_i) = factor * -1 * (x_i - x_j) = factor * -1 * diff_x
-      for (int i = 0; i < 3; ++i) {
-        force[i] += factor * -diff_x[i];
-      }
-    }
-    p1.setOldF(p1.getF());
-    p1.setF(force);
+  if (force_flag==1)
+  {
+    calculateF_G(particles);
+  }else
+  {
+    calculateF_LJ(particles);
   }
 }
 

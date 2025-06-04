@@ -6,7 +6,7 @@
 /**** forward declaration of the calculation functions ****/
 
 #include "ParticleContainer.h"
-//! function to calculate and update the velocity of the particles
+//! function to calculate and update the current force acting on the particles
 void calculateF();
 
 //! function to calculate and update the position of the particles

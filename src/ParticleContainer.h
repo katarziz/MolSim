@@ -77,8 +77,7 @@ public:
     /*!
      \param particles ParticleContainer
      \param p Particle
-     \returns bool that siginfies if a particle which is semantically equivalent to
-      p is present in particles
+     \returns bool that signifies if a particle is present in the ParticleContainer
     */
     static bool contains(ParticleContainer &particles, const Particle &p);
  ///! Function which checks whether two Particle containers contain the same Particles

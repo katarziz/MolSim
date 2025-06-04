@@ -13,9 +13,7 @@ void calculateF_G(ParticleContainer &particles) {
 
             // diff_x = x_i - x_j
             std::array<double, 3> diff_x = {0,0,0};
-            for (int i = 0; i < 3; ++i) {
-                diff_x[i] = p1->getX()[i] - p2->getX()[i];
-            }
+            diff_x = p1->getX() - p2->getX();
 
             // l2_norm_x = ||diff_x||_2
             const double l2_norm_x = ArrayUtils::L2Norm(diff_x);

@@ -5,7 +5,7 @@
 #define MOLSIM_H
 /**** forward declaration of the calculation functions ****/
 
-#include "ParticleContainer.h"
+#include "objects/ParticleContainer.h"
 //! function to calculate and update the current force acting on the particles
 void calculateF();
 

@@ -14,7 +14,7 @@
 #include <sstream>
 #include <spdlog/spdlog.h>
 
-#include "ParticleGenerator.h"
+#include "../objects/ParticleGenerator.h"
 
 FileReader::FileReader() = default;
 

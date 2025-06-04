@@ -4,8 +4,8 @@
 
 #ifndef LENNARDJONESTEST_H
 #define LENNARDJONESTEST_H
-#include "../src/ParticleContainer.h"
-#include "../src/LennardJones.h"
+#include "../src/objects/ParticleContainer.h"
+#include "../src/simulation/LennardJones.h"
 
 /**
  * Particle p1 to be used in Tests

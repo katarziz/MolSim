@@ -2,7 +2,7 @@
 
 #include "ParticleContainerTest.h"
 #include <gtest/gtest.h>
-#include "../src/ParticleContainer.h"
+#include "../src/objects/ParticleContainer.h"
 #include "../src/utils/ArrayUtils.h"
 
 

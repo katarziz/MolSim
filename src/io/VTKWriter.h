@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "Particle.h"
+#include "../objects/Particle.h"
 #include "vtk-unstructured.h"
 
 #include <list>

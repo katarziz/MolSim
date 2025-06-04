@@ -4,7 +4,7 @@
 
 #ifndef LENNARDJONES_H
 #define LENNARDJONES_H
-#include "ParticleContainer.h"
+#include "../objects/ParticleContainer.h"
 //! A function to calculate and apply the forces acting on a set of particles
 /*!
  \param particles a reference to the container of particles the force will be applied to

@@ -2,7 +2,7 @@
 // Created by cpsch on 22.05.2025.
 //
 #pragma once
-#include "../src/ParticleGenerator.h"
+#include "../src/objects/ParticleGenerator.h"
 #include "../src/utils/MaxwellBoltzmannDistribution.h"
 //! double representing the average brownian velocity. Set to 0 for Tests
 inline double brown=0.0;

@@ -3,7 +3,7 @@
 //
 
 #include "ParticleGenerator.h"
-#include "utils/MaxwellBoltzmannDistribution.h"
+#include "../utils/MaxwellBoltzmannDistribution.h"
 
 ParticleContainer ParticleGenerator::generateParticleContainer(const std::array<double, 3> &base_coordinates,
     const std::array<int64_t, 3> &number_of_particles, const double spacing, const double mass,

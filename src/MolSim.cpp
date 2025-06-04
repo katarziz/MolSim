@@ -1,8 +1,8 @@
 
 #include "MolSim.h"
-#include "FileReader.h"
-#include "outputWriter/XYZWriter.h"
-#include "outputWriter/VTKWriter.h"
+#include "io/FileReader.h"
+#include "io/XYZWriter.h"
+#include "io/VTKWriter.h"
 #include "utils/ArrayUtils.h"
 
 #include <iostream>
@@ -10,8 +10,8 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include  <getopt.h>
-#include "LennardJones.h"
-#include "Grav.h"
+#include "simulation/LennardJones.h"
+#include "simulation/Grav.h"
 #include "spdlog/sinks/stdout_sinks.h"
 
 int main(int argc, char *argsv[]) {

@@ -16,7 +16,8 @@ XMLReader::XMLReader() = default;
 XMLReader::~XMLReader() = default;
 
 void XMLReader::readFile(ParticleContainer &particles, const char *filename)
-{   try
+{   SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Started reading file {}", filename);
+    try
     {
         unique_ptr<Molsim_Input> input =Molsim_Input_ (filename);
         Parameters param=input->Parameters();
@@ -44,6 +45,15 @@ void XMLReader::readFile(ParticleContainer &particles, const char *filename)
            force_flag=1;
         }
 
+        SPDLOG_LOGGER_INFO(spdlog::get("default"),
+            "Simulation Parameters:\nOutput Writer: {}     Output Name: {}    Output Frequency: {} \nDelta t = {}    End t = {}    Force: {} "
+            ,param.writer().c_str(), out_name,out_freq, delta_t, end_time,param.force().c_str());
+        SPDLOG_LOGGER_INFO(spdlog::get("default"),"Cutoff Radius = {}    Box Dimensions = ({}, {}, {})\nBoundary Conditions:\nTop: {}    Right: {}    Bottom: {}    Left:{}"
+            ,param.cutoff(), box_dim[0],box_dim[1],box_dim[2],param.boundary_conditions().top_bound().c_str(),
+            param.boundary_conditions().right_bound().c_str(),param.boundary_conditions().bottom_bound().c_str(),
+            param.boundary_conditions().right_bound().c_str());
+
+
         for (auto cube=particle_in.cuboid().begin();cube!=particle_in.cuboid().end();++cube)
         {
             std::array<double,3> x={cube->base_coordinates().x_coordinate(),cube->base_coordinates().y_coordinate(),cube->base_coordinates().z_coordinate()};
@@ -51,6 +61,7 @@ void XMLReader::readFile(ParticleContainer &particles, const char *filename)
             std::array<double,3> v={cube->velocity().x_velocity(),cube->velocity().y_velocity(),cube->velocity().z_velocity()};
             ParticleGenerator::generateCube(particles,x,n,cube->spacing(),cube->mass(),v,cube->brownian_vel());
         }
+
         for (auto part=particle_in.particle().begin();part!=particle_in.particle().end();++part)
         {   std::array<double,3> x={part->position().x_coordinate(),part->position().y_coordinate(),part->position().z_coordinate()};
             std::array<double,3> v={part->velocity().x_velocity(),part->velocity().y_velocity(),part->velocity().z_velocity()};
@@ -61,6 +72,7 @@ void XMLReader::readFile(ParticleContainer &particles, const char *filename)
             std::array<double,3> v={disc->velocity().x_velocity(),disc->velocity().y_velocity(),disc->velocity().z_velocity()};
             ParticleGenerator::generateDisc(particles, x, disc->radius(), disc->spacing(), disc->mass(), v, disc->brownian_vel());
         }
+        SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Finished reading in Particles.", iteration);
     }
     catch (const xml_schema::exception& e)
     {

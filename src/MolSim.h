@@ -24,7 +24,7 @@ void calculateV();
 void plotParticles(int iteration);
 //! constant double representing the start time of the simulation.
 constexpr double start_time =0;
-//! double representing the end time of the simulation. Default:1000
+//! double representing the end time of the simulation. Default:5
 inline double end_time= 5;
 //! double representing the timestep of the simulation. Default:0.0002
 inline double delta_t= 0.0002;
@@ -41,8 +41,8 @@ inline std::array<int,4>bounds={0,0,0,0};
 
 
 //! ParticleContainer containing all particles in the simulation
-inline auto particles = BasicParticleContainer();
-// inline auto particles = LinkedCellParticleContainer(box_dim,cell_num,r_c);
+//inline auto particles = BasicParticleContainer();
+ inline auto particles = LinkedCellParticleContainer(box_dim,cell_num,r_c);
 
 //! int representation of the output writer being used
 /*!

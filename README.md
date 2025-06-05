@@ -48,7 +48,7 @@ xsi:noNamespaceSchemaLocation="input.xsd">
 
 [Parameters]
 <Particles>
-[Sequence of cuboids and particles]
+[Sequence of cuboids, particles and discs]
 </Particles>
 
 </Molsim_Input>
@@ -60,19 +60,37 @@ xsi:noNamespaceSchemaLocation="input.xsd">
 <Parameters>
         <delta_t/>
         <t_end/>
+        <box_size>
+            <x-size/>
+            <y-size/>
+            <z-size/>
+        </box_size>
+        <number_cells>
+            <x-number/>
+            <y-number/>
+            <z-number/>
+        </number_cells>
+        <boundary_conditions>
+            <top_bound/>
+            <right_bound/>
+            <bottom_bound/>
+            <left_bound/>
+        </boundary_conditions>
+        <cutoff/>
         <writer/>
         <force/>
         <output_name/>
         <output_frequency/>
     </Parameters>
 ```
-- The Parameters object is followed by a Particles object, representing a seqence of cuboid and particle objects
+- The Parameters object is followed by a Particles object, representing a seqence of cuboid, disc and particle objects
 - - CUBOID data consists of
   * xyz-coordinates of the lower left front-side corner (3 double values)
   * velocities (3 double values)
   * mass of one particle (1 double value)
   * number of particles per dimension (3 double values)
   * distance of the particles (mesh width of the grid) (1 double value)
+  * borwnian-velocity (1 double value)
 - Example cuboid:
 ```shell
  <cuboid>
@@ -116,8 +134,32 @@ xsi:noNamespaceSchemaLocation="input.xsd">
             <mass>2.0</mass>
         </particle>
 ```
-
-
+- DISC data consists of
+  * xyz-coordinates (3 double values)
+  * velocities (3 double values)
+  * radius in particles from center(1 integer value)
+  * mass (1 double value)
+  * spacing( 1 double value)
+  * brownian_velocity (1 double value)
+- Example disc:
+```shell
+<disc>
+            <position>
+                <x-coordinate>0.0</x-coordinate>
+                <y-coordinate>0.0</y-coordinate>
+                <z-coordinate>0.0</z-coordinate>
+            </position>
+            <velocity>
+                <x-velocity>0.0</x-velocity>
+                <y-velocity>0.0</y-velocity>
+                <z-velocity>0.0</z-velocity>
+            </velocity>
+            <radius>2</radius>
+            <mass>1.0</mass>
+            <spacing>1.0</spacing>
+            <brownian_vel>0.1</brownian_vel>
+</disc>
+```
 
 ### Logging
 

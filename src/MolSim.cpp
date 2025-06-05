@@ -142,8 +142,7 @@ int main(int argc, char *argsv[]) {
   }
 
   //FileReader fileReader;
-  XMLReader fileReader;
-  fileReader.readFile(particles, input_file);
+  XMLReader::readFile(particles, input_file);
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG

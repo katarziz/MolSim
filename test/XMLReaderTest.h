@@ -4,7 +4,7 @@
 
 #ifndef XMLREADERTEST_H
 #define XMLREADERTEST_H
-#include "../src/particles/ParticleGenerator.h"
+#include "../src/objects/ParticleGenerator.h"
 
 //! double representing the average brownian velocity. Set to 0 for Tests
 inline double brown=0.0;
@@ -49,7 +49,7 @@ inline Particle c8=Particle({1.0,1.0,-1.0},v_b,1.0,0);
  * Origin: (0.0,0.0,0.0)    NumberParticles: (2,2,2)    Spacing: 1.0
  * Mass : 1.0               Velocity:   (0.0,0.0,0.0)   Brown_Vel: 0.0
  */
-inline ParticleContainer cube1=ParticleContainer({c1,c2,c3,c4,c5,c6,c7,c8});
+inline BasicParticleContainer cube1=BasicParticleContainer({c1,c2,c3,c4,c5,c6,c7,c8});
 /**
  * Particle d1 to be used in Tests, belonging to Cube 2
  */
@@ -71,7 +71,7 @@ inline Particle d4=Particle({1.5,1.5,0.5},v_b,2.0,0);
  * Origin: (0.5,0.5,0.5)    NumberParticles: (2,2,1)    Spacing: 1.0
  * Mass : 2.0               Velocity:   (0.0,0.0,0.0)   Brown_Vel: 0.0
  */
-inline ParticleContainer cube2=ParticleContainer({d1,d2,d3,d4,});
+inline BasicParticleContainer cube2=BasicParticleContainer({d1,d2,d3,d4,});
 
 /**
  * Particle p1 to be used in Tests
@@ -86,13 +86,13 @@ inline Particle pt2= Particle({2.0,1.0,0.0},{0.0,0.0,0.0},1.0,0);
 /**
  * ParticleContainer containing Cube1 Cube2, p1 and p2
  */
-inline  ParticleContainer all=ParticleContainer({c1,c2,c3,c4,c5,c6,c7,c8,d1,d3,d2,d4,pt1,pt2});
+inline  BasicParticleContainer all=BasicParticleContainer({c1,c2,c3,c4,c5,c6,c7,c8,d1,d3,d2,d4,pt1,pt2});
 
 /**
  * ParticleContainer containing particles for the Disc
  * origin(0,0,0),R=2, spacing=1.0
  */
-inline  ParticleContainer disc=ParticleContainer({
+inline BasicParticleContainer disc=BasicParticleContainer({
     Particle({0.0,0.0,0.0},{0.0,0.0,0.0},1.0,0),
     Particle({0.0,1.0,0.0},{0.0,0.0,0.0},1.0,0),
     Particle({0.0,-1.0,0.0},{0.0,0.0,0.0},1.0,0),

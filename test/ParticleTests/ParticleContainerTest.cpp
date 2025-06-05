@@ -2,13 +2,13 @@
 
 #include "ParticleContainerTest.h"
 #include <gtest/gtest.h>
-#include "../../src/particles/ParticleContainer.h"
 #include "../../src/utils/ArrayUtils.h"
+#include "objects/BasicParticleContainer.h"
 
 
 /*!Test initialization of an empty Particle container*/
 TEST(EmpytInitTest, ParticleContainerTests) {
-    ParticleContainer emp=ParticleContainer();
+    BasicParticleContainer emp=BasicParticleContainer();
     // Expect equality.
     EXPECT_EQ(0, emp.size());
     EXPECT_EQ(emp.begin(),emp.end());
@@ -16,7 +16,7 @@ TEST(EmpytInitTest, ParticleContainerTests) {
 
 /*!Test initialization of a Particle container*/
 TEST(InitTest, ParticleContainerTests) {
-    ParticleContainer con=ParticleContainer(coll);
+    BasicParticleContainer con=BasicParticleContainer(coll);
     EXPECT_EQ(coll.size(), con.size());
     for(int i=0;i<coll.size();i++)
     {
@@ -24,10 +24,10 @@ TEST(InitTest, ParticleContainerTests) {
     }
 }
 TEST(SizeTest,ParticleContainerTests)
-{   ParticleContainer emp=ParticleContainer();
-    ParticleContainer con=ParticleContainer(coll);
-    ParticleContainer con2=ParticleContainer(coll3);
-    ParticleContainer con3=ParticleContainer(coll);
+{   BasicParticleContainer emp=BasicParticleContainer();
+    BasicParticleContainer con=BasicParticleContainer(coll);
+    BasicParticleContainer con2=BasicParticleContainer(coll3);
+    BasicParticleContainer con3=BasicParticleContainer(coll);
     EXPECT_EQ(emp.size(),0);
     emp.addParticle(p4);
     EXPECT_EQ(emp.size(),1);
@@ -42,7 +42,7 @@ TEST(SizeTest,ParticleContainerTests)
 }
 
 TEST(AddParticleTest,ParticleContainerTests)
-{   ParticleContainer con=ParticleContainer(coll);
+{   BasicParticleContainer con=BasicParticleContainer(coll);
     EXPECT_EQ(2,con.size());
     con.addParticle(p3);
     EXPECT_EQ(3,con.size());
@@ -50,7 +50,7 @@ TEST(AddParticleTest,ParticleContainerTests)
 }
 
 TEST(AddParticlesTest,ParticleContainerTests)
-{ ParticleContainer con=ParticleContainer();
+{ BasicParticleContainer con=BasicParticleContainer();
   EXPECT_EQ(con.size(),0);
   con.addParticles(coll);
   EXPECT_EQ(con.size(),coll.size());
@@ -58,18 +58,18 @@ TEST(AddParticlesTest,ParticleContainerTests)
     {
         EXPECT_TRUE(particle_sem_eq(con.getParticles()[i],coll[i]));
     }
-   ParticleContainer con2=ParticleContainer({p3});
+   BasicParticleContainer con2=BasicParticleContainer({p3});
     EXPECT_EQ(con2.size(),1);
     con2.addParticles(coll);
     EXPECT_EQ(con2.size(),coll3.size());
     for(int i=0;i<con2.size();i++)
     {
-        EXPECT_TRUE(ParticleContainer::contains(con2,coll3[i]));
+        EXPECT_TRUE(BasicParticleContainer::contains(con2,coll3[i]));
     }
 }
 
 TEST(GetParticlesTest,ParticleContainerTests)
-{ ParticleContainer con=ParticleContainer(coll);
+{BasicParticleContainer con=BasicParticleContainer(coll);
     EXPECT_EQ(con.size(),coll.size());
     for(int i=0;i<coll.size();i++)
     {
@@ -78,7 +78,7 @@ TEST(GetParticlesTest,ParticleContainerTests)
 }
 
 TEST(IteratorTest,ParticleContainerTests)
-{ ParticleContainer con=ParticleContainer(coll);
+{ BasicParticleContainer con=BasicParticleContainer(coll);
     auto j = coll.begin();
     for(auto & i : con)
     { EXPECT_TRUE(particle_sem_eq(i,*j));
@@ -87,26 +87,26 @@ TEST(IteratorTest,ParticleContainerTests)
 
 }
 TEST(ContainsTest,ParticleContainerTests)
-{ ParticleContainer con=ParticleContainer(coll);
-  EXPECT_FALSE(ParticleContainer::contains(con,p3));
+{ BasicParticleContainer con=BasicParticleContainer(coll);
+  EXPECT_FALSE(BasicParticleContainer::contains(con,p3));
   con.addParticle(p3);
-  EXPECT_TRUE(ParticleContainer::contains(con,p3)) ;
+  EXPECT_TRUE(BasicParticleContainer::contains(con,p3)) ;
 }
 TEST(ContSemEquTest,ParticleContainerTests)
-{   ParticleContainer con=ParticleContainer(coll);
-    ParticleContainer con2=ParticleContainer(coll);
-    ParticleContainer con3=ParticleContainer(coll3);
-    EXPECT_FALSE(ParticleContainer::cont_sem_eq(con,con3));
-    EXPECT_TRUE(ParticleContainer::cont_sem_eq(con,con2));
+{   BasicParticleContainer con=BasicParticleContainer(coll);
+    BasicParticleContainer con2=BasicParticleContainer(coll);
+    BasicParticleContainer con3=BasicParticleContainer(coll3);
+    EXPECT_FALSE(BasicParticleContainer::cont_sem_eq(con,con3));
+    EXPECT_TRUE(BasicParticleContainer::cont_sem_eq(con,con2));
     con2.addParticle(p3);
-    EXPECT_FALSE(ParticleContainer::cont_sem_eq(con,con2));
-    EXPECT_TRUE(ParticleContainer::cont_sem_eq(con3,con2));
+    EXPECT_FALSE(BasicParticleContainer::cont_sem_eq(con,con2));
+    EXPECT_TRUE(BasicParticleContainer::cont_sem_eq(con3,con2));
 
 }
 /*!Test the iteration over Particle Pairs and check that forces are updted correctly */
 TEST(ParticlePairIterTest,ParticleContainerTests)
 {   Particle t1=Particle({1.0,1.0,1.0},{0.0,0.0,0.0},1.0,0);
-    ParticleContainer con=ParticleContainer(coll3);
+    BasicParticleContainer con=BasicParticleContainer(coll3);
     con.addParticle(t1);
     for (auto particle1 = con.begin(); particle1 != con.end(); ++particle1)
     {

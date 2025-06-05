@@ -3,15 +3,15 @@
 //
 
 #include "XMLReaderTest.h"
-#include "../src/inputReader/XMLReader.h"
+#include "../src/io/XMLReader.h"
 #include <gtest/gtest.h>
 
 
 TEST(SingleParticleInputTest,XMLReaderTests)
 {
     const char *input= "../test/TestInput/XMLReaderTestInputSingleParticle.xml";
-    ParticleContainer particles=ParticleContainer();
-    ParticleContainer check=ParticleContainer({pt1});
+     BasicParticleContainer particles= BasicParticleContainer();
+     BasicParticleContainer check= BasicParticleContainer({pt1});
     XMLReader fileReader;
     fileReader.readFile(particles,input);
     EXPECT_EQ(particles.size(),check.size());
@@ -32,7 +32,7 @@ TEST(SingleParticleInputTest,XMLReaderTests)
 
 TEST(SingleCubeInputTest,XMLReaderTests)
 {  const char *input= "../test/TestInput/XMLReaderTestInputSingleCube.xml";
-    ParticleContainer particles=ParticleContainer();
+     BasicParticleContainer particles= BasicParticleContainer();
     XMLReader::readFile(particles,input);
     EXPECT_EQ(particles.size(),cube1.size());
     for (int i=0;i<particles.size();i++)
@@ -52,7 +52,7 @@ TEST(SingleCubeInputTest,XMLReaderTests)
 
 TEST(SingleMixedInputTest,XMLReaderTests)
 { const char *input= "../test/TestInput/XMLReaderTestInputAll.xml";
-    ParticleContainer particles=ParticleContainer();
+     BasicParticleContainer particles= BasicParticleContainer();
     XMLReader::readFile(particles,input);
     EXPECT_EQ(particles.size(),all.size());
     for (int i=0;i<particles.size();i++)
@@ -70,7 +70,7 @@ TEST(SingleMixedInputTest,XMLReaderTests)
 }
 TEST(DiscInputTest,XMLReaderTests)
 { const char *input= "../test/TestInput/DiscTestInput.xml";
-    ParticleContainer particles=ParticleContainer();
+    BasicParticleContainer particles= BasicParticleContainer();
     XMLReader::readFile(particles,input);
     EXPECT_EQ(particles.size(),disc.size());
     for (int i=0;i<particles.size();i++)

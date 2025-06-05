@@ -1,52 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Molsim_Input xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:noNamespaceSchemaLocation="../../input/input.xsd">
+              xsi:noNamespaceSchemaLocation="input.xsd">
     <Parameters>
-        <delta_t/>
-        <t_end/>
+        <delta_t>0.00005</delta_t>
+        <t_end>10.0</t_end>
         <box_size>
             <x-size/>
             <y-size/>
             <z-size/>
         </box_size>
         <number_cells>
-            <x-number/>
-            <y-number/>
-            <z-number/>
+            <x-number>120</x-number>
+            <y-number>50</y-number>
+            <z-number>1</z-number>
         </number_cells>
         <boundary_conditions>
             <top_bound/>
             <right_bound/>
-            <bottom_bound/>
+            <bottom_bound>ref</bottom_bound>
             <left_bound/>
         </boundary_conditions>
-        <cutoff/>
+        <cutoff>3.0</cutoff>
         <writer/>
         <force/>
-        <output_name/>
+        <output_name>raindrop</output_name>
         <output_frequency/>
     </Parameters>
     <Particles>
-        <cuboid>
-            <base_coordinates>
-                <x-coordinate>0.0</x-coordinate>
-                <y-coordinate>0.0</y-coordinate>
+        <disc>
+            <position>
+                <x-coordinate>60.0</x-coordinate>
+                <y-coordinate>25.0</y-coordinate>
                 <z-coordinate>0.0</z-coordinate>
-            </base_coordinates>
-            <number_particles>
-                <x-number>2</x-number>
-                <y-number>2</y-number>
-                <z-number>2</z-number>
-            </number_particles>
+            </position>
             <velocity>
                 <x-velocity>0.0</x-velocity>
-                <y-velocity>0.0</y-velocity>
+                <y-velocity>-10.0</y-velocity>
                 <z-velocity>0.0</z-velocity>
             </velocity>
-            <spacing>1.0</spacing>
+            <radius>15</radius>
             <mass>1.0</mass>
+            <spacing>1.1225</spacing>
             <brownian_vel>0.0</brownian_vel>
-        </cuboid>
+        </disc>
     </Particles>
 </Molsim_Input>

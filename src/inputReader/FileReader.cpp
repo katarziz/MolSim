@@ -89,7 +89,7 @@ void FileReader::readFile(ParticleContainer &particles, char *filename) {
         datastream >> h;
 
         // TODO MAGIC NUMBER 0.1 is hard coded Brownian Motion
-        auto cuboid = ParticleGenerator::generateParticleContainer(x, n, h, m, v, 0.1);
+        auto cuboid = ParticleGenerator::generateCube(x, n, h, m, v, 0.1);
 
         particles.addParticles(cuboid.getParticles());
       }

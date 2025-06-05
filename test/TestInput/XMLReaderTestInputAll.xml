@@ -5,6 +5,23 @@
     <Parameters>
         <delta_t/>
         <t_end/>
+        <box_size>
+            <x-size/>
+            <y-size/>
+            <z-size/>
+        </box_size>
+        <number_cells>
+            <x-number/>
+            <y-number/>
+            <z-number/>
+        </number_cells>
+        <boundary_conditions>
+            <top_bound/>
+            <right_bound/>
+            <bottom_bound/>
+            <left_bound/>
+        </boundary_conditions>
+        <cutoff/>
         <writer/>
         <force/>
         <output_name/>

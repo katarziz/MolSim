@@ -24,8 +24,20 @@ void plotParticles(int iteration);
 constexpr double start_time =0;
 //! double representing the end time of the simulation. Default:1000
 inline double end_time= 5;
-//! double representing the timestep of the simulation. Default:0.014
+//! double representing the timestep of the simulation. Default:0.0002
 inline double delta_t= 0.0002;
+//! double representing the cutoff radius. Default:3.0
+inline double r_c= 3.0;
+//! array of three doubles representing the cell size. Default:r_c x r_c x 1
+inline std::array<double,3>box_size={r_c,r_c,1.0};
+//! array of three ints representing the number of cells. Default:1x1x1
+inline std::array<int64_t,3>cell_num={1,1,1};
+//! array of four ints representing the boundary conditions: top,right,bottom, left
+// outflow:0 ("out"), reflecting:1 ("ref")
+//Default:outflow x outflow x outflow x outflow
+inline std::array<int,4>bounds={0,0,0,0};
+
+
 //! ParticleContainer containing all particles in the simulation
 inline ParticleContainer particles;
 

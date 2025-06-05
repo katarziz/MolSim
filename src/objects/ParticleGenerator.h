@@ -25,8 +25,13 @@ public:
      \param brownian_motion_avg_velocity The mean-value of the velocity of the Brownian Motion
      \returns a set-up cuboid of particles in a ParticleContainer
      */
-    static void generateParticleContainer(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
-        const std::array<int64_t, 3> &number_of_particles, double spacing, double mass,
-        const std::array<double, 3> &velocity, double brownian_motion_avg_velocity);
+    static void generateCube(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
+                                          const std::array<int64_t, 3> &number_of_particles, double spacing,
+                                          double mass,
+                                          const std::array<double, 3> &velocity, double brownian_motion_avg_velocity);
 
+    static void generateDisc(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
+                             const double &radius, const double &spacing, const double &mass,
+                             const std::array<double, 3> &velocity,
+                             const double &brownian_motion_avg_velocity);
 };

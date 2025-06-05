@@ -8,7 +8,7 @@
 #include <spdlog/spdlog.h>
 
 LinkedCellParticleContainer::LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg,
-                                                         const std::array<int, 3> &cell_number_arg,
+                                                         const std::array<int64_t, 3> &cell_number_arg,
                                                          const double &cutoff_arg) {
     particles = std::vector<Particle>();
     box_size = box_size_arg;
@@ -26,7 +26,7 @@ LinkedCellParticleContainer::LinkedCellParticleContainer(const std::array<double
 
 LinkedCellParticleContainer::LinkedCellParticleContainer(const std::vector<Particle> &particles_arg,
                                                          const std::array<double, 3> &box_size_arg,
-                                                         const std::array<int, 3> &cell_number_arg,
+                                                         const std::array<int64_t, 3> &cell_number_arg,
                                                          const double &cutoff_arg) {
     particles = particles_arg;
     box_size = box_size_arg;

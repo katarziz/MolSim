@@ -55,7 +55,7 @@ int main(int argc, char *argsv[]) {
     {"delta_t", optional_argument, nullptr, 'd'},
     {"t_end",optional_argument, nullptr, 't'},
     {"writer",optional_argument,nullptr,'w'},
-        {"force",optional_argument,nullptr,'f'},
+    {"force",optional_argument,nullptr,'f'},
     {nullptr}
   };
 
@@ -173,10 +173,12 @@ int main(int argc, char *argsv[]) {
     if (iteration % out_freq == 0) {
       plotParticles(iteration);
       SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
+      std::cout << "\rProgress: " << std::ceil(100*current_time/end_time) << "%" << std::flush;
     }
 
     current_time += delta_t;
   }
+  std::cout << std::endl;
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
   SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation finished. Terminating...");

@@ -2,10 +2,10 @@
 // Created by cpsch on 02.06.2025.
 //
 
-#include "../inputReader/XMLReader.h"
+#include "../io/XMLReader.h"
 
 #include <spdlog/spdlog.h>
-#include "../particles/ParticleGenerator.h"
+#include "../objects/ParticleGenerator.h"
 #include "../MolSim.h"
 #include <iostream>
 #include "input.h"
@@ -49,7 +49,7 @@ void XMLReader::readFile(ParticleContainer &particles, const char *filename)
             std::array<double,3> x={cube->base_coordinates().x_coordinate(),cube->base_coordinates().y_coordinate(),cube->base_coordinates().z_coordinate()};
             std::array<int64_t,3> n={cube->number_particles().x_number(),cube->number_particles().y_number(),cube->number_particles().z_number()};
             std::array<double,3> v={cube->velocity().x_velocity(),cube->velocity().y_velocity(),cube->velocity().z_velocity()};
-            particles.addParticles(ParticleGenerator::generateCube(x,n,cube->spacing(),cube->mass(),v,cube->brownian_vel()).getParticles());
+            ParticleGenerator::generateCube(particles,x,n,cube->spacing(),cube->mass(),v,cube->brownian_vel());
         }
         for (auto part=particle_in.particle().begin();part!=particle_in.particle().end();++part)
         {   std::array<double,3> x={part->position().x_coordinate(),part->position().y_coordinate(),part->position().z_coordinate()};
@@ -59,8 +59,7 @@ void XMLReader::readFile(ParticleContainer &particles, const char *filename)
         for (auto disc=particle_in.disc().begin();disc!=particle_in.disc().end();++disc)
         {   std::array<double,3> x={disc->position().x_coordinate(),disc->position().y_coordinate(),disc->position().z_coordinate()};
             std::array<double,3> v={disc->velocity().x_velocity(),disc->velocity().y_velocity(),disc->velocity().z_velocity()};
-            particles.addParticles(ParticleGenerator::generateDisc(x,disc->radius(),disc->spacing(),disc->mass(),
-                v, disc->brownian_vel()).getParticles());
+            ParticleGenerator::generateDisc(particles, x, disc->radius(), disc->spacing(), disc->mass(), v, disc->brownian_vel());
         }
     }
     catch (const xml_schema::exception& e)

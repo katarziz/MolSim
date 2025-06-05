@@ -4,7 +4,7 @@
 
 #ifndef XMLREADER_H
 #define XMLREADER_H
-#include "../particles/ParticleContainer.h"
+#include "../objects/ParticleContainer.h"
 
 class XMLReader {
 

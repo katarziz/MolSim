@@ -12,17 +12,17 @@
 class LinkedCellParticleContainer : public ParticleContainer {
 private:
     std::array<double, 3> box_size;
-    std::array<int, 3> cell_number;
+    std::array<int64_t, 3> cell_number;
     std::vector<std::vector<int>> cells;
     double cutoff;
     const int boundary_width = 1;
     std::vector<Particle> particles;
 public:
-    LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg, const std::array<int, 3> &cell_number_arg,
+    LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg, const std::array<int64_t, 3> &cell_number_arg,
         const double &cutoff_arg);
 
     LinkedCellParticleContainer(const std::vector<Particle> &particles_arg, const std::array<double, 3> &box_size_arg,
-                                const std::array<int, 3> &cell_number_arg, const double &cutoff_arg);
+                                const std::array<int64_t, 3> &cell_number_arg, const double &cutoff_arg);
 
     void addParticle(const Particle &p) override;
 

@@ -12,6 +12,8 @@
 #include  <getopt.h>
 #include "simulation/LennardJones.h"
 #include "simulation/Grav.h"
+#include "io/XMLReader.h"
+#include "io/input.h"
 #include "spdlog/sinks/stdout_sinks.h"
 
 int main(int argc, char *argsv[]) {
@@ -53,7 +55,7 @@ int main(int argc, char *argsv[]) {
     {"delta_t", optional_argument, nullptr, 'd'},
     {"t_end",optional_argument, nullptr, 't'},
     {"writer",optional_argument,nullptr,'w'},
-        {"force",optional_argument,nullptr,'f' },
+        {"force",optional_argument,nullptr,'f'},
     {nullptr}
   };
 
@@ -139,7 +141,8 @@ int main(int argc, char *argsv[]) {
     exit(0);
   }
 
-  FileReader fileReader;
+  //FileReader fileReader;
+  XMLReader fileReader;
   fileReader.readFile(particles, input_file);
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");
@@ -167,15 +170,13 @@ int main(int argc, char *argsv[]) {
     calculateV();
 
     iteration++;
-    if (iteration % 50 == 0) {
-      std::cout << "\r" << std::floor(current_time/end_time*100) << "%" << std::flush;
+    if (iteration % out_freq == 0) {
       plotParticles(iteration);
       SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
     }
 
     current_time += delta_t;
   }
-  std::cout << std::endl;
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
   SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation finished. Terminating...");
@@ -215,7 +216,6 @@ void calculateV() {
 }
 
 void plotParticles(int iteration) {
-  std::string out_name("MD_vtk");
 
   if (writer_flag==1)  {
     outputWriter::XYZWriter writer;

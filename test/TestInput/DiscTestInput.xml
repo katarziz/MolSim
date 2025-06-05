@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Molsim_Input xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="../../input/input.xsd">
+    <Parameters>
+        <delta_t>0.002</delta_t>
+        <t_end> 1.0 </t_end>
+        <box_size>
+            <x-size/>
+            <y-size/>
+            <z-size/>
+        </box_size>
+        <number_cells>
+            <x-number/>
+            <y-number/>
+            <z-number/>
+        </number_cells>
+        <boundary_conditions>
+            <top_bound/>
+            <right_bound/>
+            <bottom_bound/>
+            <left_bound/>
+        </boundary_conditions>
+        <cutoff/>
+        <writer/>
+        <force/>
+        <output_name/>
+        <output_frequency/>
+    </Parameters>
+    <Particles>
+        <disc>
+            <position>
+                <x-coordinate>0.0</x-coordinate>
+                <y-coordinate>0.0</y-coordinate>
+                <z-coordinate>0.0</z-coordinate>
+            </position>
+            <velocity>
+                <x-velocity>0.0</x-velocity>
+                <y-velocity>0.0</y-velocity>
+                <z-velocity>0.0</z-velocity>
+            </velocity>
+            <radius>2</radius>
+            <mass>1.0</mass>
+            <spacing>1.0</spacing>
+            <brownian_vel>0.0</brownian_vel>
+        </disc>
+    </Particles>
+</Molsim_Input>

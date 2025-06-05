@@ -90,7 +90,7 @@ inline  ParticleContainer all=ParticleContainer({c1,c2,c3,c4,c5,c6,c7,c8,d1,d3,d
 
 /**
  * ParticleContainer containing particles for the Disc
- * origin(0,0,0),R=3, spacing=1.0
+ * origin(0,0,0),R=2, spacing=1.0
  */
 inline  ParticleContainer disc=ParticleContainer({
     Particle({0.0,0.0,0.0},{0.0,0.0,0.0},1.0,0),

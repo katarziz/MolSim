@@ -87,4 +87,25 @@ inline Particle pt2= Particle({2.0,1.0,0.0},{0.0,0.0,0.0},1.0,0);
  * ParticleContainer containing Cube1 Cube2, p1 and p2
  */
 inline  ParticleContainer all=ParticleContainer({c1,c2,c3,c4,c5,c6,c7,c8,d1,d3,d2,d4,pt1,pt2});
+
+/**
+ * ParticleContainer containing particles for the Disc
+ * origin(0,0,0),R=3, spacing=1.0
+ */
+inline  ParticleContainer disc=ParticleContainer({
+    Particle({0.0,0.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({0.0,1.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({0.0,-1.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({0.0,2.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({0.0,-2.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({1.0,0.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({-1.0,0.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({1.0,1.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({1.0,-1.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({-1.0,1.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({-1.0,-1.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({2.0,0.0,0.0},{0.0,0.0,0.0},1.0,0),
+    Particle({-2.0,0.0,0.0},{0.0,0.0,0.0},1.0,0),
+});
+
 #endif //XMLREADERTEST_H

@@ -39,9 +39,9 @@
                 <y-velocity>0.0</y-velocity>
                 <z-velocity>0.0</z-velocity>
             </velocity>
-            <radius>5</radius>
+            <radius>2</radius>
             <mass>1.0</mass>
-            <spacing>1.1225</spacing>
+            <spacing>1.0</spacing>
             <brownian_vel>0.0</brownian_vel>
         </disc>
     </Particles>

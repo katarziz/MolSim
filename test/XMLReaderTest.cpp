@@ -58,9 +58,7 @@ TEST(SingleMixedInputTest,XMLReaderTests)
     for (int i=0;i<particles.size();i++)
     {   Particle p=particles.getParticles()[i];
         Particle c=all.getParticles()[i];
-        std::cout<<p.toString()<<std::endl;
-        std::cout<<c.toString()<<std::endl;
-        EXPECT_FLOAT_EQ(p.getM(),c.getM());
+                EXPECT_FLOAT_EQ(p.getM(),c.getM());
         for (auto j=0;j<3;++j)
         {
             EXPECT_FLOAT_EQ(p.getX()[j],c.getX()[j]);
@@ -74,8 +72,18 @@ TEST(DiscInputTest,XMLReaderTests)
 { const char *input= "../test/TestInput/DiscTestInput.xml";
     ParticleContainer particles=ParticleContainer();
     XMLReader::readFile(particles,input);
-    //EXPECT_EQ(particles.size(),all.size());
+    EXPECT_EQ(particles.size(),disc.size());
     for (int i=0;i<particles.size();i++)
-    {   std::cout<<particles.getParticles()[i].toString()<<std::endl;
+    {   Particle p=particles.getParticles()[i];
+        Particle c=disc.getParticles()[i];
+        EXPECT_FLOAT_EQ(p.getM(),c.getM());
+        for (auto j=0;j<3;++j)
+        {
+            EXPECT_FLOAT_EQ(p.getX()[j],c.getX()[j]);
+            EXPECT_FLOAT_EQ(p.getOldF()[j],c.getOldF()[j]);
+            EXPECT_FLOAT_EQ(p.getF()[j],c.getF()[j]);
+            EXPECT_FLOAT_EQ(p.getV()[j],c.getV()[j]);
+        }
     }
+
 }

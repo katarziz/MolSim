@@ -29,7 +29,7 @@ inline double delta_t= 0.0002;
 //! double representing the cutoff radius. Default:3.0
 inline double r_c= 3.0;
 //! array of three doubles representing the cell size. Default:r_c x r_c x 1
-inline std::array<double,3>box_size={r_c,r_c,1.0};
+inline std::array<double,3>box_dim={r_c,r_c,1.0};
 //! array of three ints representing the number of cells. Default:1x1x1
 inline std::array<int64_t,3>cell_num={1,1,1};
 //! array of four ints representing the boundary conditions: top,right,bottom, left

@@ -26,7 +26,7 @@ void XMLReader::readFile(ParticleContainer &particles, const char *filename)
         out_name=param.output_name().c_str();
         out_freq=param.output_frequency();
         r_c=param.cutoff();
-        box_size={param.box_size().x_size(),param.box_size().y_size(),param.box_size().z_size()};
+        box_dim={param.box_size().x_size(),param.box_size().y_size(),param.box_size().z_size()};
         cell_num={param.number_cells().x_number(),param.number_cells().y_number(),param.number_cells().z_number()};
         bounds={strcmp(param.boundary_conditions().top_bound().c_str(), "ref")==0?1:0,
             strcmp(param.boundary_conditions().right_bound().c_str(), "ref")==0?1:0,
@@ -59,7 +59,8 @@ void XMLReader::readFile(ParticleContainer &particles, const char *filename)
         for (auto disc=particle_in.disc().begin();disc!=particle_in.disc().end();++disc)
         {   std::array<double,3> x={disc->position().x_coordinate(),disc->position().y_coordinate(),disc->position().z_coordinate()};
             std::array<double,3> v={disc->velocity().x_velocity(),disc->velocity().y_velocity(),disc->velocity().z_velocity()};
-            particles.addParticle(ParticleGenerator::generateDisc(x,disc->radius(),disc->spacing(),disc->mass(),v, disc->brownian_vel()));
+            particles.addParticles(ParticleGenerator::generateDisc(x,disc->radius(),disc->spacing(),disc->mass(),
+                v, disc->brownian_vel()).getParticles());
         }
     }
     catch (const xml_schema::exception& e)

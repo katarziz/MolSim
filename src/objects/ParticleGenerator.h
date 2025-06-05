@@ -9,13 +9,14 @@
 
 #include <array>
 
-#include "ParticleContainer.h"
+#include "BasicParticleContainer.h"
 
 
 class ParticleGenerator {
 public:
     //! A constructor for a Particle Generator from given Parameters
     /*!
+     \param particles The ParticleContainer to be generated
      \param base_coordinates The coordinate of the lower left front-side corner of the cuboid
      \param number_of_particles Number of particles per dimension N1 x N2 x N3
      \param spacing Distance h of the particle (mesh width of the grid)
@@ -24,7 +25,7 @@ public:
      \param brownian_motion_avg_velocity The mean-value of the velocity of the Brownian Motion
      \returns a set-up cuboid of particles in a ParticleContainer
      */
-    static ParticleContainer generateParticleContainer(const std::array<double, 3> &base_coordinates,
+    static void generateParticleContainer(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
         const std::array<int64_t, 3> &number_of_particles, double spacing, double mass,
         const std::array<double, 3> &velocity, double brownian_motion_avg_velocity);
 

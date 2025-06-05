@@ -3,13 +3,13 @@
 //
 
 #include "ParticleGenerator.h"
+#include "BasicParticleContainer.h"
+#include "LinkedCellParticleContainer.h"
 #include "../utils/MaxwellBoltzmannDistribution.h"
 
-ParticleContainer ParticleGenerator::generateParticleContainer(const std::array<double, 3> &base_coordinates,
+void ParticleGenerator::generateParticleContainer(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
     const std::array<int64_t, 3> &number_of_particles, const double spacing, const double mass,
     const std::array<double, 3> &velocity, const double brownian_motion_avg_velocity) {
-    std::vector<Particle> particles;
-    particles.reserve(number_of_particles[0]*number_of_particles[1]*number_of_particles[2]);
 
     // 3D-iteration over the cuboid
     for (int i = 0; i < number_of_particles[0]; ++i) {
@@ -30,9 +30,8 @@ ParticleContainer ParticleGenerator::generateParticleContainer(const std::array<
                 particle_velocity[0] += velocity[0];
                 particle_velocity[1] += velocity[1];
                 particle_velocity[2] += velocity[2];
-                particles.emplace_back(position, particle_velocity, mass);
+                particles.addParticle({position, particle_velocity, mass});
             }
         }
     }
-    return {particles};
 }

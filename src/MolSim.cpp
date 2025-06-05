@@ -168,12 +168,14 @@ int main(int argc, char *argsv[]) {
 
     iteration++;
     if (iteration % 50 == 0) {
+      std::cout << "\r" << std::floor(current_time/end_time*100) << "%" << std::flush;
       plotParticles(iteration);
       SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
     }
 
     current_time += delta_t;
   }
+  std::cout << std::endl;
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
   SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation finished. Terminating...");
@@ -181,35 +183,35 @@ int main(int argc, char *argsv[]) {
 }
 
 void calculateF() {
+  particles.applyUnary(
+    [](Particle &p) {
+      p.setOldF(p.getF());
+      p.setF({0,0,0});
+    });
   if (force_flag==1)
   {
-    calculateF_G(particles);
+    particles.applyBinary(calculateF_G);
   }else
   {
-    calculateF_LJ(particles);
+    particles.applyBinary(calculateF_LJ);
   }
 }
 
 void calculateX() {
-  for (auto &p : particles) {
-    std::array<double, 3> x = p.getX();
-    //calculations according to Stoermer-Verlet
-    for (int i = 0; i < 3; ++i) {
-      x[i] += delta_t * p.getV()[i] + delta_t * delta_t * p.getF()[i] / (2 * p.getM());
-    }
-    p.setX(x);
+  particles.applyUnary(
+    [](Particle &p) {
+      p.setX(p.getX() + delta_t*p.getV() + delta_t*delta_t/(2*p.getM())*p.getF());
+    });
+  if constexpr (std::is_same_v<decltype(particles), LinkedCellParticleContainer>) {
+    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).updateCells();
   }
 }
 
 void calculateV() {
-  for (auto &p : particles) {
-    std::array<double, 3> v = p.getV();
-    // calculations according to Stoermer-Verlet
-    for (int i = 0; i < 3; ++i) {
-      v[i] += delta_t * (p.getOldF()[i] + p.getF()[i]) / (2 * p.getM());
-    }
-    p.setV(v);
-  }
+  particles.applyUnary(
+    [](Particle &p) {
+      p.setV(p.getV() + delta_t/(2*p.getM())*(p.getOldF() + p.getF()));
+    });
 }
 
 void plotParticles(int iteration) {
@@ -220,7 +222,7 @@ void plotParticles(int iteration) {
     writer.plotParticles(particles, out_name, iteration);
   } else {
     outputWriter::VTKWriter writer;
-    writer.initializeOutput(static_cast<int>(particles.size()));
+    writer.initializeOutput(particles.size());
     for (auto &p : particles) {
       writer.plotParticle(p);
     }

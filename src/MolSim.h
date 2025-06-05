@@ -5,7 +5,9 @@
 #define MOLSIM_H
 /**** forward declaration of the calculation functions ****/
 
-#include "objects/ParticleContainer.h"
+#include "objects/BasicParticleContainer.h"
+#include "objects/LinkedCellParticleContainer.h"
+
 //! function to calculate and update the current force acting on the particles
 void calculateF();
 
@@ -27,7 +29,8 @@ inline double end_time= 5;
 //! double representing the timestep of the simulation. Default:0.014
 inline double delta_t= 0.0002;
 //! ParticleContainer containing all particles in the simulation
-inline ParticleContainer particles;
+// inline auto particles = BasicParticleContainer();
+inline auto particles = LinkedCellParticleContainer({180,90,1},{1,1,1},3);
 
 //! int representation of the output writer being used
 /*!

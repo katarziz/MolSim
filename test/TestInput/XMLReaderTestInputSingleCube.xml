@@ -3,8 +3,8 @@
 <Molsim_Input xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:noNamespaceSchemaLocation="../../input/input.xsd">
     <Parameters>
-        <delta_t/>
-        <t_end/>
+        <delta_t>0.02</delta_t>
+        <t_end>1</t_end>
         <box_size>
             <x-size/>
             <y-size/>
@@ -24,7 +24,7 @@
         <cutoff/>
         <writer/>
         <force/>
-        <output_name/>
+        <output_name>cube</output_name>
         <output_frequency/>
     </Parameters>
     <Particles>

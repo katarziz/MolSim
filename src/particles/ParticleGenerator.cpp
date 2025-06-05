@@ -44,37 +44,46 @@ ParticleContainer ParticleGenerator::generateDisc(const std::array<double, 3> &b
     // 3D-iteration over the cuboid
     for (int i = 0; i <= radius; ++i)
     {
-        for (int j = 0; j < radius; ++j) {
+        for (int j = 0; j <= radius; ++j) {
             //Checking if Particle is within the disc radius
              if ((i * i)+(j * j)<=(radius*radius))
-             {    // all particles are set up in a disc with a base velocity and an initial velocity-offset
+             {
+                 // all particles are set up in a disc with a base velocity and an initial velocity-offset
                  // based on brownian motion and the Maxwell-Boltzmann Distribution
-                std::array<double, 3> particle_velocity =
-                    maxwellBoltzmannDistributedVelocity(brownian_motion_avg_velocity, 3);
-                particle_velocity[0] += velocity[0];
-                particle_velocity[1] += velocity[1];
-                particle_velocity[2] += velocity[2];
-                //Adding Particles in all 4 Quadrants of the disc
-                particles.emplace_back((std::array<double,3>){
-                    base_coordinates[0] + spacing * i,
-                    base_coordinates[1] + spacing * j,
+                 std::array<double, 3> particle_velocity =
+                     maxwellBoltzmannDistributedVelocity(brownian_motion_avg_velocity, 3);
+                 particle_velocity[0] += velocity[0];
+                 particle_velocity[1] += velocity[1];
+                 particle_velocity[2] += velocity[2];
+                 //Adding Particles in all 4 Quadrants of the disc
+                 particles.emplace_back((std::array<double,3>){
+                     base_coordinates[0] + spacing * i,
+                     base_coordinates[1] + spacing * j,
+                     base_coordinates[2]
+                 }, particle_velocity, mass);
+                 if (j!=0)
+                 {
+                     particles.emplace_back((std::array<double,3>){
+                        base_coordinates[0] + spacing * i,
+                        base_coordinates[1] - spacing * j,
+                        base_coordinates[2]
+                    }, particle_velocity, mass);
+                 }
+                 if (i!=0)
+                 {
+                     particles.emplace_back((std::array<double,3>){
+                        base_coordinates[0] - spacing * i,
+                        base_coordinates[1] + spacing * j,
+                        base_coordinates[2]
+                    }, particle_velocity, mass);
+                 }
+                 if (i!=0&&j!=0){
+                 particles.emplace_back((std::array<double,3>){
+                    base_coordinates[0] - spacing * i,
+                    base_coordinates[1] - spacing * j,
                     base_coordinates[2]
                 }, particle_velocity, mass);
-                particles.emplace_back((std::array<double,3>){
-                   base_coordinates[0] + spacing * i,
-                   base_coordinates[1] - spacing * j,
-                   base_coordinates[2]
-               }, particle_velocity, mass);
-                particles.emplace_back((std::array<double,3>){
-                   base_coordinates[0] - spacing * i,
-                   base_coordinates[1] + spacing * j,
-                   base_coordinates[2]
-               }, particle_velocity, mass);
-                particles.emplace_back((std::array<double,3>){
-                   base_coordinates[0] - spacing * i,
-                   base_coordinates[1] - spacing * j,
-                   base_coordinates[2]
-               }, particle_velocity, mass);
+                }
 
             }
         }

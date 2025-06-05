@@ -3,8 +3,8 @@
 <Molsim_Input xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:noNamespaceSchemaLocation="../../input/input.xsd">
     <Parameters>
-        <delta_t/>
-        <t_end/>
+        <delta_t>0.002</delta_t>
+        <t_end> 1.0 </t_end>
         <box_size>
             <x-size/>
             <y-size/>
@@ -30,16 +30,16 @@
     <Particles>
         <disc>
             <position>
-                <x-coordinate>60.0</x-coordinate>
-                <y-coordinate>25.0</y-coordinate>
+                <x-coordinate>0.0</x-coordinate>
+                <y-coordinate>0.0</y-coordinate>
                 <z-coordinate>0.0</z-coordinate>
             </position>
             <velocity>
                 <x-velocity>0.0</x-velocity>
-                <y-velocity>-10.0</y-velocity>
+                <y-velocity>0.0</y-velocity>
                 <z-velocity>0.0</z-velocity>
             </velocity>
-            <radius>15</radius>
+            <radius>5</radius>
             <mass>1.0</mass>
             <spacing>1.1225</spacing>
             <brownian_vel>0.0</brownian_vel>

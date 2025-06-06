@@ -6,13 +6,13 @@
         <delta_t>0.00005</delta_t>
         <t_end>10.0</t_end>
         <box_size>
-            <x-size/>
-            <y-size/>
-            <z-size/>
+            <x-size>120</x-size>
+            <y-size>50</y-size>
+            <z-size>1</z-size>
         </box_size>
         <number_cells>
-            <x-number>120</x-number>
-            <y-number>50</y-number>
+            <x-number>40</x-number>
+            <y-number>17</y-number>
             <z-number>1</z-number>
         </number_cells>
         <boundary_conditions>

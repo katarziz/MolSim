@@ -6,13 +6,13 @@
         <delta_t>0.005</delta_t>
         <t_end>1.0</t_end>
         <box_size>
-            <x-size/>
-            <y-size/>
-            <z-size/>
+            <x-size>180</x-size>
+            <y-size>90</y-size>
+            <z-size>1</z-size>
         </box_size>
         <number_cells>
-            <x-number>180</x-number>
-            <y-number>90</y-number>
+            <x-number>60</x-number>
+            <y-number>30</y-number>
             <z-number>1</z-number>
         </number_cells>
         <boundary_conditions>
@@ -25,7 +25,7 @@
         <writer/>
         <force/>
         <output_name>timetest</output_name>
-        <output_frequency/>
+        <output_frequency>5</output_frequency>
     </Parameters>
     <Particles>
         <cuboid>

@@ -141,8 +141,10 @@ int main(int argc, char *argsv[]) {
     exit(0);
   }
 
-  //FileReader fileReader;
   XMLReader::readFile(particles, input_file);
+  if constexpr (std::is_same_v<decltype(particles), LinkedCellParticleContainer>) {
+    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).setParameters(box_dim,cell_num,r_c,bounds);
+  }
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG
@@ -172,7 +174,7 @@ int main(int argc, char *argsv[]) {
     if (iteration % out_freq == 0) {
       plotParticles(iteration);
       SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
-      std::cout << "\rProgress: " << std::ceil(100*current_time/end_time) << "%" << std::flush;
+      std::cout << "\rProgress: " << std::ceil(1000*current_time/end_time)/10 << "%  " << std::flush;
     }
 
     current_time += delta_t;
@@ -190,6 +192,10 @@ void calculateF() {
       p.setOldF(p.getF());
       p.setF({0,0,0});
     });
+  if constexpr (std::is_same_v<decltype(particles), LinkedCellParticleContainer>) {
+    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).updateCells();
+    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).deleteHalo();
+  }
   if (force_flag==1)
   {
     particles.applyBinary(calculateF_G);
@@ -204,9 +210,6 @@ void calculateX() {
     [](Particle &p) {
       p.setX(p.getX() + delta_t*p.getV() + delta_t*delta_t/(2*p.getM())*p.getF());
     });
-  if constexpr (std::is_same_v<decltype(particles), LinkedCellParticleContainer>) {
-    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).updateCells();
-  }
 }
 
 void calculateV() {

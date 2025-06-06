@@ -13,10 +13,13 @@ class LinkedCellParticleContainer : public ParticleContainer {
 private:
     std::array<double, 3> box_size;
     std::array<int64_t, 3> cell_number;
-    std::vector<std::vector<int>> cells;
+    std::vector<std::vector<Particle*>> cells;
+    std::vector<Particle> particles;
+    std::vector<Particle> halo;
     double cutoff;
     const int boundary_width = 1;
-    std::vector<Particle> particles;
+    std::array<int, 4> boundary_conditions;
+
 public:
     //! a constructor for an empty Particle Container
     /*!
@@ -24,8 +27,9 @@ public:
      \param cell_number_arg a reference to a vector of int64_t's to set the number of cells
      \param cutoff_arg a reference to a double to set the cutoff radius
      */
-    LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg, const std::array<int64_t, 3> &cell_number_arg,
-        const double &cutoff_arg);
+    LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg,
+                                const std::array<int64_t, 3> &cell_number_arg,
+                                const double &cutoff_arg, const std::array<int, 4> &bounds_arg);
 
     //! a constructor for a Particle Container
     /*!
@@ -35,7 +39,12 @@ public:
      \param cutoff_arg a reference to a double to set the cutoff radius
      */
     LinkedCellParticleContainer(const std::vector<Particle> &particles_arg, const std::array<double, 3> &box_size_arg,
-                                const std::array<int64_t, 3> &cell_number_arg, const double &cutoff_arg);
+                                const std::array<int64_t, 3> &cell_number_arg, const double &cutoff_arg,
+                                const std::array<int, 4> &bounds_arg);
+
+    void setParameters(const std::array<double, 3> &box_size_arg,
+                       const std::array<int64_t, 3> &cell_number_arg,
+                       const double &cutoff_arg, const std::array<int, 4> &bounds_arg);
     //! A function to add a Particle to the ParticleContainer
     /*!
      \param p reference to the Particle to be added to the container
@@ -91,4 +100,14 @@ public:
         A function to update the cells of the ParticleContainer
     */
     void updateCells();
+
+    void applyUnaryToBoundary(const std::function<void(Particle &i)> &fun);
+
+    void applyUnaryToHalo(const std::function<void(Particle &i)> &fun);
+
+    void deleteHalo();
+
+    void outflow(const Particle *p);
+
+    void reflect(Particle *p, int boundary);
 };

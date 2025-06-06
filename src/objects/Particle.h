@@ -124,6 +124,12 @@ public:
  */
 
   bool operator==(Particle &other);
+ //! Equality operator between Particles
+ /*!
+  \param other reference to Particle to be compared to this for equality
+ */
+
+ bool operator==(const Particle &other) const;
  //! Function retuning a String representation of the Particle
  /*!
   \return String representation of the Particle

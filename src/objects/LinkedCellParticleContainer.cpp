@@ -20,9 +20,9 @@ LinkedCellParticleContainer::LinkedCellParticleContainer(const std::array<double
             cell_number[0] *
             cell_number[1] *
             cell_number[2];
-    cells = std::vector<std::vector<Particle*>>(size);
+    cells = std::vector<std::vector<std::unique_ptr<Particle>>>(size);
     for (int i = 0; i < size; i++) {
-        cells[i] = std::vector<Particle*>();
+        cells[i] = std::vector<std::unique_ptr<Particle>>();
     }
     particles = std::vector<Particle>();
     halo = std::vector<Particle>();
@@ -41,9 +41,9 @@ LinkedCellParticleContainer::LinkedCellParticleContainer(const std::vector<Parti
             cell_number[0] *
             cell_number[1] *
             cell_number[2];
-    cells = std::vector<std::vector<Particle*>>(size);
+    cells = std::vector<std::vector<std::unique_ptr<Particle>>>(size);
     for (int i = 0; i < size; i++) {
-        cells[i] = std::vector<Particle*>();
+        cells[i] = std::vector<std::unique_ptr<Particle>>();
     }
     particles = particles_arg;
     for (auto p : particles) {
@@ -51,7 +51,7 @@ LinkedCellParticleContainer::LinkedCellParticleContainer(const std::vector<Parti
         for (int i = 0; i < 3; ++i) {
             indices[i] = std::floor(p.getX()[i]+0.5*box_size[i])/(box_size[i]/cell_number[i]);
         }
-        cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(&p);
+        cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(std::make_unique<Particle>(p));
     }
     halo = std::vector<Particle>();
     cutoff = cutoff_arg;
@@ -68,9 +68,9 @@ void LinkedCellParticleContainer::setParameters(const std::array<double, 3> &box
             cell_number[0] *
             cell_number[1] *
             cell_number[2];
-    auto temp = std::vector<std::vector<Particle*>>(size);
+    auto temp = std::vector<std::vector<std::unique_ptr<Particle>>>(size);
     for (int i = 0; i < size; ++i) {
-        temp[i] = std::vector<Particle*>();
+        temp[i] = std::vector<std::unique_ptr<Particle>>();
     }
     for (int i = 0; i < cells.size(); ++i) {
         for (int j = 0; i < cells[i].size(); ++j) {
@@ -78,21 +78,21 @@ void LinkedCellParticleContainer::setParameters(const std::array<double, 3> &box
             for (int k = 0; k < 3; ++k) {
                 indices[k] = std::floor(cells[i][j]->getX()[k]+0.5*box_size[k])/(box_size[k]/cell_number[k]);
             }
-            temp[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(cells[i][j]);
+            temp[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(std::move(cells[i][j]));
         }
     }
-    cells = temp;
+    cells = std::move(temp);
     cutoff = cutoff_arg;
     boundary_conditions = bounds_arg;
 }
 
 void LinkedCellParticleContainer::addParticle(const Particle &p) {
-    particles.push_back(p);
+    particles.emplace_back(p);
     std::array<int, 3> indices;
     for (int k = 0; k < 3; ++k) {
         indices[k] = std::floor(p.getX()[k]+0.5*box_size[k])/(box_size[k]/cell_number[k]);
     }
-    cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(&*particles.end());
+    cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(std::make_unique<Particle>(particles.back()));
 }
 
 void LinkedCellParticleContainer::addParticles(const std::vector<Particle> &p) {
@@ -136,7 +136,7 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
         for (int i_y = 0; i_y < cell_number[1]; ++i_y) {
             for (int i_z = 0; i_z < cell_number[2]; ++i_z) {
                 const int index = i_x + i_y * cell_number[0] + i_z * cell_number[0] * cell_number[1];
-                auto i_cell = cells[index];
+                auto &i_cell = cells[index];
                 // calculations within i_cell to avoid duplicate calculations.
                 for (auto i = 0; i < i_cell.size(); ++i) {
                     for (auto j = 0; j < i; ++j) {
@@ -150,7 +150,7 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
                                             i_y + cutoff / (box_size[1] / cell_number[1])); ++j_y) {
                         for (int j_z = i_z; j_z < cell_number[2] && j_z <= std::ceil(
                                                 i_z + cutoff / (box_size[2] / cell_number[2])); ++j_z) {
-                            auto j_cell = cells[j_x + j_y * cell_number[0] + j_z * cell_number[0] * cell_number[1]];
+                            auto &j_cell = cells[j_x + j_y * cell_number[0] + j_z * cell_number[0] * cell_number[1]];
                             // skip the already computed i_cell
                             if (i_cell == j_cell) {
                                 continue;
@@ -174,9 +174,9 @@ void LinkedCellParticleContainer::updateCells() {
         cell_number[0] *
         cell_number[1] *
         cell_number[2];
-    cells = std::vector<std::vector<Particle*>>(size);
+    cells = std::vector<std::vector<std::unique_ptr<Particle>>>(size);
     for (int i = 0; i < size; ++i) {
-        cells[i] = std::vector<Particle*>();
+        cells[i] = std::vector<std::unique_ptr<Particle>>();
     }
     for (int i = 0; i < particles.size(); ++i) {
         Particle &p = particles[i];
@@ -190,7 +190,7 @@ void LinkedCellParticleContainer::updateCells() {
         for (int k = 0; k < 3; ++k) {
             indices[k] = std::floor(p.getX()[k]+0.5*box_size[k])/(box_size[k]/cell_number[k]);
         }
-        cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(&p);
+        cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(std::make_unique<Particle>(p));
         SKIP:;
     }
     for (auto p = halo.begin(); p != halo.end(); ++p) {
@@ -200,36 +200,36 @@ void LinkedCellParticleContainer::updateCells() {
         if (i < cell_number[0]) {
             for (auto j = cells[i].begin(); j != cells[i].end(); ++j) {
                 if (boundary_conditions[2] == 1) {
-                    reflect(*j,2);
+                    reflect(j->get(),2);
                 } else if (boundary_conditions[2] == 0) {
-                    outflow(*j);
+                    outflow(j->get());
                 }
             }
         }
         if (i >= cell_number[0]*(cell_number[1]-1)) {
             for (auto j = cells[i].begin(); j != cells[i].end(); ++j) {
                 if (boundary_conditions[0] == 1) {
-                    reflect(*j,0);
+                    reflect(j->get(),0);
                 } else if (boundary_conditions[0] == 0) {
-                    outflow(*j);
+                    outflow(j->get());
                 }
             }
         }
         if (i % cell_number[0] == 0) {
             for (auto j = cells[i].begin(); j != cells[i].end(); ++j) {
                 if (boundary_conditions[3] == 1) {
-                    reflect(*j,3);
+                    reflect(j->get(),3);
                 } else if (boundary_conditions[3] == 0) {
-                    outflow(*j);
+                    outflow(j->get());
                 }
             }
         }
         if (i % cell_number[0] == cell_number[0] - 1) {
             for (auto j = cells[i].begin(); j != cells[i].end(); ++j) {
                 if (boundary_conditions[1] == 1) {
-                    reflect(*j,1);
+                    reflect(j->get(),1);
                 } else if (boundary_conditions[1] == 0) {
-                    outflow(*j);
+                    outflow(j->get());
                 }
             }
         }
@@ -263,9 +263,14 @@ void LinkedCellParticleContainer::outflow(const Particle *p) {
     for (int k = 0; k < 3; ++k) {
         indices[k] = std::floor(p->getX()[k]+0.5*box_size[k])/(box_size[k]/cell_number[k]);
     }
-    auto cell = cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]];
-    cell.erase(std::find(cell.begin(), cell.end(), p));
-
+    auto &cell = cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]];
+    const auto it = std::find_if(cell.begin(), cell.end(),
+    [&p](const std::unique_ptr<Particle>& ptr) {
+        return ptr.get() == p;
+    });
+    if (it != cell.end()) {
+        cell.erase(it);
+    }
 }
 
 void LinkedCellParticleContainer::reflect(Particle *p, const int boundary) {

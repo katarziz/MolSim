@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "Particle.h"
@@ -13,7 +14,7 @@ class LinkedCellParticleContainer : public ParticleContainer {
 private:
     std::array<double, 3> box_size;
     std::array<int64_t, 3> cell_number;
-    std::vector<std::vector<Particle*>> cells;
+    std::vector<std::vector<std::unique_ptr<Particle>>> cells;
     std::vector<Particle> particles;
     std::vector<Particle> halo;
     double cutoff;

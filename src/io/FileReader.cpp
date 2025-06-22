@@ -66,7 +66,7 @@ void FileReader::readFile(ParticleContainer &particles, char *filename) {
           }
           datastream >> m;
 
-          particles.addParticle(Particle(x, v, m));
+          particles.addParticle(Particle(x, v, m,5.0,1.0,0,0));
 
           getline(input_file, tmp_string);
           SPDLOG_LOGGER_INFO(spdlog::get("default"),"Read line: {}", tmp_string);
@@ -90,7 +90,7 @@ void FileReader::readFile(ParticleContainer &particles, char *filename) {
         datastream >> h;
 
         // TODO MAGIC NUMBER 0.1 is hard coded Brownian Motion
-        ParticleGenerator::generateCube(particles, x, n, h, m, v, 0.1);
+        ParticleGenerator::generateCube(particles, x, n, h, m,5.0,1.0, v, 0,3, 0.1);
       }
       getline(input_file, tmp_string);
     }

@@ -178,6 +178,10 @@ int main(int argc, char *argsv[]) {
     calculateF();
     // calculate new v
     calculateV();
+    if (iteration%f_therm==0)
+    {
+      thermostat.scaleV(particles);
+    }
 
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
     iteration++;
@@ -208,9 +212,12 @@ void calculateF() {
   if (force_flag==1)
   {
     particles->applyBinary([](Particle &a, Particle &b){ calculateF_G(a, b, r_c); });
+    particles->applyUnary([](Particle &p){calculateF_GE(p,grav);});
+
   }else
   {
     particles->applyBinary([](Particle &a, Particle &b){ calculateF_LJ(a, b, r_c); });
+    particles->applyUnary([](Particle &p){calculateF_GE(p,grav);});
   }
 }
 

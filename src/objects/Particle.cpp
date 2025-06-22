@@ -9,6 +9,7 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include "../utils/ArrayUtils.h"
+#include "utils/MaxwellBoltzmannDistribution.h"
 
 Particle::Particle(int type_arg) {
   type = type_arg;
@@ -25,6 +26,8 @@ Particle::Particle(const Particle &other) {
   f = other.f;
   old_f = other.old_f;
   m = other.m;
+  eps=other.eps;
+  sig=other.sig;
   type = other.type;
   state = other.state;
   if (auto logger = spdlog::get("default"); logger) {
@@ -33,11 +36,16 @@ Particle::Particle(const Particle &other) {
 }
 
 
-Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg,
-                   double m_arg, int type_arg, int state_arg) {
+
+
+Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg, double eps_arg,
+  double sig_arg, int type_arg, int state_arg)
+{
   x = x_arg;
   v = v_arg;
   m = m_arg;
+  eps=eps_arg;
+  sig=sig_arg;
   type = type_arg;
   state = state_arg;
   f = {0., 0., 0.};
@@ -66,6 +74,10 @@ const std::array<double, 3> &Particle::getOldF() const { return old_f; }
 void Particle::setOldF(const std::array<double, 3> &old_f_arg) { old_f = old_f_arg; }
 
 double Particle::getM() const { return m; }
+
+double Particle::getEps() const{ return eps;}
+
+double Particle::getSig() const{ return sig;}
 
 int Particle::getType() const { return type; }
 

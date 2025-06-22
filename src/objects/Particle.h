@@ -37,6 +37,14 @@ private:
    * Mass of this particle
    */
   double m;
+  /**
+   * Lennard-Jones Parameter epsilon of this Particle
+   */
+  double eps;
+  /**
+   * Lennard-Jones Parameter sigma of this Particle
+   */
+  double sig;
 
   /**
    * Type of the particle. Use it for whatever you want (e.g. to separate
@@ -56,19 +64,19 @@ public:
     \param other reference to a constant Particle
    */
   Particle(const Particle &other);
-    //! Constructor for a Particle from properties
-    /*!
-     \param x_arg array of three doubles containing the x-,y-&z- position of the Particle
-     \param v_arg array of three doubles containing the x-,y-&z- velocity of the Particle
-     \param m_arg double containing the mass of the particle
-     \param type int denoting the particle's type
-     \param state int denoting the particle's state
-    */
-  Particle(
-      // for visualization, we need always 3 coordinates
-      // -> in case of 2d, we use only the first and the second
-      std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg,
-      int type = 0, int state = 0);
+
+ //! Constructor for a Particle from properties
+ /*!
+  \param x_arg array of three doubles containing the x-,y-&z- position of the Particle
+  \param v_arg array of three doubles containing the x-,y-&z- velocity of the Particle
+  \param m_arg double containing the mass of the particle
+  \param eps_arg  double containing Lennard-Jones Parameter epsilon of this Particle
+  \param sig_arg   double containing Lennard-Jones Parameter sigma of this Particle
+  \param type_arg int denoting the particle's type
+  \param state_arg int denoting the particle's state
+ */
+ Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg,double m_arg,
+          double eps_arg, double sig_arg,int type_arg, int state_arg = 0);
 
   virtual ~Particle();
 
@@ -119,6 +127,16 @@ public:
   \return double representing the mass of the Particle
  */
   double getM() const;
+ //! Getter for the Lennard-Jones parameter epsilon of the Particle
+ /*!
+  \return double representing the Lennard-Jones parameter epsilonof the Particle
+ */
+ double getEps() const;
+ //! Getter for the Lennard-Jones parameter sigma of the Particle
+ /*!
+  \return double representing the Lennard-Jones parameter sigma of the Particle
+ */
+ double getSig() const;
  //! Getter for the type of the Particle
  /*!
   \return int representing the type of the Particle

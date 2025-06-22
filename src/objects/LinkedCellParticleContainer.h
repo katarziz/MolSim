@@ -20,7 +20,7 @@ private:
     std::vector<int> halo;
     double cutoff;
     const int boundary_width = 1;
-    std::array<int, 4> boundary_conditions;
+    std::array<int, 6> boundary_conditions;
 
 public:
     //! a constructor for an empty Particle Container
@@ -28,10 +28,12 @@ public:
      \param box_size_arg a reference to a vector of doubles to set the size of cells
      \param cell_number_arg a reference to a vector of int64_t's to set the number of cells
      \param cutoff_arg a reference to a double to set the cutoff radius
+     \param bounds_arg an array of ints setting the boundary conditions of the imulaiton space
+            0: outflow, 1: reflective, 2: periodic
      */
     LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg,
                                 const std::array<int64_t, 3> &cell_number_arg,
-                                const double &cutoff_arg, const std::array<int, 4> &bounds_arg);
+                                const double &cutoff_arg, const std::array<int, 6> &bounds_arg);
 
     //! a constructor for a Particle Container
     /*!
@@ -39,14 +41,23 @@ public:
      \param box_size_arg a reference to a vector of doubles to set the size of cells
      \param cell_number_arg a reference to a vector of int64_t's to set the number of cells
      \param cutoff_arg a reference to a double to set the cutoff radius
+     \param bounds_arg an array of ints setting the boundary conditions of the imulaiton space
+            0: outflow, 1: reflective, 2: periodic
      */
     LinkedCellParticleContainer(const std::vector<Particle> &particles_arg, const std::array<double, 3> &box_size_arg,
                                 const std::array<int64_t, 3> &cell_number_arg, const double &cutoff_arg,
-                                const std::array<int, 4> &bounds_arg);
-
+                                const std::array<int, 6> &bounds_arg);
+    //! a function to set the parameters of a LinkedCellParticleContainer
+    /*!
+     \param box_size_arg a reference to a vector of doubles to set the size of cells
+     \param cell_number_arg a reference to a vector of int64_t's to set the number of cells
+     \param cutoff_arg a reference to a double to set the cutoff radius
+     \param bounds_arg an array of ints setting the boundary conditions of the imulaiton space
+            0: outflow, 1: reflective, 2: periodic
+     */
     void setParameters(const std::array<double, 3> &box_size_arg,
                        const std::array<int64_t, 3> &cell_number_arg,
-                       const double &cutoff_arg, const std::array<int, 4> &bounds_arg);
+                       const double &cutoff_arg, const std::array<int, 6> &bounds_arg);
     //! A function to add a Particle to the ParticleContainer
     /*!
      \param p reference to the Particle to be added to the container
@@ -61,12 +72,12 @@ public:
     /*!
      \returns a vector of the Particles in the Container
      */
-    const std::vector<Particle> &getParticles() const override;
+    [[nodiscard]] const std::vector<Particle> &getParticles() const override;
     //! A function to return the size of the ParticleContainer
     /*!
      \returns an int representing the number of Particles in the Container
      */
-    int size() const override;
+    [[nodiscard]] int size() const override;
     //! A function to return an iterator pointing to the beginning of the ParticleContainer
     /*!
      \returns an iterator pointing to the beginning of the ParticleContainer
@@ -81,15 +92,15 @@ public:
     /*!
      \returns a constant iterator pointing to the beginning of the ParticleContainer
      */
-    std::vector<Particle>::const_iterator begin() const override;
+    [[nodiscard]] std::vector<Particle>::const_iterator begin() const override;
     //! A function to return a constant iterator pointing to the end of the ParticleContainer
     /*!
     \returns a constant iterator pointing to the end of the ParticleContainer
     */
-    std::vector<Particle>::const_iterator end() const override;
+    [[nodiscard]] std::vector<Particle>::const_iterator end() const override;
     //! A function to apply a unary function to the Particles in the ParticleContainer
     /*!
-    \param a unary function to be applied to the Particles in the ParticleContainer
+    \param fun a unary function to be applied to the Particles in the ParticleContainer
    */
     void applyUnary(std::function<void(Particle &i)> fun) override;
 

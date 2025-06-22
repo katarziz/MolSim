@@ -13,8 +13,9 @@
 LinkedCellParticleContainer::LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg,
                                                          const std::array<int64_t, 3> &cell_number_arg,
                                                          const double &cutoff_arg,
-                                                         const std::array<int, 4> &bounds_arg) {
+                                                         const std::array<int, 6> &bounds_arg) {
     box_size = box_size_arg;
+    //What is box size?
     cell_number = cell_number_arg;
     const int64_t size =
             cell_number[0] *
@@ -35,7 +36,7 @@ LinkedCellParticleContainer::LinkedCellParticleContainer(const std::vector<Parti
                                                          const std::array<double, 3> &box_size_arg,
                                                          const std::array<int64_t, 3> &cell_number_arg,
                                                          const double &cutoff_arg,
-                                                         const std::array<int, 4> &bounds_arg) {
+                                                         const std::array<int, 6> &bounds_arg) {
     box_size = box_size_arg;
     cell_number = cell_number_arg;
     const int64_t size =
@@ -57,7 +58,7 @@ LinkedCellParticleContainer::LinkedCellParticleContainer(const std::vector<Parti
 void LinkedCellParticleContainer::setParameters(const std::array<double, 3> &box_size_arg,
                                                 const std::array<int64_t, 3> &cell_number_arg,
                                                 const double &cutoff_arg,
-                                                const std::array<int, 4> &bounds_arg) {
+                                                const std::array<int, 6> &bounds_arg) {
     box_size = box_size_arg;
     cell_number = cell_number_arg;
     const int64_t size =
@@ -129,8 +130,8 @@ void LinkedCellParticleContainer::applyUnary(const std::function<void(Particle &
 
 void LinkedCellParticleContainer::applyBinaryToCells(const std::function<void(Particle &i, Particle &j)> fun,
                                                      std::vector<int> &i_cell, std::vector<int> &j_cell) {
-    for (auto i = 0; i < i_cell.size(); ++i) {
-        for (auto j = 0; j < j_cell.size(); ++j) {
+    for (unsigned int i = 0; i < i_cell.size(); ++i) {
+        for (unsigned int j = 0; j < j_cell.size(); ++j) {
             fun(particles.at(i_cell[i]), particles.at(j_cell[j]));
         }
     }
@@ -143,8 +144,8 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
                 const int index = i_x + i_y * cell_number[0] + i_z * cell_number[0] * cell_number[1];
                 auto &i_cell = cells[index];
                 // calculations within i_cell to avoid duplicate calculations.
-                for (auto i = 0; i < i_cell.size(); ++i) {
-                    for (auto j = 0; j < i; ++j) {
+                for (unsigned int i = 0; i < i_cell.size(); ++i) {
+                    for (unsigned int j = 0; j < i; ++j) {
                         fun(particles.at(i_cell[i]), particles.at(i_cell[j]));
                     }
                 }
@@ -199,7 +200,7 @@ void LinkedCellParticleContainer::updateCells() {
     for (int i = 0; i < size; ++i) {
         cells[i] = std::vector<int>();
     }
-    for (int i = 0; i < particles.size(); ++i) {
+    for (unsigned int i = 0; i < particles.size(); ++i) {
         Particle &p = particles[i];
         if (p.getState() == 1) {
             continue;
@@ -250,7 +251,7 @@ void LinkedCellParticleContainer::updateCells() {
 }
 
 void LinkedCellParticleContainer::applyUnaryToBoundary(const std::function<void(Particle &i)> &fun) {
-    for (int i = 0; i < cells.size(); ++i) {
+    for (unsigned int i = 0; i < cells.size(); ++i) {
         if (i < cell_number[0] || i >= cell_number[0] * (cell_number[1] - 1) || i % cell_number[0] == 0 || i %
             cell_number[0] == cell_number[0] - 1) {
             auto p = particles.at(i);
@@ -298,6 +299,6 @@ void LinkedCellParticleContainer::reflect(Particle &p, const int boundary) {
     } else if (boundary == 3) { // top
         counter_particle_X[1] = box_size[1] + (box_size[1] - counter_particle_X[1]);
     }
-    auto counter_particle = Particle(counter_particle_X, p.getV(), p.getM(), p.getType());
+    auto counter_particle = Particle(counter_particle_X, p.getV(), p.getM(),p.getEps(),p.getSig(), p.getType());
     calculateF_LJ(p, counter_particle, cutoff);
 }

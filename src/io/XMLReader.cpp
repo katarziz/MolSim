@@ -19,61 +19,77 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
 {   SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Started reading file {}", filename);
     try
     {
+        //read out XML Input from input file  filename
         unique_ptr<Molsim_Input> input =Molsim_Input_ (filename);
         Parameters param=input->Parameters();
         Particles particle_in=input->Particles();
-        delta_t=param.delta_t();
-        end_time=param.t_end();
-        out_name=param.output_name().c_str();
-        out_freq=param.output_frequency();
-        r_c=param.cutoff();
-        box_dim={param.box_size().x_size(),param.box_size().y_size(),param.box_size().z_size()};
-        cell_num={param.number_cells().x_number(),param.number_cells().y_number(),param.number_cells().z_number()};
-        // TODO correct boundaries. bounds: [left, bottom, back, right, top, front]
-        // currently: [left, bottom, right, top]
-        bounds={strcmp(param.boundary_conditions().left_bound().c_str(), "ref")==0?1:0,
-            strcmp(param.boundary_conditions().bottom_bound().c_str(), "ref")==0?1:0,
-            strcmp(param.boundary_conditions().right_bound().c_str(), "ref")==0?1:0,
-            strcmp(param.boundary_conditions().top_bound().c_str(), "ref")==0?1:0};
+        ThermostatParams therm=input->ThermostatParams();
+        readoutParams(param);
 
-        if (strcmp(param.writer().c_str(), "xyz")==0)
-        {   writer_flag=1;
-        }else if (strcmp(param.writer().c_str(), "vtk")==0){
-            writer_flag=0;
-        }
-        if (strcmp(param.force().c_str(), "lennard-jones")==0)
-        {  force_flag=0;
-        }else if (strcmp(param.force().c_str(), "newton")==0){
-           force_flag=1;
-        }
-
+        //Log basic simulation parameters
         SPDLOG_LOGGER_INFO(spdlog::get("default"),
-            "Simulation Parameters:\nOutput Writer: {}     Output Name: {}    Output Frequency: {} \nDelta t = {}    End t = {}    Force: {} "
-            ,param.writer().c_str(), out_name,out_freq, delta_t, end_time,param.force().c_str());
-        SPDLOG_LOGGER_INFO(spdlog::get("default"),"Cutoff Radius = {}    Box Dimensions = ({}, {}, {})\nBoundary Conditions:\nTop: {}    Right: {}    Bottom: {}    Left:{}"
-            ,param.cutoff(), box_dim[0],box_dim[1],box_dim[2],param.boundary_conditions().top_bound().c_str(),
-            param.boundary_conditions().right_bound().c_str(),param.boundary_conditions().bottom_bound().c_str(),
-            param.boundary_conditions().right_bound().c_str());
+            "Simulation Parameters:\nOutput Writer: {}     Output Name: {}    Output Frequency: {} \n Container Type: {}    Delta t = {}    End t = {}    Force: {}   Gravitation: {}"
+            ,param.writer().c_str(), out_name,out_freq,param.container().c_str(), delta_t, end_time,param.force().c_str(),param.grav());
 
-
-        for (auto cube=particle_in.cuboid().begin();cube!=particle_in.cuboid().end();++cube)
+        //Set up initialization of Particle Container depending on param container
+        //! int giving the number of dimensions based on the domain /box size
+        int dim=2;
+        if (param.box_size().z_size()!=1)
         {
-            std::array<double,3> x={cube->base_coordinates().x_coordinate(),cube->base_coordinates().y_coordinate(),cube->base_coordinates().z_coordinate()};
-            std::array<int64_t,3> n={cube->number_particles().x_number(),cube->number_particles().y_number(),cube->number_particles().z_number()};
-            std::array<double,3> v={cube->velocity().x_velocity(),cube->velocity().y_velocity(),cube->velocity().z_velocity()};
-            ParticleGenerator::generateCube(*particles,x,n,cube->spacing(),cube->mass(),v,cube->brownian_vel());
+            dim=3;
         }
 
-        for (auto part=particle_in.particle().begin();part!=particle_in.particle().end();++part)
-        {   std::array<double,3> x={part->position().x_coordinate(),part->position().y_coordinate(),part->position().z_coordinate()};
-            std::array<double,3> v={part->velocity().x_velocity(),part->velocity().y_velocity(),part->velocity().z_velocity()};
-            particles->addParticle(Particle(x,v,part->mass(),0));
+        f_therm=therm.f_therm();
+        thermostat.setParams(therm.T_targ(), therm.delta_T(), dim);
+
+        //TODO: Check if this works!!
+        if (strcmp(param.container().c_str(), "LinkedCell")==0)
+        {
+            //! double representing the cutoff radius. Default:3.0
+            double r_c=param.cutoff();
+
+            //! array of three doubles representing the cell size. Default:r_c x r_c x 1
+            box_dim={param.box_size().x_size(),param.box_size().y_size(),param.box_size().z_size()};
+            //! array of three ints representing the number of cells. Default:1x1x1
+            cell_num={static_cast<int64_t>(std::floor(box_dim[0] / r_c)),static_cast<int64_t>(ceil(box_dim[1]/r_c)),static_cast<int64_t>(ceil(box_dim[2]/r_c))};
+            //! array of four ints representing the boundary conditions: top,right,bottom, left
+            // outflow:0 ("out"), reflecting:1 ("ref"), periodic_2 ("per")
+            //Default:outflow
+
+            std::array<int,6>boundaries={
+                parse_bound(param.boundary_conditions().top_bound().c_str()),
+                parse_bound(param.boundary_conditions().right_bound().c_str()),
+                parse_bound(param.boundary_conditions().bottom_bound().c_str()),
+                parse_bound(param.boundary_conditions().left_bound().c_str()),
+                parse_bound(param.boundary_conditions().front_bound().c_str()),
+                parse_bound(param.boundary_conditions().back_bound().c_str()),
+                };
+            if (!check_bounds(boundaries))
+            {
+                //TODO: Exit/Exception and error message
+            } else
+            {
+                bounds=boundaries;
+            }
+
+
+            //Log Linked Cell Container Parameters
+            SPDLOG_LOGGER_INFO(spdlog::get("default"),"Cutoff Radius = {}    Box Dimensions = ({}, {}, {})\nBoundary Conditions:\nTop: {}    Right: {}    Bottom: {}    Left:{}"
+                    ,param.cutoff(), box_dim[0],box_dim[1],box_dim[2],param.boundary_conditions().top_bound().c_str(),
+                    param.boundary_conditions().right_bound().c_str(),param.boundary_conditions().bottom_bound().c_str(),
+                    param.boundary_conditions().right_bound().c_str());
+
         }
-        for (auto disc=particle_in.disc().begin();disc!=particle_in.disc().end();++disc)
-        {   std::array<double,3> x={disc->position().x_coordinate(),disc->position().y_coordinate(),disc->position().z_coordinate()};
-            std::array<double,3> v={disc->velocity().x_velocity(),disc->velocity().y_velocity(),disc->velocity().z_velocity()};
-            ParticleGenerator::generateDisc(*particles, x, disc->radius(), disc->spacing(), disc->mass(), v, disc->brownian_vel());
-        }
+
+        //Reading in all Particle Cubes
+        readInCubes(particle_in,*particles,dim,therm.T_init());
+
+        //Reading in all single Particles
+        readInDiscs(particle_in,*particles,dim,therm.T_init());
+
+        //Reading in all Particle discs
+        readInParticles(particle_in,*particles,therm.T_init());
+
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Finished reading in Particles.", iteration);
     }
     catch (const xml_schema::exception& e)
@@ -81,3 +97,86 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
         cerr << e << endl;
     }
 }
+
+bool XMLReader::check_bounds(const std::array<int, 6>& bounds)
+{
+    if ((bounds[0]==2||bounds[2]==2)&&bounds[0]!=bounds[2])
+    {
+        return false;
+    }
+    else if ((bounds[1]==2||bounds[3]==2)&&bounds[1]!=bounds[3])
+    {
+        return false;
+    } else if ((bounds[4]==2||bounds[5]==2)&&bounds[4]!=bounds[5])
+    {
+        return false;
+    }
+    return true;
+}
+
+void XMLReader::readoutParams(Parameters& param)
+{
+    //assign Parameters given in the XML
+    delta_t=param.delta_t();
+    grav=param.grav();
+    end_time=param.t_end();
+    out_name=param.output_name().c_str();
+    out_freq=param.output_frequency();
+
+    if (strcmp(param.writer().c_str(), "xyz")==0)
+    {   writer_flag=1;
+    }else if (strcmp(param.writer().c_str(), "vtk")==0){
+        writer_flag=0;
+    }
+    if (strcmp(param.force().c_str(), "lennard-jones")==0)
+    {  force_flag=0;
+    }else if (strcmp(param.force().c_str(), "newton")==0){
+        force_flag=1;
+    }
+}
+void XMLReader::readInCubes(Particles &particle_in,ParticleContainer &particles, int dim, double T_init)
+{
+    for (auto & cube : particle_in.cuboid())
+    {   double f_i = sqrt(T_init / cube.mass());
+        std::array<double,3> x={cube.base_coordinates().x_coordinate(),cube.base_coordinates().y_coordinate(),cube.base_coordinates().z_coordinate()};
+        std::array<int64_t,3> n={cube.number_particles().x_number(),cube.number_particles().y_number(),cube.number_particles().z_number()};
+        std::array<double,3> v={cube.velocity().x_velocity(),cube.velocity().y_velocity(),cube.velocity().z_velocity()};
+        ParticleGenerator::generateCube(particles,x,n,cube.spacing(),cube.mass(),cube.eps(),cube.sigma(),
+            v,cube.type(), dim,f_i);
+    }
+}
+void XMLReader::readInDiscs(Particles &particle_in,ParticleContainer &particles, int dim, double T_init)
+{
+    for (auto & disc : particle_in.disc())
+    {   double f_i = sqrt(T_init / disc.mass());
+        std::array<double,3> x={disc.position().x_coordinate(),disc.position().y_coordinate(),disc.position().z_coordinate()};
+        std::array<double,3> v={disc.velocity().x_velocity(),disc.velocity().y_velocity(),disc.velocity().z_velocity()};
+        ParticleGenerator::generateDisc(particles, x, disc.radius(), disc.spacing(), disc.mass(),
+                                        disc.eps(),disc.sigma(), v,disc.type(), dim,f_i);
+    }
+
+}
+void XMLReader::readInParticles(Particles &particle_in,ParticleContainer &particles, double T_init)
+{
+    for (auto & part : particle_in.particle())
+    {   double f_i=sqrt(T_init/part.mass());
+        std::array<double,3> x={part.position().x_coordinate(),part.position().y_coordinate(),part.position().z_coordinate()};
+        std::array<double,3> v={part.velocity().x_velocity(),part.velocity().y_velocity(),part.velocity().z_velocity()};
+        particles.addParticle(Particle(x,v,part.mass(),part.eps(), part.sigma(),part.type(),f_i));
+    }
+}
+
+int XMLReader::parse_bound(const std::string& bound)
+{
+    if (strcmp(bound.c_str(), "ref")==0)
+    {
+     return 1;
+    } else if (strcmp(bound.c_str(), "per")==0)
+    {
+        return 2;
+    } else
+    {
+        return 0;
+    }
+}
+

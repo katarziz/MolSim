@@ -67,6 +67,30 @@ Parameters (::std::unique_ptr< Parameters_type > x)
   this->Parameters_.set (std::move (x));
 }
 
+const Molsim_Input::ThermostatParams_type& Molsim_Input::
+ThermostatParams () const
+{
+  return this->ThermostatParams_.get ();
+}
+
+Molsim_Input::ThermostatParams_type& Molsim_Input::
+ThermostatParams ()
+{
+  return this->ThermostatParams_.get ();
+}
+
+void Molsim_Input::
+ThermostatParams (const ThermostatParams_type& x)
+{
+  this->ThermostatParams_.set (x);
+}
+
+void Molsim_Input::
+ThermostatParams (::std::unique_ptr< ThermostatParams_type > x)
+{
+  this->ThermostatParams_.set (std::move (x));
+}
+
 const Molsim_Input::Particles_type& Molsim_Input::
 Particles () const
 {
@@ -143,6 +167,60 @@ t_end_default_value ()
   return t_end_type (5.0);
 }
 
+const Parameters::grav_type& Parameters::
+grav () const
+{
+  return this->grav_.get ();
+}
+
+Parameters::grav_type& Parameters::
+grav ()
+{
+  return this->grav_.get ();
+}
+
+void Parameters::
+grav (const grav_type& x)
+{
+  this->grav_.set (x);
+}
+
+Parameters::grav_type Parameters::
+grav_default_value ()
+{
+  return grav_type (-9.81);
+}
+
+const Parameters::container_type& Parameters::
+container () const
+{
+  return this->container_.get ();
+}
+
+Parameters::container_type& Parameters::
+container ()
+{
+  return this->container_.get ();
+}
+
+void Parameters::
+container (const container_type& x)
+{
+  this->container_.set (x);
+}
+
+void Parameters::
+container (::std::unique_ptr< container_type > x)
+{
+  this->container_.set (std::move (x));
+}
+
+const Parameters::container_type& Parameters::
+container_default_value ()
+{
+  return container_default_value_;
+}
+
 const Parameters::box_size_type& Parameters::
 box_size () const
 {
@@ -165,30 +243,6 @@ void Parameters::
 box_size (::std::unique_ptr< box_size_type > x)
 {
   this->box_size_.set (std::move (x));
-}
-
-const Parameters::number_cells_type& Parameters::
-number_cells () const
-{
-  return this->number_cells_.get ();
-}
-
-Parameters::number_cells_type& Parameters::
-number_cells ()
-{
-  return this->number_cells_.get ();
-}
-
-void Parameters::
-number_cells (const number_cells_type& x)
-{
-  this->number_cells_.set (x);
-}
-
-void Parameters::
-number_cells (::std::unique_ptr< number_cells_type > x)
-{
-  this->number_cells_.set (std::move (x));
 }
 
 const Parameters::boundary_conditions_type& Parameters::
@@ -354,6 +408,106 @@ output_frequency_default_value ()
 }
 
 
+// ThermostatParams
+// 
+
+const ThermostatParams::T_init_type& ThermostatParams::
+T_init () const
+{
+  return this->T_init_.get ();
+}
+
+ThermostatParams::T_init_type& ThermostatParams::
+T_init ()
+{
+  return this->T_init_.get ();
+}
+
+void ThermostatParams::
+T_init (const T_init_type& x)
+{
+  this->T_init_.set (x);
+}
+
+ThermostatParams::T_init_type ThermostatParams::
+T_init_default_value ()
+{
+  return T_init_type (.0);
+}
+
+const ThermostatParams::T_targ_type& ThermostatParams::
+T_targ () const
+{
+  return this->T_targ_.get ();
+}
+
+ThermostatParams::T_targ_type& ThermostatParams::
+T_targ ()
+{
+  return this->T_targ_.get ();
+}
+
+void ThermostatParams::
+T_targ (const T_targ_type& x)
+{
+  this->T_targ_.set (x);
+}
+
+ThermostatParams::T_targ_type ThermostatParams::
+T_targ_default_value ()
+{
+  return T_targ_type (-1.0);
+}
+
+const ThermostatParams::f_therm_type& ThermostatParams::
+f_therm () const
+{
+  return this->f_therm_.get ();
+}
+
+ThermostatParams::f_therm_type& ThermostatParams::
+f_therm ()
+{
+  return this->f_therm_.get ();
+}
+
+void ThermostatParams::
+f_therm (const f_therm_type& x)
+{
+  this->f_therm_.set (x);
+}
+
+ThermostatParams::f_therm_type ThermostatParams::
+f_therm_default_value ()
+{
+  return f_therm_type (5LL);
+}
+
+const ThermostatParams::delta_T_type& ThermostatParams::
+delta_T () const
+{
+  return this->delta_T_.get ();
+}
+
+ThermostatParams::delta_T_type& ThermostatParams::
+delta_T ()
+{
+  return this->delta_T_.get ();
+}
+
+void ThermostatParams::
+delta_T (const delta_T_type& x)
+{
+  this->delta_T_.set (x);
+}
+
+ThermostatParams::delta_T_type ThermostatParams::
+delta_T_default_value ()
+{
+  return delta_T_type (.0);
+}
+
+
 // Particles
 // 
 
@@ -488,82 +642,6 @@ z_size_default_value ()
 }
 
 
-// number_cells
-// 
-
-const number_cells::x_number_type& number_cells::
-x_number () const
-{
-  return this->x_number_.get ();
-}
-
-number_cells::x_number_type& number_cells::
-x_number ()
-{
-  return this->x_number_.get ();
-}
-
-void number_cells::
-x_number (const x_number_type& x)
-{
-  this->x_number_.set (x);
-}
-
-number_cells::x_number_type number_cells::
-x_number_default_value ()
-{
-  return x_number_type (1LL);
-}
-
-const number_cells::y_number_type& number_cells::
-y_number () const
-{
-  return this->y_number_.get ();
-}
-
-number_cells::y_number_type& number_cells::
-y_number ()
-{
-  return this->y_number_.get ();
-}
-
-void number_cells::
-y_number (const y_number_type& x)
-{
-  this->y_number_.set (x);
-}
-
-number_cells::y_number_type number_cells::
-y_number_default_value ()
-{
-  return y_number_type (1LL);
-}
-
-const number_cells::z_number_type& number_cells::
-z_number () const
-{
-  return this->z_number_.get ();
-}
-
-number_cells::z_number_type& number_cells::
-z_number ()
-{
-  return this->z_number_.get ();
-}
-
-void number_cells::
-z_number (const z_number_type& x)
-{
-  this->z_number_.set (x);
-}
-
-number_cells::z_number_type number_cells::
-z_number_default_value ()
-{
-  return z_number_type (1LL);
-}
-
-
 // boundary_conditions
 // 
 
@@ -687,6 +765,66 @@ left_bound_default_value ()
   return left_bound_default_value_;
 }
 
+const boundary_conditions::front_bound_type& boundary_conditions::
+front_bound () const
+{
+  return this->front_bound_.get ();
+}
+
+boundary_conditions::front_bound_type& boundary_conditions::
+front_bound ()
+{
+  return this->front_bound_.get ();
+}
+
+void boundary_conditions::
+front_bound (const front_bound_type& x)
+{
+  this->front_bound_.set (x);
+}
+
+void boundary_conditions::
+front_bound (::std::unique_ptr< front_bound_type > x)
+{
+  this->front_bound_.set (std::move (x));
+}
+
+const boundary_conditions::front_bound_type& boundary_conditions::
+front_bound_default_value ()
+{
+  return front_bound_default_value_;
+}
+
+const boundary_conditions::back_bound_type& boundary_conditions::
+back_bound () const
+{
+  return this->back_bound_.get ();
+}
+
+boundary_conditions::back_bound_type& boundary_conditions::
+back_bound ()
+{
+  return this->back_bound_.get ();
+}
+
+void boundary_conditions::
+back_bound (const back_bound_type& x)
+{
+  this->back_bound_.set (x);
+}
+
+void boundary_conditions::
+back_bound (::std::unique_ptr< back_bound_type > x)
+{
+  this->back_bound_.set (std::move (x));
+}
+
+const boundary_conditions::back_bound_type& boundary_conditions::
+back_bound_default_value ()
+{
+  return back_bound_default_value_;
+}
+
 
 // cuboid
 // 
@@ -799,6 +937,66 @@ mass (const mass_type& x)
   this->mass_.set (x);
 }
 
+const cuboid::type_type& cuboid::
+type () const
+{
+  return this->type_.get ();
+}
+
+cuboid::type_type& cuboid::
+type ()
+{
+  return this->type_.get ();
+}
+
+void cuboid::
+type (const type_type& x)
+{
+  this->type_.set (x);
+}
+
+cuboid::type_type cuboid::
+type_default_value ()
+{
+  return type_type (0LL);
+}
+
+const cuboid::eps_type& cuboid::
+eps () const
+{
+  return this->eps_.get ();
+}
+
+cuboid::eps_type& cuboid::
+eps ()
+{
+  return this->eps_.get ();
+}
+
+void cuboid::
+eps (const eps_type& x)
+{
+  this->eps_.set (x);
+}
+
+const cuboid::sigma_type& cuboid::
+sigma () const
+{
+  return this->sigma_.get ();
+}
+
+cuboid::sigma_type& cuboid::
+sigma ()
+{
+  return this->sigma_.get ();
+}
+
+void cuboid::
+sigma (const sigma_type& x)
+{
+  this->sigma_.set (x);
+}
+
 const cuboid::brownian_vel_type& cuboid::
 brownian_vel () const
 {
@@ -887,6 +1085,66 @@ mass (const mass_type& x)
   this->mass_.set (x);
 }
 
+const particle::type_type& particle::
+type () const
+{
+  return this->type_.get ();
+}
+
+particle::type_type& particle::
+type ()
+{
+  return this->type_.get ();
+}
+
+void particle::
+type (const type_type& x)
+{
+  this->type_.set (x);
+}
+
+particle::type_type particle::
+type_default_value ()
+{
+  return type_type (0LL);
+}
+
+const particle::eps_type& particle::
+eps () const
+{
+  return this->eps_.get ();
+}
+
+particle::eps_type& particle::
+eps ()
+{
+  return this->eps_.get ();
+}
+
+void particle::
+eps (const eps_type& x)
+{
+  this->eps_.set (x);
+}
+
+const particle::sigma_type& particle::
+sigma () const
+{
+  return this->sigma_.get ();
+}
+
+particle::sigma_type& particle::
+sigma ()
+{
+  return this->sigma_.get ();
+}
+
+void particle::
+sigma (const sigma_type& x)
+{
+  this->sigma_.set (x);
+}
+
 
 // disc
 // 
@@ -973,6 +1231,66 @@ void disc::
 mass (const mass_type& x)
 {
   this->mass_.set (x);
+}
+
+const disc::type_type& disc::
+type () const
+{
+  return this->type_.get ();
+}
+
+disc::type_type& disc::
+type ()
+{
+  return this->type_.get ();
+}
+
+void disc::
+type (const type_type& x)
+{
+  this->type_.set (x);
+}
+
+disc::type_type disc::
+type_default_value ()
+{
+  return type_type (0LL);
+}
+
+const disc::eps_type& disc::
+eps () const
+{
+  return this->eps_.get ();
+}
+
+disc::eps_type& disc::
+eps ()
+{
+  return this->eps_.get ();
+}
+
+void disc::
+eps (const eps_type& x)
+{
+  this->eps_.set (x);
+}
+
+const disc::sigma_type& disc::
+sigma () const
+{
+  return this->sigma_.get ();
+}
+
+disc::sigma_type& disc::
+sigma ()
+{
+  return this->sigma_.get ();
+}
+
+void disc::
+sigma (const sigma_type& x)
+{
+  this->sigma_.set (x);
 }
 
 const disc::spacing_type& disc::
@@ -1251,18 +1569,22 @@ z_coordinate (const z_coordinate_type& x)
 
 Molsim_Input::
 Molsim_Input (const Parameters_type& Parameters,
+              const ThermostatParams_type& ThermostatParams,
               const Particles_type& Particles)
 : ::xml_schema::type (),
   Parameters_ (Parameters, this),
+  ThermostatParams_ (ThermostatParams, this),
   Particles_ (Particles, this)
 {
 }
 
 Molsim_Input::
 Molsim_Input (::std::unique_ptr< Parameters_type > Parameters,
+              ::std::unique_ptr< ThermostatParams_type > ThermostatParams,
               ::std::unique_ptr< Particles_type > Particles)
 : ::xml_schema::type (),
   Parameters_ (std::move (Parameters), this),
+  ThermostatParams_ (std::move (ThermostatParams), this),
   Particles_ (std::move (Particles), this)
 {
 }
@@ -1273,6 +1595,7 @@ Molsim_Input (const Molsim_Input& x,
               ::xml_schema::container* c)
 : ::xml_schema::type (x, f, c),
   Parameters_ (x.Parameters_, f, this),
+  ThermostatParams_ (x.ThermostatParams_, f, this),
   Particles_ (x.Particles_, f, this)
 {
 }
@@ -1283,6 +1606,7 @@ Molsim_Input (const ::xercesc::DOMElement& e,
               ::xml_schema::container* c)
 : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
   Parameters_ (this),
+  ThermostatParams_ (this),
   Particles_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
@@ -1316,6 +1640,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // ThermostatParams
+    //
+    if (n.name () == "ThermostatParams" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< ThermostatParams_type > r (
+        ThermostatParams_traits::create (i, f, this));
+
+      if (!ThermostatParams_.present ())
+      {
+        this->ThermostatParams_.set (::std::move (r));
+        continue;
+      }
+    }
+
     // Particles
     //
     if (n.name () == "Particles" && n.namespace_ ().empty ())
@@ -1337,6 +1675,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_element< char > (
       "Parameters",
+      "");
+  }
+
+  if (!ThermostatParams_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "ThermostatParams",
       "");
   }
 
@@ -1362,6 +1707,7 @@ operator= (const Molsim_Input& x)
   {
     static_cast< ::xml_schema::type& > (*this) = x;
     this->Parameters_ = x.Parameters_;
+    this->ThermostatParams_ = x.ThermostatParams_;
     this->Particles_ = x.Particles_;
   }
 
@@ -1376,6 +1722,9 @@ Molsim_Input::
 // Parameters
 //
 
+const Parameters::container_type Parameters::container_default_value_ (
+  "LinkedCell");
+
 const Parameters::writer_type Parameters::writer_default_value_ (
   "vtk");
 
@@ -1388,8 +1737,9 @@ const Parameters::output_name_type Parameters::output_name_default_value_ (
 Parameters::
 Parameters (const delta_t_type& delta_t,
             const t_end_type& t_end,
+            const grav_type& grav,
+            const container_type& container,
             const box_size_type& box_size,
-            const number_cells_type& number_cells,
             const boundary_conditions_type& boundary_conditions,
             const cutoff_type& cutoff,
             const writer_type& writer,
@@ -1399,8 +1749,9 @@ Parameters (const delta_t_type& delta_t,
 : ::xml_schema::type (),
   delta_t_ (delta_t, this),
   t_end_ (t_end, this),
+  grav_ (grav, this),
+  container_ (container, this),
   box_size_ (box_size, this),
-  number_cells_ (number_cells, this),
   boundary_conditions_ (boundary_conditions, this),
   cutoff_ (cutoff, this),
   writer_ (writer, this),
@@ -1413,8 +1764,9 @@ Parameters (const delta_t_type& delta_t,
 Parameters::
 Parameters (const delta_t_type& delta_t,
             const t_end_type& t_end,
+            const grav_type& grav,
+            const container_type& container,
             ::std::unique_ptr< box_size_type > box_size,
-            ::std::unique_ptr< number_cells_type > number_cells,
             ::std::unique_ptr< boundary_conditions_type > boundary_conditions,
             const cutoff_type& cutoff,
             const writer_type& writer,
@@ -1424,8 +1776,9 @@ Parameters (const delta_t_type& delta_t,
 : ::xml_schema::type (),
   delta_t_ (delta_t, this),
   t_end_ (t_end, this),
+  grav_ (grav, this),
+  container_ (container, this),
   box_size_ (std::move (box_size), this),
-  number_cells_ (std::move (number_cells), this),
   boundary_conditions_ (std::move (boundary_conditions), this),
   cutoff_ (cutoff, this),
   writer_ (writer, this),
@@ -1442,8 +1795,9 @@ Parameters (const Parameters& x,
 : ::xml_schema::type (x, f, c),
   delta_t_ (x.delta_t_, f, this),
   t_end_ (x.t_end_, f, this),
+  grav_ (x.grav_, f, this),
+  container_ (x.container_, f, this),
   box_size_ (x.box_size_, f, this),
-  number_cells_ (x.number_cells_, f, this),
   boundary_conditions_ (x.boundary_conditions_, f, this),
   cutoff_ (x.cutoff_, f, this),
   writer_ (x.writer_, f, this),
@@ -1460,8 +1814,9 @@ Parameters (const ::xercesc::DOMElement& e,
 : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
   delta_t_ (this),
   t_end_ (this),
+  grav_ (this),
+  container_ (this),
   box_size_ (this),
-  number_cells_ (this),
   boundary_conditions_ (this),
   cutoff_ (this),
   writer_ (this),
@@ -1508,6 +1863,31 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // grav
+    //
+    if (n.name () == "grav" && n.namespace_ ().empty ())
+    {
+      if (!grav_.present ())
+      {
+        this->grav_.set (grav_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // container
+    //
+    if (n.name () == "container" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< container_type > r (
+        container_traits::create (i, f, this));
+
+      if (!container_.present ())
+      {
+        this->container_.set (::std::move (r));
+        continue;
+      }
+    }
+
     // box_size
     //
     if (n.name () == "box_size" && n.namespace_ ().empty ())
@@ -1518,20 +1898,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!box_size_.present ())
       {
         this->box_size_.set (::std::move (r));
-        continue;
-      }
-    }
-
-    // number_cells
-    //
-    if (n.name () == "number_cells" && n.namespace_ ().empty ())
-    {
-      ::std::unique_ptr< number_cells_type > r (
-        number_cells_traits::create (i, f, this));
-
-      if (!number_cells_.present ())
-      {
-        this->number_cells_.set (::std::move (r));
         continue;
       }
     }
@@ -1631,17 +1997,24 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
+  if (!grav_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "grav",
+      "");
+  }
+
+  if (!container_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "container",
+      "");
+  }
+
   if (!box_size_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
       "box_size",
-      "");
-  }
-
-  if (!number_cells_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "number_cells",
       "");
   }
 
@@ -1703,8 +2076,9 @@ operator= (const Parameters& x)
     static_cast< ::xml_schema::type& > (*this) = x;
     this->delta_t_ = x.delta_t_;
     this->t_end_ = x.t_end_;
+    this->grav_ = x.grav_;
+    this->container_ = x.container_;
     this->box_size_ = x.box_size_;
-    this->number_cells_ = x.number_cells_;
     this->boundary_conditions_ = x.boundary_conditions_;
     this->cutoff_ = x.cutoff_;
     this->writer_ = x.writer_;
@@ -1718,6 +2092,164 @@ operator= (const Parameters& x)
 
 Parameters::
 ~Parameters ()
+{
+}
+
+// ThermostatParams
+//
+
+ThermostatParams::
+ThermostatParams (const T_init_type& T_init,
+                  const T_targ_type& T_targ,
+                  const f_therm_type& f_therm,
+                  const delta_T_type& delta_T)
+: ::xml_schema::type (),
+  T_init_ (T_init, this),
+  T_targ_ (T_targ, this),
+  f_therm_ (f_therm, this),
+  delta_T_ (delta_T, this)
+{
+}
+
+ThermostatParams::
+ThermostatParams (const ThermostatParams& x,
+                  ::xml_schema::flags f,
+                  ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  T_init_ (x.T_init_, f, this),
+  T_targ_ (x.T_targ_, f, this),
+  f_therm_ (x.f_therm_, f, this),
+  delta_T_ (x.delta_T_, f, this)
+{
+}
+
+ThermostatParams::
+ThermostatParams (const ::xercesc::DOMElement& e,
+                  ::xml_schema::flags f,
+                  ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  T_init_ (this),
+  T_targ_ (this),
+  f_therm_ (this),
+  delta_T_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
+    this->parse (p, f);
+  }
+}
+
+void ThermostatParams::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // T_init
+    //
+    if (n.name () == "T_init" && n.namespace_ ().empty ())
+    {
+      if (!T_init_.present ())
+      {
+        this->T_init_.set (T_init_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // T_targ
+    //
+    if (n.name () == "T_targ" && n.namespace_ ().empty ())
+    {
+      if (!T_targ_.present ())
+      {
+        this->T_targ_.set (T_targ_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // f_therm
+    //
+    if (n.name () == "f_therm" && n.namespace_ ().empty ())
+    {
+      if (!f_therm_.present ())
+      {
+        this->f_therm_.set (f_therm_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // delta_T
+    //
+    if (n.name () == "delta_T" && n.namespace_ ().empty ())
+    {
+      if (!delta_T_.present ())
+      {
+        this->delta_T_.set (delta_T_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!T_init_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "T_init",
+      "");
+  }
+
+  if (!T_targ_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "T_targ",
+      "");
+  }
+
+  if (!f_therm_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "f_therm",
+      "");
+  }
+
+  if (!delta_T_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "delta_T",
+      "");
+  }
+}
+
+ThermostatParams* ThermostatParams::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class ThermostatParams (*this, f, c);
+}
+
+ThermostatParams& ThermostatParams::
+operator= (const ThermostatParams& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->T_init_ = x.T_init_;
+    this->T_targ_ = x.T_targ_;
+    this->f_therm_ = x.f_therm_;
+    this->delta_T_ = x.delta_T_;
+  }
+
+  return *this;
+}
+
+ThermostatParams::
+~ThermostatParams ()
 {
 }
 
@@ -1968,141 +2500,6 @@ box_size::
 {
 }
 
-// number_cells
-//
-
-number_cells::
-number_cells (const x_number_type& x_number,
-              const y_number_type& y_number,
-              const z_number_type& z_number)
-: ::xml_schema::type (),
-  x_number_ (x_number, this),
-  y_number_ (y_number, this),
-  z_number_ (z_number, this)
-{
-}
-
-number_cells::
-number_cells (const number_cells& x,
-              ::xml_schema::flags f,
-              ::xml_schema::container* c)
-: ::xml_schema::type (x, f, c),
-  x_number_ (x.x_number_, f, this),
-  y_number_ (x.y_number_, f, this),
-  z_number_ (x.z_number_, f, this)
-{
-}
-
-number_cells::
-number_cells (const ::xercesc::DOMElement& e,
-              ::xml_schema::flags f,
-              ::xml_schema::container* c)
-: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
-  x_number_ (this),
-  y_number_ (this),
-  z_number_ (this)
-{
-  if ((f & ::xml_schema::flags::base) == 0)
-  {
-    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
-    this->parse (p, f);
-  }
-}
-
-void number_cells::
-parse (::xsd::cxx::xml::dom::parser< char >& p,
-       ::xml_schema::flags f)
-{
-  for (; p.more_content (); p.next_content (false))
-  {
-    const ::xercesc::DOMElement& i (p.cur_element ());
-    const ::xsd::cxx::xml::qualified_name< char > n (
-      ::xsd::cxx::xml::dom::name< char > (i));
-
-    // x-number
-    //
-    if (n.name () == "x-number" && n.namespace_ ().empty ())
-    {
-      if (!x_number_.present ())
-      {
-        this->x_number_.set (x_number_traits::create (i, f, this));
-        continue;
-      }
-    }
-
-    // y-number
-    //
-    if (n.name () == "y-number" && n.namespace_ ().empty ())
-    {
-      if (!y_number_.present ())
-      {
-        this->y_number_.set (y_number_traits::create (i, f, this));
-        continue;
-      }
-    }
-
-    // z-number
-    //
-    if (n.name () == "z-number" && n.namespace_ ().empty ())
-    {
-      if (!z_number_.present ())
-      {
-        this->z_number_.set (z_number_traits::create (i, f, this));
-        continue;
-      }
-    }
-
-    break;
-  }
-
-  if (!x_number_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "x-number",
-      "");
-  }
-
-  if (!y_number_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "y-number",
-      "");
-  }
-
-  if (!z_number_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "z-number",
-      "");
-  }
-}
-
-number_cells* number_cells::
-_clone (::xml_schema::flags f,
-        ::xml_schema::container* c) const
-{
-  return new class number_cells (*this, f, c);
-}
-
-number_cells& number_cells::
-operator= (const number_cells& x)
-{
-  if (this != &x)
-  {
-    static_cast< ::xml_schema::type& > (*this) = x;
-    this->x_number_ = x.x_number_;
-    this->y_number_ = x.y_number_;
-    this->z_number_ = x.z_number_;
-  }
-
-  return *this;
-}
-
-number_cells::
-~number_cells ()
-{
-}
-
 // boundary_conditions
 //
 
@@ -2118,16 +2515,26 @@ const boundary_conditions::bottom_bound_type boundary_conditions::bottom_bound_d
 const boundary_conditions::left_bound_type boundary_conditions::left_bound_default_value_ (
   "out");
 
+const boundary_conditions::front_bound_type boundary_conditions::front_bound_default_value_ (
+  "out");
+
+const boundary_conditions::back_bound_type boundary_conditions::back_bound_default_value_ (
+  "out");
+
 boundary_conditions::
 boundary_conditions (const top_bound_type& top_bound,
                      const right_bound_type& right_bound,
                      const bottom_bound_type& bottom_bound,
-                     const left_bound_type& left_bound)
+                     const left_bound_type& left_bound,
+                     const front_bound_type& front_bound,
+                     const back_bound_type& back_bound)
 : ::xml_schema::type (),
   top_bound_ (top_bound, this),
   right_bound_ (right_bound, this),
   bottom_bound_ (bottom_bound, this),
-  left_bound_ (left_bound, this)
+  left_bound_ (left_bound, this),
+  front_bound_ (front_bound, this),
+  back_bound_ (back_bound, this)
 {
 }
 
@@ -2139,7 +2546,9 @@ boundary_conditions (const boundary_conditions& x,
   top_bound_ (x.top_bound_, f, this),
   right_bound_ (x.right_bound_, f, this),
   bottom_bound_ (x.bottom_bound_, f, this),
-  left_bound_ (x.left_bound_, f, this)
+  left_bound_ (x.left_bound_, f, this),
+  front_bound_ (x.front_bound_, f, this),
+  back_bound_ (x.back_bound_, f, this)
 {
 }
 
@@ -2151,7 +2560,9 @@ boundary_conditions (const ::xercesc::DOMElement& e,
   top_bound_ (this),
   right_bound_ (this),
   bottom_bound_ (this),
-  left_bound_ (this)
+  left_bound_ (this),
+  front_bound_ (this),
+  back_bound_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -2226,6 +2637,34 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // front_bound
+    //
+    if (n.name () == "front_bound" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< front_bound_type > r (
+        front_bound_traits::create (i, f, this));
+
+      if (!front_bound_.present ())
+      {
+        this->front_bound_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // back_bound
+    //
+    if (n.name () == "back_bound" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< back_bound_type > r (
+        back_bound_traits::create (i, f, this));
+
+      if (!back_bound_.present ())
+      {
+        this->back_bound_.set (::std::move (r));
+        continue;
+      }
+    }
+
     break;
   }
 
@@ -2256,6 +2695,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "left_bound",
       "");
   }
+
+  if (!front_bound_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "front_bound",
+      "");
+  }
+
+  if (!back_bound_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "back_bound",
+      "");
+  }
 }
 
 boundary_conditions* boundary_conditions::
@@ -2275,6 +2728,8 @@ operator= (const boundary_conditions& x)
     this->right_bound_ = x.right_bound_;
     this->bottom_bound_ = x.bottom_bound_;
     this->left_bound_ = x.left_bound_;
+    this->front_bound_ = x.front_bound_;
+    this->back_bound_ = x.back_bound_;
   }
 
   return *this;
@@ -2294,6 +2749,9 @@ cuboid (const base_coordinates_type& base_coordinates,
         const velocity_type& velocity,
         const spacing_type& spacing,
         const mass_type& mass,
+        const type_type& type,
+        const eps_type& eps,
+        const sigma_type& sigma,
         const brownian_vel_type& brownian_vel)
 : ::xml_schema::type (),
   base_coordinates_ (base_coordinates, this),
@@ -2301,6 +2759,9 @@ cuboid (const base_coordinates_type& base_coordinates,
   velocity_ (velocity, this),
   spacing_ (spacing, this),
   mass_ (mass, this),
+  type_ (type, this),
+  eps_ (eps, this),
+  sigma_ (sigma, this),
   brownian_vel_ (brownian_vel, this)
 {
 }
@@ -2311,6 +2772,9 @@ cuboid (::std::unique_ptr< base_coordinates_type > base_coordinates,
         ::std::unique_ptr< velocity_type > velocity,
         const spacing_type& spacing,
         const mass_type& mass,
+        const type_type& type,
+        const eps_type& eps,
+        const sigma_type& sigma,
         const brownian_vel_type& brownian_vel)
 : ::xml_schema::type (),
   base_coordinates_ (std::move (base_coordinates), this),
@@ -2318,6 +2782,9 @@ cuboid (::std::unique_ptr< base_coordinates_type > base_coordinates,
   velocity_ (std::move (velocity), this),
   spacing_ (spacing, this),
   mass_ (mass, this),
+  type_ (type, this),
+  eps_ (eps, this),
+  sigma_ (sigma, this),
   brownian_vel_ (brownian_vel, this)
 {
 }
@@ -2332,6 +2799,9 @@ cuboid (const cuboid& x,
   velocity_ (x.velocity_, f, this),
   spacing_ (x.spacing_, f, this),
   mass_ (x.mass_, f, this),
+  type_ (x.type_, f, this),
+  eps_ (x.eps_, f, this),
+  sigma_ (x.sigma_, f, this),
   brownian_vel_ (x.brownian_vel_, f, this)
 {
 }
@@ -2346,6 +2816,9 @@ cuboid (const ::xercesc::DOMElement& e,
   velocity_ (this),
   spacing_ (this),
   mass_ (this),
+  type_ (this),
+  eps_ (this),
+  sigma_ (this),
   brownian_vel_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
@@ -2429,6 +2902,39 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // type
+    //
+    if (n.name () == "type" && n.namespace_ ().empty ())
+    {
+      if (!type_.present ())
+      {
+        this->type_.set (type_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // eps
+    //
+    if (n.name () == "eps" && n.namespace_ ().empty ())
+    {
+      if (!eps_.present ())
+      {
+        this->eps_.set (eps_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // sigma
+    //
+    if (n.name () == "sigma" && n.namespace_ ().empty ())
+    {
+      if (!sigma_.present ())
+      {
+        this->sigma_.set (sigma_traits::create (i, f, this));
+        continue;
+      }
+    }
+
     // brownian_vel
     //
     if (n.name () == "brownian_vel" && n.namespace_ ().empty ())
@@ -2478,6 +2984,27 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
+  if (!type_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "type",
+      "");
+  }
+
+  if (!eps_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "eps",
+      "");
+  }
+
+  if (!sigma_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "sigma",
+      "");
+  }
+
   if (!brownian_vel_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
@@ -2504,6 +3031,9 @@ operator= (const cuboid& x)
     this->velocity_ = x.velocity_;
     this->spacing_ = x.spacing_;
     this->mass_ = x.mass_;
+    this->type_ = x.type_;
+    this->eps_ = x.eps_;
+    this->sigma_ = x.sigma_;
     this->brownian_vel_ = x.brownian_vel_;
   }
 
@@ -2521,22 +3051,34 @@ cuboid::
 particle::
 particle (const position_type& position,
           const velocity_type& velocity,
-          const mass_type& mass)
+          const mass_type& mass,
+          const type_type& type,
+          const eps_type& eps,
+          const sigma_type& sigma)
 : ::xml_schema::type (),
   position_ (position, this),
   velocity_ (velocity, this),
-  mass_ (mass, this)
+  mass_ (mass, this),
+  type_ (type, this),
+  eps_ (eps, this),
+  sigma_ (sigma, this)
 {
 }
 
 particle::
 particle (::std::unique_ptr< position_type > position,
           ::std::unique_ptr< velocity_type > velocity,
-          const mass_type& mass)
+          const mass_type& mass,
+          const type_type& type,
+          const eps_type& eps,
+          const sigma_type& sigma)
 : ::xml_schema::type (),
   position_ (std::move (position), this),
   velocity_ (std::move (velocity), this),
-  mass_ (mass, this)
+  mass_ (mass, this),
+  type_ (type, this),
+  eps_ (eps, this),
+  sigma_ (sigma, this)
 {
 }
 
@@ -2547,7 +3089,10 @@ particle (const particle& x,
 : ::xml_schema::type (x, f, c),
   position_ (x.position_, f, this),
   velocity_ (x.velocity_, f, this),
-  mass_ (x.mass_, f, this)
+  mass_ (x.mass_, f, this),
+  type_ (x.type_, f, this),
+  eps_ (x.eps_, f, this),
+  sigma_ (x.sigma_, f, this)
 {
 }
 
@@ -2558,7 +3103,10 @@ particle (const ::xercesc::DOMElement& e,
 : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
   position_ (this),
   velocity_ (this),
-  mass_ (this)
+  mass_ (this),
+  type_ (this),
+  eps_ (this),
+  sigma_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -2616,6 +3164,39 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // type
+    //
+    if (n.name () == "type" && n.namespace_ ().empty ())
+    {
+      if (!type_.present ())
+      {
+        this->type_.set (type_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // eps
+    //
+    if (n.name () == "eps" && n.namespace_ ().empty ())
+    {
+      if (!eps_.present ())
+      {
+        this->eps_.set (eps_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // sigma
+    //
+    if (n.name () == "sigma" && n.namespace_ ().empty ())
+    {
+      if (!sigma_.present ())
+      {
+        this->sigma_.set (sigma_traits::create (i, f, this));
+        continue;
+      }
+    }
+
     break;
   }
 
@@ -2639,6 +3220,27 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "mass",
       "");
   }
+
+  if (!type_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "type",
+      "");
+  }
+
+  if (!eps_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "eps",
+      "");
+  }
+
+  if (!sigma_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "sigma",
+      "");
+  }
 }
 
 particle* particle::
@@ -2657,6 +3259,9 @@ operator= (const particle& x)
     this->position_ = x.position_;
     this->velocity_ = x.velocity_;
     this->mass_ = x.mass_;
+    this->type_ = x.type_;
+    this->eps_ = x.eps_;
+    this->sigma_ = x.sigma_;
   }
 
   return *this;
@@ -2675,6 +3280,9 @@ disc (const position_type& position,
       const velocity_type& velocity,
       const radius_type& radius,
       const mass_type& mass,
+      const type_type& type,
+      const eps_type& eps,
+      const sigma_type& sigma,
       const spacing_type& spacing,
       const brownian_vel_type& brownian_vel)
 : ::xml_schema::type (),
@@ -2682,6 +3290,9 @@ disc (const position_type& position,
   velocity_ (velocity, this),
   radius_ (radius, this),
   mass_ (mass, this),
+  type_ (type, this),
+  eps_ (eps, this),
+  sigma_ (sigma, this),
   spacing_ (spacing, this),
   brownian_vel_ (brownian_vel, this)
 {
@@ -2692,6 +3303,9 @@ disc (::std::unique_ptr< position_type > position,
       ::std::unique_ptr< velocity_type > velocity,
       const radius_type& radius,
       const mass_type& mass,
+      const type_type& type,
+      const eps_type& eps,
+      const sigma_type& sigma,
       const spacing_type& spacing,
       const brownian_vel_type& brownian_vel)
 : ::xml_schema::type (),
@@ -2699,6 +3313,9 @@ disc (::std::unique_ptr< position_type > position,
   velocity_ (std::move (velocity), this),
   radius_ (radius, this),
   mass_ (mass, this),
+  type_ (type, this),
+  eps_ (eps, this),
+  sigma_ (sigma, this),
   spacing_ (spacing, this),
   brownian_vel_ (brownian_vel, this)
 {
@@ -2713,6 +3330,9 @@ disc (const disc& x,
   velocity_ (x.velocity_, f, this),
   radius_ (x.radius_, f, this),
   mass_ (x.mass_, f, this),
+  type_ (x.type_, f, this),
+  eps_ (x.eps_, f, this),
+  sigma_ (x.sigma_, f, this),
   spacing_ (x.spacing_, f, this),
   brownian_vel_ (x.brownian_vel_, f, this)
 {
@@ -2727,6 +3347,9 @@ disc (const ::xercesc::DOMElement& e,
   velocity_ (this),
   radius_ (this),
   mass_ (this),
+  type_ (this),
+  eps_ (this),
+  sigma_ (this),
   spacing_ (this),
   brownian_vel_ (this)
 {
@@ -2797,6 +3420,39 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // type
+    //
+    if (n.name () == "type" && n.namespace_ ().empty ())
+    {
+      if (!type_.present ())
+      {
+        this->type_.set (type_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // eps
+    //
+    if (n.name () == "eps" && n.namespace_ ().empty ())
+    {
+      if (!eps_.present ())
+      {
+        this->eps_.set (eps_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // sigma
+    //
+    if (n.name () == "sigma" && n.namespace_ ().empty ())
+    {
+      if (!sigma_.present ())
+      {
+        this->sigma_.set (sigma_traits::create (i, f, this));
+        continue;
+      }
+    }
+
     // spacing
     //
     if (n.name () == "spacing" && n.namespace_ ().empty ())
@@ -2850,6 +3506,27 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
+  if (!type_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "type",
+      "");
+  }
+
+  if (!eps_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "eps",
+      "");
+  }
+
+  if (!sigma_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "sigma",
+      "");
+  }
+
   if (!spacing_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
@@ -2882,6 +3559,9 @@ operator= (const disc& x)
     this->velocity_ = x.velocity_;
     this->radius_ = x.radius_;
     this->mass_ = x.mass_;
+    this->type_ = x.type_;
+    this->eps_ = x.eps_;
+    this->sigma_ = x.sigma_;
     this->spacing_ = x.spacing_;
     this->brownian_vel_ = x.brownian_vel_;
   }
@@ -3872,6 +4552,17 @@ operator<< (::xercesc::DOMElement& e, const Molsim_Input& i)
     s << i.Parameters ();
   }
 
+  // ThermostatParams
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "ThermostatParams",
+        e));
+
+    s << i.ThermostatParams ();
+  }
+
   // Particles
   //
   {
@@ -3911,6 +4602,28 @@ operator<< (::xercesc::DOMElement& e, const Parameters& i)
     s << ::xml_schema::as_decimal(i.t_end ());
   }
 
+  // grav
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "grav",
+        e));
+
+    s << ::xml_schema::as_decimal(i.grav ());
+  }
+
+  // container
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "container",
+        e));
+
+    s << i.container ();
+  }
+
   // box_size
   //
   {
@@ -3920,17 +4633,6 @@ operator<< (::xercesc::DOMElement& e, const Parameters& i)
         e));
 
     s << i.box_size ();
-  }
-
-  // number_cells
-  //
-  {
-    ::xercesc::DOMElement& s (
-      ::xsd::cxx::xml::dom::create_element (
-        "number_cells",
-        e));
-
-    s << i.number_cells ();
   }
 
   // boundary_conditions
@@ -3997,6 +4699,56 @@ operator<< (::xercesc::DOMElement& e, const Parameters& i)
         e));
 
     s << i.output_frequency ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const ThermostatParams& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // T_init
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "T_init",
+        e));
+
+    s << ::xml_schema::as_decimal(i.T_init ());
+  }
+
+  // T_targ
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "T_targ",
+        e));
+
+    s << ::xml_schema::as_decimal(i.T_targ ());
+  }
+
+  // f_therm
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "f_therm",
+        e));
+
+    s << i.f_therm ();
+  }
+
+  // delta_T
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "delta_T",
+        e));
+
+    s << ::xml_schema::as_decimal(i.delta_T ());
   }
 }
 
@@ -4088,45 +4840,6 @@ operator<< (::xercesc::DOMElement& e, const box_size& i)
 }
 
 void
-operator<< (::xercesc::DOMElement& e, const number_cells& i)
-{
-  e << static_cast< const ::xml_schema::type& > (i);
-
-  // x-number
-  //
-  {
-    ::xercesc::DOMElement& s (
-      ::xsd::cxx::xml::dom::create_element (
-        "x-number",
-        e));
-
-    s << i.x_number ();
-  }
-
-  // y-number
-  //
-  {
-    ::xercesc::DOMElement& s (
-      ::xsd::cxx::xml::dom::create_element (
-        "y-number",
-        e));
-
-    s << i.y_number ();
-  }
-
-  // z-number
-  //
-  {
-    ::xercesc::DOMElement& s (
-      ::xsd::cxx::xml::dom::create_element (
-        "z-number",
-        e));
-
-    s << i.z_number ();
-  }
-}
-
-void
 operator<< (::xercesc::DOMElement& e, const boundary_conditions& i)
 {
   e << static_cast< const ::xml_schema::type& > (i);
@@ -4173,6 +4886,28 @@ operator<< (::xercesc::DOMElement& e, const boundary_conditions& i)
         e));
 
     s << i.left_bound ();
+  }
+
+  // front_bound
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "front_bound",
+        e));
+
+    s << i.front_bound ();
+  }
+
+  // back_bound
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "back_bound",
+        e));
+
+    s << i.back_bound ();
   }
 }
 
@@ -4236,6 +4971,39 @@ operator<< (::xercesc::DOMElement& e, const cuboid& i)
     s << ::xml_schema::as_decimal(i.mass ());
   }
 
+  // type
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "type",
+        e));
+
+    s << i.type ();
+  }
+
+  // eps
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "eps",
+        e));
+
+    s << ::xml_schema::as_decimal(i.eps ());
+  }
+
+  // sigma
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "sigma",
+        e));
+
+    s << ::xml_schema::as_decimal(i.sigma ());
+  }
+
   // brownian_vel
   //
   {
@@ -4284,6 +5052,39 @@ operator<< (::xercesc::DOMElement& e, const particle& i)
         e));
 
     s << ::xml_schema::as_decimal(i.mass ());
+  }
+
+  // type
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "type",
+        e));
+
+    s << i.type ();
+  }
+
+  // eps
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "eps",
+        e));
+
+    s << ::xml_schema::as_decimal(i.eps ());
+  }
+
+  // sigma
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "sigma",
+        e));
+
+    s << ::xml_schema::as_decimal(i.sigma ());
   }
 }
 
@@ -4334,6 +5135,39 @@ operator<< (::xercesc::DOMElement& e, const disc& i)
         e));
 
     s << ::xml_schema::as_decimal(i.mass ());
+  }
+
+  // type
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "type",
+        e));
+
+    s << i.type ();
+  }
+
+  // eps
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "eps",
+        e));
+
+    s << ::xml_schema::as_decimal(i.eps ());
+  }
+
+  // sigma
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "sigma",
+        e));
+
+    s << ::xml_schema::as_decimal(i.sigma ());
   }
 
   // spacing

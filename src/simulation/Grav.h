@@ -12,3 +12,9 @@
  \param j the second particle of the pair
  */
 void calculateF_G(Particle &i, Particle &j, double cutoff);
+
+//! A function to apply gravitational force of the environment to a particle
+/*!
+ \param i a particle
+ */
+void calculateF_GE(Particle &i, double grav=9.8);

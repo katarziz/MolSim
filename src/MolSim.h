@@ -36,13 +36,9 @@ inline std::array<double,3>box_dim={r_c,r_c,1.0};
 inline std::array<int64_t,3>cell_num={1,1,1};
 //! array of four ints representing the boundary conditions: top,right,bottom, left
 // outflow:0 ("out"), reflecting:1 ("ref")
-//Default:outflow x outflow x outflow x outflow
+// Default:outflow x outflow x outflow x outflow
 inline std::array<int,4>bounds={0,0,0,0};
 
-
-//! ParticleContainer containing all particles in the simulation
-// inline auto particles = BasicParticleContainer();
-inline auto particles = LinkedCellParticleContainer(box_dim,cell_num,r_c,bounds);
 
 //! int representation of the output writer being used
 /*!

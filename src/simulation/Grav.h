@@ -11,4 +11,4 @@
  \param i the first particle of the pair
  \param j the second particle of the pair
  */
-void calculateF_G(Particle &i, Particle &j);
+void calculateF_G(Particle &i, Particle &j, double cutoff);

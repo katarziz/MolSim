@@ -14,9 +14,10 @@ class LinkedCellParticleContainer : public ParticleContainer {
 private:
     std::array<double, 3> box_size;
     std::array<int64_t, 3> cell_number;
-    std::vector<std::vector<std::unique_ptr<Particle>>> cells;
+    std::vector<std::vector<int>> cells;
     std::vector<Particle> particles;
-    std::vector<Particle> halo;
+    std::vector<int> boundary;
+    std::vector<int> halo;
     double cutoff;
     const int boundary_width = 1;
     std::array<int, 4> boundary_conditions;
@@ -91,9 +92,19 @@ public:
     \param a unary function to be applied to the Particles in the ParticleContainer
    */
     void applyUnary(std::function<void(Particle &i)> fun) override;
+
+    //! A function to apply a binary function to pairs of Particles between two cells of the ParticleContainer
+    /*!
+        \param fun a binary function to be applied pairwise to the Particles between two cells of the ParticleContainer
+        \param i_cell the first cell of the operation
+        \param j_cell the second cell of the operation
+    */
+    void applyBinaryToCells(std::function<void(Particle &i, Particle &j)> fun, std::vector<int> &i_cell,
+                            std::vector<int> &j_cell);
+
     //! A function to apply a binary function to pairs of Particles in neighboring cells of the ParticleContainer
     /*!
-        \param a binary function to be applied pairwise to the Particles in neighboring cells of the ParticleContainer
+        \param fun a binary function to be applied pairwise to the Particles in neighboring cells of the ParticleContainer
     */
     void applyBinary(std::function<void(Particle &i, Particle &j)> fun) override;
     //! A function to update the cells of the ParticleContainer
@@ -108,7 +119,7 @@ public:
 
     void deleteHalo();
 
-    void outflow(const Particle *p);
+    void outflow(Particle &p);
 
-    void reflect(Particle *p, int boundary);
+    void reflect(Particle &p, int boundary);
 };

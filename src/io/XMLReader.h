@@ -12,6 +12,6 @@ public:
     XMLReader();
     virtual ~XMLReader();
 
-    static void readFile(ParticleContainer &particles, const char *filename);
+    static void readFile(ParticleContainer *particles, const char *filename);
 };
 #endif //XMLREADER_H

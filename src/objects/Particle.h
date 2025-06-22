@@ -44,6 +44,11 @@ private:
    */
   int type;
 
+  /**
+   * The state of the particle. Is it to be considered active, disabled, or other options.
+   */
+  int state;
+
 public:
   explicit Particle(int type = 0);
   //! Constructor for a Particle from another Particle
@@ -57,12 +62,13 @@ public:
      \param v_arg array of three doubles containing the x-,y-&z- velocity of the Particle
      \param m_arg double containing the mass of the particle
      \param type int denoting the particle's type
+     \param state int denoting the particle's state
     */
   Particle(
       // for visualization, we need always 3 coordinates
       // -> in case of 2d, we use only the first and the second
       std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg,
-      int type = 0);
+      int type = 0, int state = 0);
 
   virtual ~Particle();
 
@@ -118,6 +124,17 @@ public:
   \return int representing the type of the Particle
  */
   int getType() const;
+ //! Getter for the state of the Particle
+ /*!
+  \return int representing the state of the Particle
+  */
+  int getState() const;
+ //! Setter for the state of the Particle
+ /*!
+  \param state_arg int representing the new state of the Particle
+  */
+  void setState(int state_arg);
+
  //! Equality operator between Particles
  /*!
   \param other reference to Particle to be compared to this for equality

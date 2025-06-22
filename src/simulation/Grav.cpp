@@ -5,9 +5,12 @@
 #include "Grav.h"
 #include "utils/ArrayUtils.h"
 
-void calculateF_G(Particle &i, Particle &j) {
+void calculateF_G(Particle &i, Particle &j, double cutoff) {
     const std::array<double, 3> dist = i.getX() - j.getX();
     const double norm = ArrayUtils::L2Norm(dist);
+    if (norm > cutoff) {
+        return;
+    }
     const double factor = i.getM() * j.getM() / (norm * norm * norm);
     const std::array<double, 3> force = -1 * factor * dist;
     i.setF(i.getF() + force);

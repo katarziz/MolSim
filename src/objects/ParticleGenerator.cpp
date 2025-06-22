@@ -28,7 +28,7 @@ void ParticleGenerator::generateCube(ParticleContainer &particles,
                     base_coordinates[2] - spacing * k
                 };
                 std::array<double, 3> particle_velocity =
-                        maxwellBoltzmannDistributedVelocity(brownian_motion_avg_velocity, 3);
+                        maxwellBoltzmannDistributedVelocity(brownian_motion_avg_velocity, 2);
                 particle_velocity[0] += velocity[0];
                 particle_velocity[1] += velocity[1];
                 particle_velocity[2] += velocity[2];
@@ -50,7 +50,7 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
                 // all particles are set up in a disc with a base velocity and an initial velocity-offset
                 // based on brownian motion and the Maxwell-Boltzmann Distribution
                 std::array<double, 3> particle_velocity =
-                        maxwellBoltzmannDistributedVelocity(brownian_motion_avg_velocity, 3);
+                        maxwellBoltzmannDistributedVelocity(brownian_motion_avg_velocity, 2);
                 particle_velocity[0] += velocity[0];
                 particle_velocity[1] += velocity[1];
                 particle_velocity[2] += velocity[2];

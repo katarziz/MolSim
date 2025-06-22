@@ -16,6 +16,9 @@
 #include "io/input.h"
 #include "spdlog/sinks/stdout_sinks.h"
 
+ParticleContainer *particles = nullptr;
+
+
 int main(int argc, char *argsv[]) {
   std::shared_ptr<spdlog::logger> logger = nullptr;
   std::shared_ptr<spdlog::logger> stdout_logger = spdlog::stdout_logger_mt("stdout");
@@ -141,9 +144,10 @@ int main(int argc, char *argsv[]) {
     exit(0);
   }
 
+  particles = new LinkedCellParticleContainer(box_dim, cell_num, r_c, bounds);
   XMLReader::readFile(particles, input_file);
-  if constexpr (std::is_same_v<decltype(particles), LinkedCellParticleContainer>) {
-    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).setParameters(box_dim,cell_num,r_c,bounds);
+  if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
+    lcparticles->setParameters(box_dim,cell_num,r_c,bounds);
   }
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");
@@ -161,6 +165,11 @@ int main(int argc, char *argsv[]) {
   SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation started");
 
 
+  // setup cells
+  if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
+    lcparticles->updateCells();
+  }
+
   // for this loop, we assume: current x, current f and current v are known
   while (current_time < end_time) {
     // calculate new x
@@ -170,10 +179,10 @@ int main(int argc, char *argsv[]) {
     // calculate new v
     calculateV();
 
+    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
     iteration++;
     if (iteration % out_freq == 0) {
       plotParticles(iteration);
-      SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
       std::cout << "\rProgress: " << std::ceil(1000*current_time/end_time)/10 << "%  " << std::flush;
     }
 
@@ -187,33 +196,33 @@ int main(int argc, char *argsv[]) {
 }
 
 void calculateF() {
-  particles.applyUnary(
+  particles->applyUnary(
     [](Particle &p) {
       p.setOldF(p.getF());
       p.setF({0,0,0});
     });
-  if constexpr (std::is_same_v<decltype(particles), LinkedCellParticleContainer>) {
-    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).updateCells();
-    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).deleteHalo();
+  if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
+    lcparticles->updateCells();
+    lcparticles->deleteHalo();
   }
   if (force_flag==1)
   {
-    particles.applyBinary(calculateF_G);
+    particles->applyBinary([](Particle &a, Particle &b){ calculateF_G(a, b, r_c); });
   }else
   {
-    particles.applyBinary(calculateF_LJ);
+    particles->applyBinary([](Particle &a, Particle &b){ calculateF_LJ(a, b, r_c); });
   }
 }
 
 void calculateX() {
-  particles.applyUnary(
+  particles->applyUnary(
     [](Particle &p) {
       p.setX(p.getX() + delta_t*p.getV() + delta_t*delta_t/(2*p.getM())*p.getF());
     });
 }
 
 void calculateV() {
-  particles.applyUnary(
+  particles->applyUnary(
     [](Particle &p) {
       p.setV(p.getV() + delta_t/(2*p.getM())*(p.getOldF() + p.getF()));
     });
@@ -223,11 +232,14 @@ void plotParticles(int iteration) {
 
   if (writer_flag==1)  {
     outputWriter::XYZWriter writer;
-    writer.plotParticles(particles, out_name, iteration);
+    writer.plotParticles(*particles, out_name, iteration);
   } else {
     outputWriter::VTKWriter writer;
-    writer.initializeOutput(particles.size());
-    for (auto &p : particles) {
+    writer.initializeOutput(particles->size());
+    for (auto &p : *particles) {
+      if (p.getState() == 1) {
+        continue;
+      }
       writer.plotParticle(p);
     }
     writer.writeFile(out_name, iteration);

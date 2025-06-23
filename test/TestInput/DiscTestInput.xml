@@ -5,21 +5,21 @@
     <Parameters>
         <delta_t>0.002</delta_t>
         <t_end> 1.0 </t_end>
+        <grav>0</grav>
+        <container>LinkedCell</container>
+        <checkpoint_freq>0</checkpoint_freq>
         <box_size>
             <x-size/>
             <y-size/>
             <z-size/>
         </box_size>
-        <number_cells>
-            <x-number/>
-            <y-number/>
-            <z-number/>
-        </number_cells>
         <boundary_conditions>
             <top_bound/>
             <right_bound/>
             <bottom_bound/>
             <left_bound/>
+            <front_bound/>
+            <back_bound/>
         </boundary_conditions>
         <cutoff/>
         <writer/>
@@ -27,6 +27,12 @@
         <output_name/>
         <output_frequency/>
     </Parameters>
+    <ThermostatParams>
+        <T_init>0</T_init>
+        <T_targ>0</T_targ>
+        <f_therm>0</f_therm>
+        <delta_T>0</delta_T>
+    </ThermostatParams>
     <Particles>
         <disc>
             <position>
@@ -41,8 +47,10 @@
             </velocity>
             <radius>2</radius>
             <mass>1.0</mass>
+            <type>0</type>
+            <eps>5</eps>
+            <sigma>1</sigma>
             <spacing>1.0</spacing>
-            <brownian_vel>0.0</brownian_vel>
         </disc>
     </Particles>
 </Molsim_Input>

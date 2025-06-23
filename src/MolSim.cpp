@@ -8,13 +8,13 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
-
+#include "spdlog/sinks/stdout_sinks.h"
 #include  <getopt.h>
 #include "simulation/LennardJones.h"
 #include "simulation/Grav.h"
 #include "io/XMLReader.h"
 #include "io/input.h"
-#include "spdlog/sinks/stdout_sinks.h"
+
 
 ParticleContainer *particles = nullptr;
 

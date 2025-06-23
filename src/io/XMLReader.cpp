@@ -31,7 +31,7 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
         //Log basic simulation parameters
         SPDLOG_LOGGER_INFO(spdlog::get("default"),
             "Simulation Parameters:\nOutput Writer: {}     Output Name: {}    Output Frequency: {}   Checkpoint Frequency: {} \n Container Type: {}    Delta t = {}    End t = {}    Force: {}   Gravitation: {}"
-            ,param.writer().c_str(), out_name,out_freq,checkpoint_freq,param.container().c_str(), delta_t, end_time,param.force().c_str(),param.grav());
+            ,param.writer().c_str(), out_name, out_freq,checkpoint_freq, param.container().c_str(), delta_t, end_time,param.force().c_str(),param.grav());
 
         //Set up initialization of Particle Container depending on param container
         //! int giving the number of dimensions based on the domain /box size
@@ -42,6 +42,7 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
         }
 
         f_therm=therm.f_therm();
+
         thermostat.setParams(therm.T_targ(), therm.delta_T(), dim);
 
         if (strcmp(param.container().c_str(), "LinkedCell")==0)

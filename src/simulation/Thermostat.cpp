@@ -4,6 +4,8 @@
 
 #include "Thermostat.h"
 
+#include <iostream>
+
 #include "utils/ArrayUtils.h"
 
 Thermostat::Thermostat()
@@ -36,23 +38,32 @@ void Thermostat::scaleV(ParticleContainer *particles) const
 {
     double temp_c=calculateTemp(*particles);
     double temp_n;
+
     if (delta_temp!=0) //delta_temp=0 -> Thermostat Off, delta_temp=inf-> immediate scaling
     {
         if (temp_c<temp_target-delta_temp)
         {
             temp_n=temp_c+delta_temp;
+
         } else if (temp_c>temp_target+delta_temp)
         {
             temp_n=temp_c-delta_temp;
+
         } else
         {
             temp_n=temp_target;
+
         }
+        std::cout<<temp_n<<std::endl;
         double beta =sqrt(temp_n/temp_c);
-        for (auto particle : *particles)
+
+
+        for (auto particle=particles->begin();particle!=particles->end();++particle)
         {
-            particle.setV(beta*particle.getV());
+            particle->setV(beta*particle->getV());
+
         }
+
     }
 
 }

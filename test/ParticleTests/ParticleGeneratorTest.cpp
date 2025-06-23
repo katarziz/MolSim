@@ -11,7 +11,7 @@ TEST(SimpleCube, ParticleGeneratorTests)
 {
  BasicParticleContainer con= BasicParticleContainer();
  ParticleGenerator::generateCube(con,{0.0,0.0,0.0},
-  {2,2,2},1.0,1.0,{0.0,0.0,0.0},brown);
+  {2,2,2},1.0,1.0,5,1,{0.0,0.0,0.0},brown,0,3);
  EXPECT_TRUE(BasicParticleContainer::cont_sem_eq(con,cube1));
  for (auto cube_it=cube1.begin(); cube_it != cube1.end(); ++cube_it)
  {
@@ -27,9 +27,9 @@ TEST(SimpleCube, ParticleGeneratorTests)
 TEST(TwoCubes, ParticleGeneratorTests)
 { BasicParticleContainer con= BasicParticleContainer();
  ParticleGenerator::generateCube(con,{0.0,0.0,0.0},
- {2,2,2},1.0,1.0,{0.0,0.0,0.0},brown);
+ {2,2,2},1.0,1.0,5,1,{0.0,0.0,0.0},0,3,brown);
  ParticleGenerator::generateCube(con,{0.5,0.5,0.5},
-  {2,2,1},1.0,2.0,{0.0,0.0,0.0},brown);
+  {2,2,1},1.0,2.0,5,1,{0.0,0.0,0.0},0,3,brown);
  EXPECT_TRUE(BasicParticleContainer::cont_sem_eq(con,cube2));
 
 }

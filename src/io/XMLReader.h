@@ -20,7 +20,7 @@ private:
     static void readoutParams(Parameters &param);
     static void readInCubes(Particles &particle_in,ParticleContainer &particles, int dim, double T_init);
     static void readInDiscs(Particles& particle_in, ParticleContainer& particles, int dim, double T_init);
-    static void readInParticles(Particles& particle_in, ParticleContainer& particles, double T_init);
+    static void readInParticles(Particles& particle_in, ParticleContainer& particles, int dim, double T_init);
     static int parse_bound(const std::string& bound);
 };
 #endif //XMLREADER_H

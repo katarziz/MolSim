@@ -95,7 +95,7 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
         readInDiscs(particle_in,*particles,dim,therm.T_init());
 
         //Reading in all Particle discs
-        readInParticles(particle_in,*particles,therm.T_init());
+        readInParticles(particle_in,*particles,dim,therm.T_init());
 
 
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Finished reading in Particles.", iteration);
@@ -165,13 +165,14 @@ void XMLReader::readInDiscs(Particles &particle_in,ParticleContainer &particles,
     }
 
 }
-void XMLReader::readInParticles(Particles &particle_in,ParticleContainer &particles, double T_init)
+void XMLReader::readInParticles(Particles &particle_in,ParticleContainer &particles, int dim, double T_init)
 {
     for (auto & part : particle_in.particle())
     {   double f_i=sqrt(T_init/part.mass());
         std::array<double,3> x={part.position().x_coordinate(),part.position().y_coordinate(),part.position().z_coordinate()};
         std::array<double,3> v={part.velocity().x_velocity(),part.velocity().y_velocity(),part.velocity().z_velocity()};
-        particles.addParticle(Particle(x,v,part.mass(),part.eps(), part.sigma(),part.type(),f_i));
+        v=ParticleGenerator::generateInitVel(v,dim,f_i);
+        particles.addParticle(Particle(x,v,part.mass(),part.eps(), part.sigma(),part.type(),0));
     }
 }
 

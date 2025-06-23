@@ -31,7 +31,7 @@
         <T_init>40</T_init>
         <T_targ>40</T_targ>
         <f_therm>1000</f_therm>
-        <delta_T>inf</delta_T>
+        <delta_T>INF</delta_T>
     </ThermostatParams>
     <Particles>
         <cuboid>

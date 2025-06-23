@@ -105,7 +105,7 @@ TEST(ContSemEquTest,ParticleContainerTests)
 }
 /*!Test the iteration over Particle Pairs and check that forces are updted correctly */
 TEST(ParticlePairIterTest,ParticleContainerTests)
-{   Particle t1=Particle({1.0,1.0,1.0},{0.0,0.0,0.0},1.0,0);
+{   Particle t1=Particle({1.0,1.0,1.0},{0.0,0.0,0.0},1.0,5,1,0);
     BasicParticleContainer con=BasicParticleContainer(coll3);
     con.addParticle(t1);
     for (auto particle1 = con.begin(); particle1 != con.end(); ++particle1)

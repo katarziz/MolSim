@@ -4,26 +4,26 @@
 
 #ifndef LENNARDJONESTEST_H
 #define LENNARDJONESTEST_H
-#include "../src/objects/ParticleContainer.h"
-#include "../src/simulation/LennardJones.h"
+#include "../../src/objects/ParticleContainer.h"
+#include "../../src/simulation/LennardJones.h"
 
 /**
  * Particle p1 to be used in Tests
  */
-inline Particle p1= Particle({0.0,0.0,0.0},{0.0,0.0,0.0},1.0,0);
+inline Particle p1= Particle({0.0,0.0,0.0},{0.0,0.0,0.0},1.0,5,1,0);
 /**
  * Particle p2 to be used in Tests
  */
-inline Particle p2= Particle({1.0,0.0,0.0},{0.0,0.0,0.0},2.0,0);
+inline Particle p2= Particle({1.0,0.0,0.0},{0.0,0.0,0.0},2.0,5,1,0);
 /**
  * Particle p3 to be used in Tests
  */
-inline Particle p3= Particle({0.0,1.0,0.0},{0.0,0.0,0.0},1.5,0);
+inline Particle p3= Particle({0.0,1.0,0.0},{0.0,0.0,0.0},1.5,5,1,0);
 
 /**
  * Particle p4 to be used in Tests
  */
-inline Particle p4= Particle({2.0,1.0,0.0},{0.0,0.0,0.0},1.0,0);
+inline Particle p4= Particle({2.0,1.0,0.0},{0.0,0.0,0.0},1.0,5,1,0);
 
 /**
  * vector of Particles containing p1 and p2 to be used in Tests

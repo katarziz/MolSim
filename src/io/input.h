@@ -625,6 +625,7 @@ class boundary_conditions;
 class cuboid;
 class particle;
 class disc;
+class checkpoint;
 class base_coordinates;
 class number_particles;
 class velocity;
@@ -1169,6 +1170,61 @@ class Parameters: public ::xml_schema::type
   //@}
 
   /**
+   * @name checkpoint_freq
+   *
+   * @brief Accessor and modifier functions for the %checkpoint_freq
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::int_ checkpoint_freq_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< checkpoint_freq_type, char > checkpoint_freq_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const checkpoint_freq_type&
+  checkpoint_freq () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  checkpoint_freq_type&
+  checkpoint_freq ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  checkpoint_freq (const checkpoint_freq_type& x);
+
+  /**
+   * @brief Return the default value for the element.
+   *
+   * @return The element's default value.
+   */
+  static checkpoint_freq_type
+  checkpoint_freq_default_value ();
+
+  //@}
+
+  /**
    * @name box_size
    *
    * @brief Accessor and modifier functions for the %box_size
@@ -1608,6 +1664,7 @@ class Parameters: public ::xml_schema::type
               const t_end_type&,
               const grav_type&,
               const container_type&,
+              const checkpoint_freq_type&,
               const box_size_type&,
               const boundary_conditions_type&,
               const cutoff_type&,
@@ -1628,6 +1685,7 @@ class Parameters: public ::xml_schema::type
               const t_end_type&,
               const grav_type&,
               const container_type&,
+              const checkpoint_freq_type&,
               ::std::unique_ptr< box_size_type >,
               ::std::unique_ptr< boundary_conditions_type >,
               const cutoff_type&,
@@ -1711,6 +1769,7 @@ class Parameters: public ::xml_schema::type
   ::xsd::cxx::tree::one< grav_type > grav_;
   ::xsd::cxx::tree::one< container_type > container_;
   static const container_type container_default_value_;
+  ::xsd::cxx::tree::one< checkpoint_freq_type > checkpoint_freq_;
   ::xsd::cxx::tree::one< box_size_type > box_size_;
   ::xsd::cxx::tree::one< boundary_conditions_type > boundary_conditions_;
   ::xsd::cxx::tree::one< cutoff_type > cutoff_;
@@ -1909,12 +1968,12 @@ class ThermostatParams: public ::xml_schema::type
   /**
    * @brief Element type.
    */
-  typedef ::xml_schema::decimal delta_T_type;
+  typedef ::xml_schema::double_ delta_T_type;
 
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< delta_T_type, char, ::xsd::cxx::tree::schema_type::decimal > delta_T_traits;
+  typedef ::xsd::cxx::tree::traits< delta_T_type, char, ::xsd::cxx::tree::schema_type::double_ > delta_T_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element.
@@ -2246,6 +2305,70 @@ class Particles: public ::xml_schema::type
   //@}
 
   /**
+   * @name checkpoint
+   *
+   * @brief Accessor and modifier functions for the %checkpoint
+   * sequence element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::checkpoint checkpoint_type;
+
+  /**
+   * @brief Element sequence container type.
+   */
+  typedef ::xsd::cxx::tree::sequence< checkpoint_type > checkpoint_sequence;
+
+  /**
+   * @brief Element iterator type.
+   */
+  typedef checkpoint_sequence::iterator checkpoint_iterator;
+
+  /**
+   * @brief Element constant iterator type.
+   */
+  typedef checkpoint_sequence::const_iterator checkpoint_const_iterator;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< checkpoint_type, char > checkpoint_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element
+   * sequence.
+   *
+   * @return A constant reference to the sequence container.
+   */
+  const checkpoint_sequence&
+  checkpoint () const;
+
+  /**
+   * @brief Return a read-write reference to the element sequence.
+   *
+   * @return A reference to the sequence container.
+   */
+  checkpoint_sequence&
+  checkpoint ();
+
+  /**
+   * @brief Copy elements from a given sequence.
+   *
+   * @param s A sequence to copy elements from.
+   *
+   * For each element in @a s this function makes a copy and adds it 
+   * to the sequence. Note that this operation completely changes the 
+   * sequence and all old elements will be lost.
+   */
+  void
+  checkpoint (const checkpoint_sequence& s);
+
+  //@}
+
+  /**
    * @name Constructors
    */
   //@{
@@ -2329,6 +2452,7 @@ class Particles: public ::xml_schema::type
   cuboid_sequence cuboid_;
   particle_sequence particle_;
   disc_sequence disc_;
+  checkpoint_sequence checkpoint_;
 
   //@endcond
 };
@@ -3534,53 +3658,6 @@ class cuboid: public ::xml_schema::type
   //@}
 
   /**
-   * @name brownian_vel
-   *
-   * @brief Accessor and modifier functions for the %brownian_vel
-   * required element.
-   */
-  //@{
-
-  /**
-   * @brief Element type.
-   */
-  typedef ::xml_schema::decimal brownian_vel_type;
-
-  /**
-   * @brief Element traits type.
-   */
-  typedef ::xsd::cxx::tree::traits< brownian_vel_type, char, ::xsd::cxx::tree::schema_type::decimal > brownian_vel_traits;
-
-  /**
-   * @brief Return a read-only (constant) reference to the element.
-   *
-   * @return A constant reference to the element.
-   */
-  const brownian_vel_type&
-  brownian_vel () const;
-
-  /**
-   * @brief Return a read-write reference to the element.
-   *
-   * @return A reference to the element.
-   */
-  brownian_vel_type&
-  brownian_vel ();
-
-  /**
-   * @brief Set the element value.
-   *
-   * @param x A new value to set.
-   *
-   * This function makes a copy of its argument and sets it as
-   * the new value of the element.
-   */
-  void
-  brownian_vel (const brownian_vel_type& x);
-
-  //@}
-
-  /**
    * @name Constructors
    */
   //@{
@@ -3596,8 +3673,7 @@ class cuboid: public ::xml_schema::type
           const mass_type&,
           const type_type&,
           const eps_type&,
-          const sigma_type&,
-          const brownian_vel_type&);
+          const sigma_type&);
 
   /**
    * @brief Create an instance from the ultimate base and
@@ -3614,8 +3690,7 @@ class cuboid: public ::xml_schema::type
           const mass_type&,
           const type_type&,
           const eps_type&,
-          const sigma_type&,
-          const brownian_vel_type&);
+          const sigma_type&);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -3695,7 +3770,6 @@ class cuboid: public ::xml_schema::type
   ::xsd::cxx::tree::one< type_type > type_;
   ::xsd::cxx::tree::one< eps_type > eps_;
   ::xsd::cxx::tree::one< sigma_type > sigma_;
-  ::xsd::cxx::tree::one< brownian_vel_type > brownian_vel_;
 
   //@endcond
 };
@@ -4546,53 +4620,6 @@ class disc: public ::xml_schema::type
   //@}
 
   /**
-   * @name brownian_vel
-   *
-   * @brief Accessor and modifier functions for the %brownian_vel
-   * required element.
-   */
-  //@{
-
-  /**
-   * @brief Element type.
-   */
-  typedef ::xml_schema::decimal brownian_vel_type;
-
-  /**
-   * @brief Element traits type.
-   */
-  typedef ::xsd::cxx::tree::traits< brownian_vel_type, char, ::xsd::cxx::tree::schema_type::decimal > brownian_vel_traits;
-
-  /**
-   * @brief Return a read-only (constant) reference to the element.
-   *
-   * @return A constant reference to the element.
-   */
-  const brownian_vel_type&
-  brownian_vel () const;
-
-  /**
-   * @brief Return a read-write reference to the element.
-   *
-   * @return A reference to the element.
-   */
-  brownian_vel_type&
-  brownian_vel ();
-
-  /**
-   * @brief Set the element value.
-   *
-   * @param x A new value to set.
-   *
-   * This function makes a copy of its argument and sets it as
-   * the new value of the element.
-   */
-  void
-  brownian_vel (const brownian_vel_type& x);
-
-  //@}
-
-  /**
    * @name Constructors
    */
   //@{
@@ -4608,8 +4635,7 @@ class disc: public ::xml_schema::type
         const type_type&,
         const eps_type&,
         const sigma_type&,
-        const spacing_type&,
-        const brownian_vel_type&);
+        const spacing_type&);
 
   /**
    * @brief Create an instance from the ultimate base and
@@ -4626,8 +4652,7 @@ class disc: public ::xml_schema::type
         const type_type&,
         const eps_type&,
         const sigma_type&,
-        const spacing_type&,
-        const brownian_vel_type&);
+        const spacing_type&);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -4707,7 +4732,158 @@ class disc: public ::xml_schema::type
   ::xsd::cxx::tree::one< eps_type > eps_;
   ::xsd::cxx::tree::one< sigma_type > sigma_;
   ::xsd::cxx::tree::one< spacing_type > spacing_;
-  ::xsd::cxx::tree::one< brownian_vel_type > brownian_vel_;
+
+  //@endcond
+};
+
+/**
+ * @brief Class corresponding to the %checkpoint schema type.
+ *
+ * @nosubgrouping
+ */
+class checkpoint: public ::xml_schema::type
+{
+  public:
+  /**
+   * @name checkpoint_file
+   *
+   * @brief Accessor and modifier functions for the %checkpoint_file
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::string checkpoint_file_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< checkpoint_file_type, char > checkpoint_file_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const checkpoint_file_type&
+  checkpoint_file () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  checkpoint_file_type&
+  checkpoint_file ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  checkpoint_file (const checkpoint_file_type& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  checkpoint_file (::std::unique_ptr< checkpoint_file_type > p);
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  checkpoint (const checkpoint_file_type&);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  checkpoint (const ::xercesc::DOMElement& e,
+              ::xml_schema::flags f = 0,
+              ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  checkpoint (const checkpoint& x,
+              ::xml_schema::flags f = 0,
+              ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual checkpoint*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  /**
+   * @brief Copy assignment operator.
+   *
+   * @param x An instance to make a copy of.
+   * @return A reference to itself.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  checkpoint&
+  operator= (const checkpoint& x);
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~checkpoint ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< checkpoint_file_type > checkpoint_file_;
 
   //@endcond
 };
@@ -6120,6 +6296,9 @@ operator<< (::xercesc::DOMElement&, const particle&);
 
 void
 operator<< (::xercesc::DOMElement&, const disc&);
+
+void
+operator<< (::xercesc::DOMElement&, const checkpoint&);
 
 void
 operator<< (::xercesc::DOMElement&, const base_coordinates&);

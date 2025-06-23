@@ -36,20 +36,23 @@ void Thermostat::scaleV(ParticleContainer *particles) const
 {
     double temp_c=calculateTemp(*particles);
     double temp_n;
-    if (temp_c<temp_target-delta_temp)
+    if (delta_temp!=0) //delta_temp=0 -> Thermostat Off, delta_temp=inf-> immediate scaling
     {
-        temp_n=temp_c+delta_temp;
-    } else if (temp_c>temp_target+delta_temp)
-    {
-        temp_n=temp_c-delta_temp;
-    } else
-    {
-        temp_n=temp_target;
-    }
-    double beta =sqrt(temp_n/temp_c);
-    for (auto particle : *particles)
-    {
-        particle.setV(beta*particle.getV());
+        if (temp_c<temp_target-delta_temp)
+        {
+            temp_n=temp_c+delta_temp;
+        } else if (temp_c>temp_target+delta_temp)
+        {
+            temp_n=temp_c-delta_temp;
+        } else
+        {
+            temp_n=temp_target;
+        }
+        double beta =sqrt(temp_n/temp_c);
+        for (auto particle : *particles)
+        {
+            particle.setV(beta*particle.getV());
+        }
     }
 
 }

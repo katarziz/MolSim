@@ -43,7 +43,7 @@ inline std::array<int,6>bounds={0,0,0,0,0,0};
 //!double representing the downward (y-dir) gravitational acceleration
 inline double grav= -9.81;
 //! int giving the frequency of velocity scaling by the thermostat
-inline int64_t f_therm=0;
+inline int f_therm=0;
 //! Thermostat object
 inline Thermostat thermostat=Thermostat();
 
@@ -60,6 +60,12 @@ inline int writer_flag=0;
 *force_flag=1 -> newton
 */
 inline int force_flag=0;
+
+//! int giving the frequency of checkpoint files being created.
+/*!
+* default=0 -> no checkpoints
+*/
+inline int checkpoint_freq = 0;
 
 inline std::string out_name="MD_vtk";
 

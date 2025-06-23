@@ -221,6 +221,30 @@ container_default_value ()
   return container_default_value_;
 }
 
+const Parameters::checkpoint_freq_type& Parameters::
+checkpoint_freq () const
+{
+  return this->checkpoint_freq_.get ();
+}
+
+Parameters::checkpoint_freq_type& Parameters::
+checkpoint_freq ()
+{
+  return this->checkpoint_freq_.get ();
+}
+
+void Parameters::
+checkpoint_freq (const checkpoint_freq_type& x)
+{
+  this->checkpoint_freq_.set (x);
+}
+
+Parameters::checkpoint_freq_type Parameters::
+checkpoint_freq_default_value ()
+{
+  return checkpoint_freq_type (0);
+}
+
 const Parameters::box_size_type& Parameters::
 box_size () const
 {
@@ -563,6 +587,24 @@ void Particles::
 disc (const disc_sequence& s)
 {
   this->disc_ = s;
+}
+
+const Particles::checkpoint_sequence& Particles::
+checkpoint () const
+{
+  return this->checkpoint_;
+}
+
+Particles::checkpoint_sequence& Particles::
+checkpoint ()
+{
+  return this->checkpoint_;
+}
+
+void Particles::
+checkpoint (const checkpoint_sequence& s)
+{
+  this->checkpoint_ = s;
 }
 
 
@@ -997,24 +1039,6 @@ sigma (const sigma_type& x)
   this->sigma_.set (x);
 }
 
-const cuboid::brownian_vel_type& cuboid::
-brownian_vel () const
-{
-  return this->brownian_vel_.get ();
-}
-
-cuboid::brownian_vel_type& cuboid::
-brownian_vel ()
-{
-  return this->brownian_vel_.get ();
-}
-
-void cuboid::
-brownian_vel (const brownian_vel_type& x)
-{
-  this->brownian_vel_.set (x);
-}
-
 
 // particle
 // 
@@ -1311,22 +1335,32 @@ spacing (const spacing_type& x)
   this->spacing_.set (x);
 }
 
-const disc::brownian_vel_type& disc::
-brownian_vel () const
+
+// checkpoint
+// 
+
+const checkpoint::checkpoint_file_type& checkpoint::
+checkpoint_file () const
 {
-  return this->brownian_vel_.get ();
+  return this->checkpoint_file_.get ();
 }
 
-disc::brownian_vel_type& disc::
-brownian_vel ()
+checkpoint::checkpoint_file_type& checkpoint::
+checkpoint_file ()
 {
-  return this->brownian_vel_.get ();
+  return this->checkpoint_file_.get ();
 }
 
-void disc::
-brownian_vel (const brownian_vel_type& x)
+void checkpoint::
+checkpoint_file (const checkpoint_file_type& x)
 {
-  this->brownian_vel_.set (x);
+  this->checkpoint_file_.set (x);
+}
+
+void checkpoint::
+checkpoint_file (::std::unique_ptr< checkpoint_file_type > x)
+{
+  this->checkpoint_file_.set (std::move (x));
 }
 
 
@@ -1739,6 +1773,7 @@ Parameters (const delta_t_type& delta_t,
             const t_end_type& t_end,
             const grav_type& grav,
             const container_type& container,
+            const checkpoint_freq_type& checkpoint_freq,
             const box_size_type& box_size,
             const boundary_conditions_type& boundary_conditions,
             const cutoff_type& cutoff,
@@ -1751,6 +1786,7 @@ Parameters (const delta_t_type& delta_t,
   t_end_ (t_end, this),
   grav_ (grav, this),
   container_ (container, this),
+  checkpoint_freq_ (checkpoint_freq, this),
   box_size_ (box_size, this),
   boundary_conditions_ (boundary_conditions, this),
   cutoff_ (cutoff, this),
@@ -1766,6 +1802,7 @@ Parameters (const delta_t_type& delta_t,
             const t_end_type& t_end,
             const grav_type& grav,
             const container_type& container,
+            const checkpoint_freq_type& checkpoint_freq,
             ::std::unique_ptr< box_size_type > box_size,
             ::std::unique_ptr< boundary_conditions_type > boundary_conditions,
             const cutoff_type& cutoff,
@@ -1778,6 +1815,7 @@ Parameters (const delta_t_type& delta_t,
   t_end_ (t_end, this),
   grav_ (grav, this),
   container_ (container, this),
+  checkpoint_freq_ (checkpoint_freq, this),
   box_size_ (std::move (box_size), this),
   boundary_conditions_ (std::move (boundary_conditions), this),
   cutoff_ (cutoff, this),
@@ -1797,6 +1835,7 @@ Parameters (const Parameters& x,
   t_end_ (x.t_end_, f, this),
   grav_ (x.grav_, f, this),
   container_ (x.container_, f, this),
+  checkpoint_freq_ (x.checkpoint_freq_, f, this),
   box_size_ (x.box_size_, f, this),
   boundary_conditions_ (x.boundary_conditions_, f, this),
   cutoff_ (x.cutoff_, f, this),
@@ -1816,6 +1855,7 @@ Parameters (const ::xercesc::DOMElement& e,
   t_end_ (this),
   grav_ (this),
   container_ (this),
+  checkpoint_freq_ (this),
   box_size_ (this),
   boundary_conditions_ (this),
   cutoff_ (this),
@@ -1884,6 +1924,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!container_.present ())
       {
         this->container_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // checkpoint_freq
+    //
+    if (n.name () == "checkpoint_freq" && n.namespace_ ().empty ())
+    {
+      if (!checkpoint_freq_.present ())
+      {
+        this->checkpoint_freq_.set (checkpoint_freq_traits::create (i, f, this));
         continue;
       }
     }
@@ -2011,6 +2062,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
+  if (!checkpoint_freq_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "checkpoint_freq",
+      "");
+  }
+
   if (!box_size_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
@@ -2078,6 +2136,7 @@ operator= (const Parameters& x)
     this->t_end_ = x.t_end_;
     this->grav_ = x.grav_;
     this->container_ = x.container_;
+    this->checkpoint_freq_ = x.checkpoint_freq_;
     this->box_size_ = x.box_size_;
     this->boundary_conditions_ = x.boundary_conditions_;
     this->cutoff_ = x.cutoff_;
@@ -2261,7 +2320,8 @@ Particles ()
 : ::xml_schema::type (),
   cuboid_ (this),
   particle_ (this),
-  disc_ (this)
+  disc_ (this),
+  checkpoint_ (this)
 {
 }
 
@@ -2272,7 +2332,8 @@ Particles (const Particles& x,
 : ::xml_schema::type (x, f, c),
   cuboid_ (x.cuboid_, f, this),
   particle_ (x.particle_, f, this),
-  disc_ (x.disc_, f, this)
+  disc_ (x.disc_, f, this),
+  checkpoint_ (x.checkpoint_, f, this)
 {
 }
 
@@ -2283,7 +2344,8 @@ Particles (const ::xercesc::DOMElement& e,
 : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
   cuboid_ (this),
   particle_ (this),
-  disc_ (this)
+  disc_ (this),
+  checkpoint_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -2335,6 +2397,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       continue;
     }
 
+    // checkpoint
+    //
+    if (n.name () == "checkpoint" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< checkpoint_type > r (
+        checkpoint_traits::create (i, f, this));
+
+      this->checkpoint_.push_back (::std::move (r));
+      continue;
+    }
+
     break;
   }
 }
@@ -2355,6 +2428,7 @@ operator= (const Particles& x)
     this->cuboid_ = x.cuboid_;
     this->particle_ = x.particle_;
     this->disc_ = x.disc_;
+    this->checkpoint_ = x.checkpoint_;
   }
 
   return *this;
@@ -2751,8 +2825,7 @@ cuboid (const base_coordinates_type& base_coordinates,
         const mass_type& mass,
         const type_type& type,
         const eps_type& eps,
-        const sigma_type& sigma,
-        const brownian_vel_type& brownian_vel)
+        const sigma_type& sigma)
 : ::xml_schema::type (),
   base_coordinates_ (base_coordinates, this),
   number_particles_ (number_particles, this),
@@ -2761,8 +2834,7 @@ cuboid (const base_coordinates_type& base_coordinates,
   mass_ (mass, this),
   type_ (type, this),
   eps_ (eps, this),
-  sigma_ (sigma, this),
-  brownian_vel_ (brownian_vel, this)
+  sigma_ (sigma, this)
 {
 }
 
@@ -2774,8 +2846,7 @@ cuboid (::std::unique_ptr< base_coordinates_type > base_coordinates,
         const mass_type& mass,
         const type_type& type,
         const eps_type& eps,
-        const sigma_type& sigma,
-        const brownian_vel_type& brownian_vel)
+        const sigma_type& sigma)
 : ::xml_schema::type (),
   base_coordinates_ (std::move (base_coordinates), this),
   number_particles_ (std::move (number_particles), this),
@@ -2784,8 +2855,7 @@ cuboid (::std::unique_ptr< base_coordinates_type > base_coordinates,
   mass_ (mass, this),
   type_ (type, this),
   eps_ (eps, this),
-  sigma_ (sigma, this),
-  brownian_vel_ (brownian_vel, this)
+  sigma_ (sigma, this)
 {
 }
 
@@ -2801,8 +2871,7 @@ cuboid (const cuboid& x,
   mass_ (x.mass_, f, this),
   type_ (x.type_, f, this),
   eps_ (x.eps_, f, this),
-  sigma_ (x.sigma_, f, this),
-  brownian_vel_ (x.brownian_vel_, f, this)
+  sigma_ (x.sigma_, f, this)
 {
 }
 
@@ -2818,8 +2887,7 @@ cuboid (const ::xercesc::DOMElement& e,
   mass_ (this),
   type_ (this),
   eps_ (this),
-  sigma_ (this),
-  brownian_vel_ (this)
+  sigma_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -2935,17 +3003,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
-    // brownian_vel
-    //
-    if (n.name () == "brownian_vel" && n.namespace_ ().empty ())
-    {
-      if (!brownian_vel_.present ())
-      {
-        this->brownian_vel_.set (brownian_vel_traits::create (i, f, this));
-        continue;
-      }
-    }
-
     break;
   }
 
@@ -3004,13 +3061,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "sigma",
       "");
   }
-
-  if (!brownian_vel_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "brownian_vel",
-      "");
-  }
 }
 
 cuboid* cuboid::
@@ -3034,7 +3084,6 @@ operator= (const cuboid& x)
     this->type_ = x.type_;
     this->eps_ = x.eps_;
     this->sigma_ = x.sigma_;
-    this->brownian_vel_ = x.brownian_vel_;
   }
 
   return *this;
@@ -3283,8 +3332,7 @@ disc (const position_type& position,
       const type_type& type,
       const eps_type& eps,
       const sigma_type& sigma,
-      const spacing_type& spacing,
-      const brownian_vel_type& brownian_vel)
+      const spacing_type& spacing)
 : ::xml_schema::type (),
   position_ (position, this),
   velocity_ (velocity, this),
@@ -3293,8 +3341,7 @@ disc (const position_type& position,
   type_ (type, this),
   eps_ (eps, this),
   sigma_ (sigma, this),
-  spacing_ (spacing, this),
-  brownian_vel_ (brownian_vel, this)
+  spacing_ (spacing, this)
 {
 }
 
@@ -3306,8 +3353,7 @@ disc (::std::unique_ptr< position_type > position,
       const type_type& type,
       const eps_type& eps,
       const sigma_type& sigma,
-      const spacing_type& spacing,
-      const brownian_vel_type& brownian_vel)
+      const spacing_type& spacing)
 : ::xml_schema::type (),
   position_ (std::move (position), this),
   velocity_ (std::move (velocity), this),
@@ -3316,8 +3362,7 @@ disc (::std::unique_ptr< position_type > position,
   type_ (type, this),
   eps_ (eps, this),
   sigma_ (sigma, this),
-  spacing_ (spacing, this),
-  brownian_vel_ (brownian_vel, this)
+  spacing_ (spacing, this)
 {
 }
 
@@ -3333,8 +3378,7 @@ disc (const disc& x,
   type_ (x.type_, f, this),
   eps_ (x.eps_, f, this),
   sigma_ (x.sigma_, f, this),
-  spacing_ (x.spacing_, f, this),
-  brownian_vel_ (x.brownian_vel_, f, this)
+  spacing_ (x.spacing_, f, this)
 {
 }
 
@@ -3350,8 +3394,7 @@ disc (const ::xercesc::DOMElement& e,
   type_ (this),
   eps_ (this),
   sigma_ (this),
-  spacing_ (this),
-  brownian_vel_ (this)
+  spacing_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -3464,17 +3507,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
-    // brownian_vel
-    //
-    if (n.name () == "brownian_vel" && n.namespace_ ().empty ())
-    {
-      if (!brownian_vel_.present ())
-      {
-        this->brownian_vel_.set (brownian_vel_traits::create (i, f, this));
-        continue;
-      }
-    }
-
     break;
   }
 
@@ -3533,13 +3565,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "spacing",
       "");
   }
-
-  if (!brownian_vel_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "brownian_vel",
-      "");
-  }
 }
 
 disc* disc::
@@ -3563,7 +3588,6 @@ operator= (const disc& x)
     this->eps_ = x.eps_;
     this->sigma_ = x.sigma_;
     this->spacing_ = x.spacing_;
-    this->brownian_vel_ = x.brownian_vel_;
   }
 
   return *this;
@@ -3571,6 +3595,98 @@ operator= (const disc& x)
 
 disc::
 ~disc ()
+{
+}
+
+// checkpoint
+//
+
+checkpoint::
+checkpoint (const checkpoint_file_type& checkpoint_file)
+: ::xml_schema::type (),
+  checkpoint_file_ (checkpoint_file, this)
+{
+}
+
+checkpoint::
+checkpoint (const checkpoint& x,
+            ::xml_schema::flags f,
+            ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  checkpoint_file_ (x.checkpoint_file_, f, this)
+{
+}
+
+checkpoint::
+checkpoint (const ::xercesc::DOMElement& e,
+            ::xml_schema::flags f,
+            ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  checkpoint_file_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
+    this->parse (p, f);
+  }
+}
+
+void checkpoint::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // checkpoint_file
+    //
+    if (n.name () == "checkpoint_file" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< checkpoint_file_type > r (
+        checkpoint_file_traits::create (i, f, this));
+
+      if (!checkpoint_file_.present ())
+      {
+        this->checkpoint_file_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!checkpoint_file_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "checkpoint_file",
+      "");
+  }
+}
+
+checkpoint* checkpoint::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class checkpoint (*this, f, c);
+}
+
+checkpoint& checkpoint::
+operator= (const checkpoint& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->checkpoint_file_ = x.checkpoint_file_;
+  }
+
+  return *this;
+}
+
+checkpoint::
+~checkpoint ()
 {
 }
 
@@ -4624,6 +4740,17 @@ operator<< (::xercesc::DOMElement& e, const Parameters& i)
     s << i.container ();
   }
 
+  // checkpoint_freq
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "checkpoint_freq",
+        e));
+
+    s << i.checkpoint_freq ();
+  }
+
   // box_size
   //
   {
@@ -4748,7 +4875,7 @@ operator<< (::xercesc::DOMElement& e, const ThermostatParams& i)
         "delta_T",
         e));
 
-    s << ::xml_schema::as_decimal(i.delta_T ());
+    s << ::xml_schema::as_double(i.delta_T ());
   }
 }
 
@@ -4794,6 +4921,20 @@ operator<< (::xercesc::DOMElement& e, const Particles& i)
     ::xercesc::DOMElement& s (
       ::xsd::cxx::xml::dom::create_element (
         "disc",
+        e));
+
+    s << *b;
+  }
+
+  // checkpoint
+  //
+  for (Particles::checkpoint_const_iterator
+       b (i.checkpoint ().begin ()), n (i.checkpoint ().end ());
+       b != n; ++b)
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "checkpoint",
         e));
 
     s << *b;
@@ -5003,17 +5144,6 @@ operator<< (::xercesc::DOMElement& e, const cuboid& i)
 
     s << ::xml_schema::as_decimal(i.sigma ());
   }
-
-  // brownian_vel
-  //
-  {
-    ::xercesc::DOMElement& s (
-      ::xsd::cxx::xml::dom::create_element (
-        "brownian_vel",
-        e));
-
-    s << ::xml_schema::as_decimal(i.brownian_vel ());
-  }
 }
 
 void
@@ -5180,16 +5310,22 @@ operator<< (::xercesc::DOMElement& e, const disc& i)
 
     s << ::xml_schema::as_decimal(i.spacing ());
   }
+}
 
-  // brownian_vel
+void
+operator<< (::xercesc::DOMElement& e, const checkpoint& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // checkpoint_file
   //
   {
     ::xercesc::DOMElement& s (
       ::xsd::cxx::xml::dom::create_element (
-        "brownian_vel",
+        "checkpoint_file",
         e));
 
-    s << ::xml_schema::as_decimal(i.brownian_vel ());
+    s << i.checkpoint_file ();
   }
 }
 

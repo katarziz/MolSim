@@ -10,6 +10,7 @@
                             <xs:element name="t_end" type="xs:decimal" default="5.0"/>
                             <xs:element name="grav" type="xs:decimal" default="-9.81"/>
                             <xs:element name="container" type="xs:string" default="LinkedCell"/>
+                            <xs:element name="checkpoint_freq" type="xs:int" default="0"/>
                             <xs:element name="box_size">
                                 <xs:complexType>
                                     <xs:sequence>
@@ -45,7 +46,7 @@
                             <xs:element name="T_init" type="xs:decimal" default="0.0"/>
                             <xs:element name="T_targ" type="xs:decimal" default="-1.0"/>
                             <xs:element name="f_therm" type="xs:integer" default="5"/>
-                            <xs:element name="delta_T" type="xs:decimal" default="0.0"/>
+                            <xs:element name="delta_T" type="xs:double" default="0.0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
@@ -146,6 +147,13 @@
                                         <xs:element name="eps" type="xs:decimal"/>
                                         <xs:element name="sigma" type="xs:decimal"/>
                                         <xs:element name="spacing" type="xs:decimal"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="checkpoint" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="checkpoint_file" type="xs:string"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>

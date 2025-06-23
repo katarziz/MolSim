@@ -8,6 +8,8 @@
 #include "../objects/ParticleGenerator.h"
 #include "../MolSim.h"
 #include <iostream>
+
+#include "FileReader.h"
 #include "input.h"
 using namespace std;
 
@@ -28,8 +30,8 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
 
         //Log basic simulation parameters
         SPDLOG_LOGGER_INFO(spdlog::get("default"),
-            "Simulation Parameters:\nOutput Writer: {}     Output Name: {}    Output Frequency: {} \n Container Type: {}    Delta t = {}    End t = {}    Force: {}   Gravitation: {}"
-            ,param.writer().c_str(), out_name,out_freq,param.container().c_str(), delta_t, end_time,param.force().c_str(),param.grav());
+            "Simulation Parameters:\nOutput Writer: {}     Output Name: {}    Output Frequency: {}   Checkpoint Frequency: {} \n Container Type: {}    Delta t = {}    End t = {}    Force: {}   Gravitation: {}"
+            ,param.writer().c_str(), out_name,out_freq,checkpoint_freq,param.container().c_str(), delta_t, end_time,param.force().c_str(),param.grav());
 
         //Set up initialization of Particle Container depending on param container
         //! int giving the number of dimensions based on the domain /box size
@@ -42,10 +44,8 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
         f_therm=therm.f_therm();
         thermostat.setParams(therm.T_targ(), therm.delta_T(), dim);
 
-        //TODO: Check if this works!!
         if (strcmp(param.container().c_str(), "LinkedCell")==0)
-        {
-            //! double representing the cutoff radius. Default:3.0
+        {  //! double representing the cutoff radius. Default:3.0
             double r_c=param.cutoff();
 
             //! array of three doubles representing the cell size. Default:r_c x r_c x 1
@@ -71,7 +71,7 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
             {
                 bounds=boundaries;
             }
-
+            //particles = new LinkedCellParticleContainer(box_dim, cell_num, r_c, bounds);
 
             //Log Linked Cell Container Parameters
             SPDLOG_LOGGER_INFO(spdlog::get("default"),"Cutoff Radius = {}    Box Dimensions = ({}, {}, {})\nBoundary Conditions:\nTop: {}    Right: {}    Bottom: {}    Left:{}"
@@ -79,6 +79,13 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
                     param.boundary_conditions().right_bound().c_str(),param.boundary_conditions().bottom_bound().c_str(),
                     param.boundary_conditions().right_bound().c_str());
 
+        } else
+        {
+            //particles = new BasicParticleContainer();
+        }
+        if (particle_in.checkpoint().begin()!=particle_in.checkpoint().end())
+        {
+            FileReader::readFile(*particles,particle_in.checkpoint().begin()->checkpoint_file().data());
         }
 
         //Reading in all Particle Cubes
@@ -89,6 +96,7 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
 
         //Reading in all Particle discs
         readInParticles(particle_in,*particles,therm.T_init());
+
 
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Finished reading in Particles.", iteration);
     }
@@ -122,6 +130,7 @@ void XMLReader::readoutParams(Parameters& param)
     end_time=param.t_end();
     out_name=param.output_name().c_str();
     out_freq=param.output_frequency();
+    checkpoint_freq=param.checkpoint_freq();
 
     if (strcmp(param.writer().c_str(), "xyz")==0)
     {   writer_flag=1;

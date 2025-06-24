@@ -30,8 +30,11 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
 
         //Log basic simulation parameters
         SPDLOG_LOGGER_INFO(spdlog::get("default"),
-            "Simulation Parameters:\nOutput Writer: {}     Output Name: {}    Output Frequency: {}   Checkpoint Frequency: {} \n Container Type: {}    Delta t = {}    End t = {}    Force: {}   Gravitation: {}"
-            ,param.writer().c_str(), out_name, out_freq,checkpoint_freq, param.container().c_str(), delta_t, end_time,param.force().c_str(),param.grav());
+            "Simulation Parameters:\n\\"
+            "Output Writer: {}\tOutput Name: {}\tOutput Frequency: {}\tCheckpoint Frequency: {}\n\\"
+            "Container Type: {}\tDelta t = {}\tEnd t = {}\tForce: {}\tGravitation: {}",
+            param.writer().c_str(), out_name, out_freq, checkpoint_freq, param.container().c_str(), delta_t, end_time,
+            param.force().c_str(), param.grav());
 
         //Set up initialization of Particle Container depending on param container
         //! int giving the number of dimensions based on the domain /box size
@@ -75,10 +78,13 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
             //particles = new LinkedCellParticleContainer(box_dim, cell_num, r_c, bounds);
 
             //Log Linked Cell Container Parameters
-            SPDLOG_LOGGER_INFO(spdlog::get("default"),"Cutoff Radius = {}    Box Dimensions = ({}, {}, {})\nBoundary Conditions:\nTop: {}    Right: {}    Bottom: {}    Left:{}"
-                    ,param.cutoff(), box_dim[0],box_dim[1],box_dim[2],param.boundary_conditions().top_bound().c_str(),
-                    param.boundary_conditions().right_bound().c_str(),param.boundary_conditions().bottom_bound().c_str(),
-                    param.boundary_conditions().right_bound().c_str());
+            SPDLOG_LOGGER_INFO(spdlog::get("default"),
+                "Cutoff Radius = {}\tDomain Dimensions = ({}, {}, {})\n\\"
+                "Boundary Conditions: (Left: {}, Bottom: {}, Back: {}, Right: {}, Top: {}, Front: {})",
+                param.cutoff(), box_dim[0], box_dim[1], box_dim[2],
+                param.boundary_conditions().left_bound().c_str(), param.boundary_conditions().bottom_bound().c_str(),
+                param.boundary_conditions().back_bound().c_str(), param.boundary_conditions().right_bound().c_str(),
+                param.boundary_conditions().top_bound().c_str(), param.boundary_conditions().front_bound().c_str());
 
         } else
         {
@@ -110,14 +116,14 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
 
 bool XMLReader::check_bounds(const std::array<int, 6>& bounds)
 {
-    if ((bounds[0]==2||bounds[2]==2)&&bounds[0]!=bounds[2])
+    if ((bounds[0]==2||bounds[3]==2)&&bounds[0]!=bounds[3])
     {
         return false;
     }
-    else if ((bounds[1]==2||bounds[3]==2)&&bounds[1]!=bounds[3])
+    else if ((bounds[1]==2||bounds[4]==2)&&bounds[1]!=bounds[4])
     {
         return false;
-    } else if ((bounds[4]==2||bounds[5]==2)&&bounds[4]!=bounds[5])
+    } else if ((bounds[2]==2||bounds[5]==2)&&bounds[2]!=bounds[5])
     {
         return false;
     }

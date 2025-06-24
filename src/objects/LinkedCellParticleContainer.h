@@ -133,4 +133,6 @@ public:
     void outflow(Particle &p);
 
     void reflect(Particle &p, int boundary);
+
+    void periodic(Particle &p, int boundary);
 };

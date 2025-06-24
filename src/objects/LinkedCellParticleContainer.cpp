@@ -210,15 +210,31 @@ void LinkedCellParticleContainer::updateCells() {
             indices[j] = std::floor(p.getX()[j] / (box_size[j] / cell_number[j]));
             // particles outside the domain are deactivated
             if (indices[j] < 0 || indices[j] >= cell_number[j]) {
-                SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} moved to halo.",
-                                   p.getX()[0], p.getX()[1], p.getX()[2]);
-                halo.push_back(i);
-                p.setState(1);
-                break;
+                if (indices[j] < 0 && boundary_conditions[j] == 2) {
+                    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
+                                       p.getX()[0], p.getX()[1], p.getX()[2]);
+                    indices[j] += cell_number[j];
+                    auto p_x = p.getX();
+                    p_x[j] += box_size[j];
+                    p.setX(p_x);
+                } else if (indices[j] >= cell_number[j] && boundary_conditions[j + 3] == 2) {
+                    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
+                                       p.getX()[0], p.getX()[1], p.getX()[2]);
+                    indices[j] -= cell_number[j];
+                    auto p_x = p.getX();
+                    p_x[j] -= box_size[j];
+                    p.setX(p_x);
+                } else {
+                    SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} moved to halo.",
+                                       p.getX()[0], p.getX()[1], p.getX()[2]);
+                    halo.push_back(i);
+                    p.setState(1);
+                    break;
+                }
             }
             // boundary conditions are applied to particles in the boundary
             if (indices[j] == 0 || indices[j] == cell_number[j] - 1) {
-                // TODO this clearly only works for 2d simulations. 3d simulations need more boundaries.
+                // a simulation is considered 2d, if the number of cells in the third dimension is 1
                 if (j == 2 && cell_number[2] == 1) {
                     continue;
                 }
@@ -231,6 +247,9 @@ void LinkedCellParticleContainer::updateCells() {
                     } else if (boundary_conditions[j] == 0) {
                         // outflow Particle p at boundary j
                         outflow(p);
+                    } else if (boundary_conditions[j] == 2) {
+                        // periodic Particle p at boundary j
+                        periodic(p, j);
                     }
                 } else if (indices[j] == cell_number[j] - 1) {
                     if (boundary_conditions[j + 3] == 1) {
@@ -239,6 +258,9 @@ void LinkedCellParticleContainer::updateCells() {
                     } else if (boundary_conditions[j + 3] == 0) {
                         // outflow Particle p at boundary j + 3
                         outflow(p);
+                    } else if (boundary_conditions[j + 3] == 2) {
+                        // periodic Particle p at boundary j + 3
+                        periodic(p, j + 3);
                     }
                 }
             }
@@ -305,4 +327,42 @@ void LinkedCellParticleContainer::reflect(Particle &p, const int boundary) {
     }
     auto counter_particle = Particle(counter_particle_X, p.getV(), p.getM(),p.getEps(),p.getSig(), p.getType());
     calculateF_LJ(p, counter_particle, cutoff);
+}
+
+void LinkedCellParticleContainer::periodic(Particle &p, const int boundary) {
+    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced periodic.",
+    p.getX()[0], p.getX()[1], p.getX()[2]);
+    std::array<double, 3> counter_particle_X = p.getX();
+    if (boundary == 0) { // left
+        counter_particle_X[0] = box_size[0] + counter_particle_X[0];
+    } else if (boundary == 1) { // bottom
+        counter_particle_X[1] = box_size[1] + counter_particle_X[1];
+    } else if (boundary == 2) { // bottom
+        counter_particle_X[2] = box_size[2] + counter_particle_X[2];
+    } else if (boundary == 3) { // right
+        counter_particle_X[0] = counter_particle_X[0] - box_size[0];
+    } else if (boundary == 4) { // top
+        counter_particle_X[1] = counter_particle_X[1] - box_size[1];
+    } else if (boundary == 5) { // top
+        counter_particle_X[2] = counter_particle_X[2] - box_size[2];
+    }
+    auto counter_particle = Particle(counter_particle_X, p.getV(), p.getM(),p.getEps(),p.getSig(), p.getType());
+    std::array<int, 3> indices = {0, 0, 0};
+    for (int j = 0; j < 3; ++j) {
+        indices[j] = std::floor(counter_particle.getX()[j] / (box_size[j] / cell_number[j]));
+    }
+    for (int i_x = indices[0] - 1; i_x < indices[0] + 2; ++i_x) {
+        for (int i_y = indices[1] - 1; i_y < indices[1] + 2; ++i_y) {
+            for (int i_z = indices[2] - 1; i_z < indices[2] + 2; ++i_z) {
+                if (i_x >= 0 && i_x < cell_number[0] &&
+                    i_y >= 0 && i_y < cell_number[1] &&
+                    i_z >= 0 && i_z < cell_number[2]) {
+                    auto &cell = cells[i_x + i_y * cell_number[0] + i_z * cell_number[0] * cell_number[1]];
+                    for (auto j = cell.begin(); j != cell.end(); ++j) {
+                        calculateF_LJ(counter_particle, particles.at(*j), cutoff);
+                    }
+                }
+            }
+        }
+    }
 }

@@ -86,7 +86,8 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
         }
         if (particle_in.checkpoint().begin()!=particle_in.checkpoint().end())
         {
-            FileReader::readFile(*particles,particle_in.checkpoint().begin()->checkpoint_file().data());
+            FileReader::readCheckpoint(start_time, *particles, particle_in.checkpoint().begin()->checkpoint_file().data());
+            SPDLOG_LOGGER_INFO(spdlog::get("default"),"Checkpoint file loaded. continuing at time {}",start_time);
         }
 
         //Reading in all Particle Cubes

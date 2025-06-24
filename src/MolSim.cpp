@@ -190,16 +190,15 @@ int main(int argc, char *argsv[]) {
       std::cout << "\rProgress: " << std::ceil(1000*current_time/end_time)/10 << "%  " << std::flush;
     }
     if (checkpoint_freq!=0&&iteration % checkpoint_freq == 0) {
-      //writeCheckpoint(particles,current_time);
-
+      FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
     }
 
     current_time += delta_t;
   }
-  //! Write Final Checkpoint
-  //writeCheckpoint(particles,current_time);
   std::cout << std::endl;
-  //delete particles;
+  //! Write Final Checkpoint
+  FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
+  delete particles;
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
   SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation finished. Terminating...");
   return 0;

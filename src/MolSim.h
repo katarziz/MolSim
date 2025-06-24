@@ -24,7 +24,7 @@ void calculateV();
 */
 void plotParticles(int iteration);
 //! constant double representing the start time of the simulation.
-constexpr double start_time =0;
+inline double start_time =0;
 //! double representing the end time of the simulation. Default:5
 inline double end_time= 5;
 //! double representing the timestep of the simulation. Default:0.0002
@@ -66,6 +66,8 @@ inline int force_flag=0;
 * default=0 -> no checkpoints
 */
 inline int checkpoint_freq = 0;
+
+inline std::string checkpoint_name="checkpoint.bin";
 
 inline std::string out_name="MD_vtk";
 

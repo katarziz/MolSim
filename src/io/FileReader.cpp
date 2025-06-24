@@ -99,3 +99,31 @@ void FileReader::readFile(ParticleContainer &particles, char *filename) {
     exit(-1);
   }
 }
+
+void FileReader::readCheckpoint(double &time, ParticleContainer &particles, char *filename) {
+  std::ifstream input_file(filename, std::ios::binary);
+  if (!input_file.is_open()) {
+    SPDLOG_LOGGER_ERROR(spdlog::get("default"),"could not open file {}.", filename);
+    exit(-1);
+  }
+  std::vector<Particle> particles_vector;
+  input_file.read(reinterpret_cast<char *>(&time), sizeof(double));
+  size_t size;
+  input_file.read(reinterpret_cast<char *>(&size), sizeof(size));
+  particles_vector.resize(size);
+  input_file.read(reinterpret_cast<char *>(particles_vector.data()), size * sizeof(Particle));
+  particles.addParticles(particles_vector);
+}
+
+void FileReader::writeCheckpoint(double &time, ParticleContainer &particles, char *filename) {
+  std::ofstream output_file(filename, std::ios::binary);
+  if (!output_file.is_open()) {
+    SPDLOG_LOGGER_ERROR(spdlog::get("default"),"could not open file {}.", filename);
+    exit(-1);
+  }
+  output_file.write(reinterpret_cast<const char*>(&time), sizeof(double));
+  size_t size = particles.getParticles().size();
+  output_file.write(reinterpret_cast<const char*>(&size), sizeof(size));
+  output_file.write(reinterpret_cast<const char*>(particles.getParticles().data()), size * sizeof(Particle));
+}
+

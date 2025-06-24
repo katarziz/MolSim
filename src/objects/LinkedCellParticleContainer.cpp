@@ -281,13 +281,13 @@ void LinkedCellParticleContainer::deleteHalo() {
 }
 
 void LinkedCellParticleContainer::outflow(Particle &p) {
-    SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} experienced outflow.",
+    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced outflow.",
                        p.getX()[0], p.getX()[1], p.getX()[2]);
     p.setState(1);
 }
 
 void LinkedCellParticleContainer::reflect(Particle &p, const int boundary) {
-    SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} experienced reflect.",
+    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced reflect.",
                        p.getX()[0], p.getX()[1], p.getX()[2]);
     std::array<double, 3> counter_particle_X = p.getX();
     if (boundary == 0) { // left

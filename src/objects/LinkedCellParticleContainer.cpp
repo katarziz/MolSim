@@ -219,7 +219,7 @@ void LinkedCellParticleContainer::updateCells() {
             // boundary conditions are applied to particles in the boundary
             if (indices[j] == 0 || indices[j] == cell_number[j] - 1) {
                 // TODO this clearly only works for 2d simulations. 3d simulations need more boundaries.
-                if (j == 2) {
+                if (j == 2 && cell_number[2] == 1) {
                     continue;
                 }
                 SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} detected in boundary.",
@@ -233,11 +233,11 @@ void LinkedCellParticleContainer::updateCells() {
                         outflow(p);
                     }
                 } else if (indices[j] == cell_number[j] - 1) {
-                    if (boundary_conditions[j + 2] == 1) {
-                        // reflect Particle p at boundary j + 2
-                        reflect(p, j + 2);
-                    } else if (boundary_conditions[j + 2] == 0) {
-                        // outflow Particle p at boundary j + 2
+                    if (boundary_conditions[j + 3] == 1) {
+                        // reflect Particle p at boundary j + 3
+                        reflect(p, j + 3);
+                    } else if (boundary_conditions[j + 3] == 0) {
+                        // outflow Particle p at boundary j + 3
                         outflow(p);
                     }
                 }
@@ -294,10 +294,14 @@ void LinkedCellParticleContainer::reflect(Particle &p, const int boundary) {
         counter_particle_X[0] = 0 - counter_particle_X[0];
     } else if (boundary == 1) { // bottom
         counter_particle_X[1] = 0 - counter_particle_X[1];
-    } else if (boundary == 2) { // right
+    } else if (boundary == 2) { // bottom
+        counter_particle_X[2] = 0 - counter_particle_X[2];
+    } else if (boundary == 3) { // right
         counter_particle_X[0] = box_size[0] + (box_size[0] - counter_particle_X[0]);
-    } else if (boundary == 3) { // top
+    } else if (boundary == 4) { // top
         counter_particle_X[1] = box_size[1] + (box_size[1] - counter_particle_X[1]);
+    } else if (boundary == 5) { // top
+        counter_particle_X[2] = box_size[2] + (box_size[2] - counter_particle_X[2]);
     }
     auto counter_particle = Particle(counter_particle_X, p.getV(), p.getM(),p.getEps(),p.getSig(), p.getType());
     calculateF_LJ(p, counter_particle, cutoff);

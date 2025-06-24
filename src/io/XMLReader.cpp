@@ -53,17 +53,17 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
             box_dim={param.box_size().x_size(),param.box_size().y_size(),param.box_size().z_size()};
             //! array of three ints representing the number of cells. Default:1x1x1
             cell_num={static_cast<int64_t>(std::floor(box_dim[0] / r_c)),static_cast<int64_t>(ceil(box_dim[1]/r_c)),static_cast<int64_t>(ceil(box_dim[2]/r_c))};
-            //! array of four ints representing the boundary conditions: top,right,bottom, left
+            //! array of six ints representing the boundary conditions: left, bottom, back, right, top, front
             // outflow:0 ("out"), reflecting:1 ("ref"), periodic_2 ("per")
             //Default:outflow
 
             std::array<int,6>boundaries={
-                parse_bound(param.boundary_conditions().top_bound().c_str()),
-                parse_bound(param.boundary_conditions().right_bound().c_str()),
-                parse_bound(param.boundary_conditions().bottom_bound().c_str()),
                 parse_bound(param.boundary_conditions().left_bound().c_str()),
-                parse_bound(param.boundary_conditions().front_bound().c_str()),
+                parse_bound(param.boundary_conditions().bottom_bound().c_str()),
                 parse_bound(param.boundary_conditions().back_bound().c_str()),
+                parse_bound(param.boundary_conditions().right_bound().c_str()),
+                parse_bound(param.boundary_conditions().top_bound().c_str()),
+                parse_bound(param.boundary_conditions().front_bound().c_str()),
                 };
             if (!check_bounds(boundaries))
             {

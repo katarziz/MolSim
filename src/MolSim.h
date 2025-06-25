@@ -24,7 +24,7 @@ void calculateV();
 */
 void plotParticles(int iteration);
 //! constant double representing the start time of the simulation.
-constexpr double start_time =0;
+inline double start_time =0;
 //! double representing the end time of the simulation. Default:5
 inline double end_time= 5;
 //! double representing the timestep of the simulation. Default:0.0002
@@ -35,7 +35,7 @@ inline double r_c= 3.0;
 inline std::array<double,3>box_dim={r_c,r_c,1.0};
 //! array of three ints representing the number of cells. Default:1x1x1
 inline std::array<int64_t,3>cell_num={1,1,1};
-//! array of four ints representing the boundary conditions: top,right,bottom, left
+//! array of six ints representing the boundary conditions: left, bottom, back, right, top, front
 // outflow:0 ("out"), reflecting:1 ("ref")
 // Default:outflow x outflow x outflow x outflow
 inline std::array<int,6>bounds={0,0,0,0,0,0};
@@ -66,6 +66,8 @@ inline int force_flag=0;
 * default=0 -> no checkpoints
 */
 inline int checkpoint_freq = 0;
+
+inline std::string checkpoint_name="checkpoint.bin";
 
 inline std::string out_name="MD_vtk";
 

@@ -170,6 +170,11 @@ int main(int argc, char *argsv[]) {
     lcparticles->updateCells();
   }
 
+  using clock = std::chrono::steady_clock;
+  auto start_time_seconds = clock::now();
+  auto last_update_seconds = clock::now();
+  int64_t current_updates_per_second = 0;
+
   // for this loop, we assume: current x, current f and current v are known
   while (current_time < end_time) {
     // calculate new x
@@ -186,21 +191,28 @@ int main(int argc, char *argsv[]) {
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
     iteration++;
     if (iteration % out_freq == 0) {
+      current_updates_per_second = out_freq * 1000000
+        / std::chrono::duration_cast<std::chrono::microseconds>(clock::now() - last_update_seconds).count();
+      last_update_seconds = clock::now();
       plotParticles(iteration);
-      std::cout << "\rProgress: " << std::ceil(1000*current_time/end_time)/10 << "%  " << std::flush;
+      std::cout << "\rProgress: " << std::ceil(1000*current_time/end_time)/10 << "%\t"
+                                         "Current updates per second: " << current_updates_per_second << "MUPS/s    " << std::flush;
     }
     if (checkpoint_freq!=0&&iteration % checkpoint_freq == 0) {
-      //writeCheckpoint(particles,current_time);
-
+      FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
     }
 
     current_time += delta_t;
   }
-  //! Write Final Checkpoint
-  //writeCheckpoint(particles,current_time);
+  auto end_time_seconds = clock::now();
+  auto time_taken = std::chrono::duration_cast<std::chrono::microseconds>(end_time_seconds - start_time_seconds);
   std::cout << std::endl;
-  //delete particles;
+  //! Write Final Checkpoint
+  FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
+  delete particles;
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
+  SPDLOG_LOGGER_INFO(spdlog::get("default"), "Time taken: {}s\tAverage updates per second: {}MUPS/s",
+    std::chrono::duration_cast<std::chrono::seconds>(time_taken).count(), iteration * 1000000 / time_taken.count());
   SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation finished. Terminating...");
   return 0;
 }

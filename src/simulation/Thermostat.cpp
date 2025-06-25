@@ -54,7 +54,6 @@ void Thermostat::scaleV(ParticleContainer *particles) const
             temp_n=temp_target;
 
         }
-        std::cout<<temp_n<<std::endl;
         double beta =sqrt(temp_n/temp_c);
 
 

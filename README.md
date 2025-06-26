@@ -62,6 +62,7 @@ xsi:noNamespaceSchemaLocation="input.xsd">
         <delta_t/>
         <t_end/>
         <grav/>   
+        <container/>
         <checkpoint_freq/>
         <box_size>
             <x-size/>

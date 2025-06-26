@@ -9,6 +9,7 @@
                             <xs:element name="delta_t" default="0.0002" type="xs:decimal"  />
                             <xs:element name="t_end" type="xs:decimal" default="5.0"/>
                             <xs:element name="grav" type="xs:decimal" default="-9.81"/>
+                            <xs:element name="container" type="xs:string" default="LinkedCell"/>
                             <xs:element name="checkpoint_freq" type="xs:int" default="0"/>
                             <xs:element name="box_size">
                                 <xs:complexType>

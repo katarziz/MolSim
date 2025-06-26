@@ -143,7 +143,9 @@ int main(int argc, char *argsv[]) {
     std::cout << "-f or --force FORCE : pass a string representation of the desired force calculation. Currently 'newton' and 'lennard-jones' are supported." << std::endl;
     exit(0);
   }
-  particles = new LinkedCellParticleContainer(box_dim, cell_num, r_c, bounds);
+
+  char particles_buffer[std::max(sizeof(LinkedCellParticleContainer),sizeof(BasicParticleContainer))];
+  particles = reinterpret_cast<ParticleContainer *>(particles_buffer);
   XMLReader::readFile(particles, input_file);
   if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
     lcparticles->setParameters(box_dim,cell_num,r_c,bounds);
@@ -208,7 +210,7 @@ int main(int argc, char *argsv[]) {
   std::cout << std::endl;
   //! Write Final Checkpoint
   FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
-  delete particles;
+  particles->~ParticleContainer();
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Time taken: {}s\tAverage updates per second: {}MUPS/s",
     std::chrono::duration_cast<std::chrono::seconds>(time_taken).count(), iteration * 1000000 / time_taken.count());

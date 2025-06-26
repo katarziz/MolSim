@@ -8,6 +8,7 @@
 #include "../objects/ParticleGenerator.h"
 #include "../MolSim.h"
 #include <iostream>
+#include <new>
 
 #include "FileReader.h"
 #include "input.h"
@@ -30,11 +31,11 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
 
         //Log basic simulation parameters
         SPDLOG_LOGGER_INFO(spdlog::get("default"),
-            "Simulation Parameters:\n\\"
-            "Output Writer: {}\tOutput Name: {}\tOutput Frequency: {}\tCheckpoint Frequency: {}\n\\"
-            "Delta t = {}\tEnd t = {}\tForce: {}\tGravitation: {}",
+            "Simulation Parameters:\n"
+            "Output Writer: {}\tOutput Name: {}\tOutput Frequency: {}\tCheckpoint Frequency: {}\n"
+            "Delta t = {}\tEnd t = {}\tForce: {}\tGravitation: {}\tContainer: {}",
             param.writer().c_str(), out_name, out_freq, checkpoint_freq, delta_t, end_time,
-            param.force().c_str(), param.grav());
+            param.force().c_str(), param.grav(), param.container().c_str());
 
         //Set up initialization of Particle Container depending on param container
         //! int giving the number of dimensions based on the domain /box size
@@ -92,12 +93,19 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
 
             //Log Linked Cell Container Parameters
             SPDLOG_LOGGER_INFO(spdlog::get("default"),
-                "Cutoff Radius = {}\tDomain Dimensions = ({}, {}, {})\n\\"
+                "Linked Cell Container Parameters:\n"
+                "Cutoff Radius = {}\tDomain Dimensions = ({}, {}, {})\n"
                 "Boundary Conditions: (Left: {}, Bottom: {}, Back: {}, Right: {}, Top: {}, Front: {})",
                 param.cutoff(), box_dim[0], box_dim[1], box_dim[2],
                 param.boundary_conditions().left_bound().c_str(), param.boundary_conditions().bottom_bound().c_str(),
                 param.boundary_conditions().back_bound().c_str(), param.boundary_conditions().right_bound().c_str(),
                 param.boundary_conditions().top_bound().c_str(), param.boundary_conditions().front_bound().c_str());
+
+        if (strcmp(param.container().c_str(), "LinkedCell")==0) {
+            new(particles) LinkedCellParticleContainer(box_dim, cell_num, r_c, bounds);
+        } else {
+            new(particles) BasicParticleContainer();
+        }
 
         if (particle_in.checkpoint().begin()!=particle_in.checkpoint().end())
         {

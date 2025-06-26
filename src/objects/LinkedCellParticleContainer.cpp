@@ -234,8 +234,8 @@ void LinkedCellParticleContainer::updateCells() {
             }
             // boundary conditions are applied to particles in the boundary
             if (indices[j] == 0 || indices[j] == cell_number[j] - 1) {
-                // a simulation is considered 2d, if the number of cells in the third dimension is 1
-                if (j == 2 && cell_number[2] == 1) {
+                // a simulation is considered 2d, if the box size  in the third dimension is 0
+                if (j == 2 && box_size[2] == 0) {
                     continue;
                 }
                 SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} detected in boundary.",

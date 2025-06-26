@@ -7,7 +7,7 @@
         <t_end>40</t_end>
         <grav>-12.44</grav>
         <container>LinkedCell</container>
-        <checkpoint_freq/>
+        <checkpoint_freq>2000</checkpoint_freq>
         <box_size>
             <x-size>303</x-size>
             <y-size>180</y-size>
@@ -34,6 +34,9 @@
         <delta_T>0</delta_T>
     </ThermostatParams>
     <Particles>
+        <checkpoint>
+            <checkpoint_file>checkpoint.bin</checkpoint_file>
+        </checkpoint>
         <disc>
             <position>
                 <x-coordinate>150</x-coordinate>

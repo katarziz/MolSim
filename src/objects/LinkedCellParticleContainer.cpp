@@ -244,16 +244,16 @@ void LinkedCellParticleContainer::updateCells() {
                     if (boundary_conditions[j] == 1) {
                         // reflect Particle p at boundary j
                         reflect(p, j);
-                    } else if (boundary_conditions[j] == 0) {
-                        // outflow Particle p at boundary j
+                    } else if (boundary_conditions[j] == 0 && cell_number[j] != 1) {
+                        // outflow Particle p at boundary j if dimension exists
                         outflow(p);
                     }
                 } else if (indices[j] == cell_number[j] - 1) {
                     if (boundary_conditions[j + 3] == 1) {
                         // reflect Particle p at boundary j + 3
                         reflect(p, j + 3);
-                    } else if (boundary_conditions[j + 3] == 0) {
-                        // outflow Particle p at boundary j + 3
+                    } else if (boundary_conditions[j + 3] == 0 && cell_number[j] != 1) {
+                        // outflow Particle p at boundary j + 3 if dimension exists
                         outflow(p);
                     }
                 }
@@ -269,7 +269,7 @@ void LinkedCellParticleContainer::updateCells() {
     // if A is left and B is right, A' would interact with B the same way B' would interact with A
     std::array<int64_t,3> stride = {1,cell_number[0],cell_number[0]*cell_number[1]};
     for (int boundary = 0; boundary < 3; ++boundary) {
-        if (boundary_conditions[boundary] == 2) {
+        if (boundary_conditions[boundary] == 2 && cell_number[boundary] != 1) {
             // perpendicular axes are used to find the correct cells of the boundary
             const int perp_axis_1 = (boundary + 1) % 3;
             const int perp_axis_2 = (boundary + 2) % 3;

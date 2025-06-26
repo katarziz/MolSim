@@ -247,9 +247,6 @@ void LinkedCellParticleContainer::updateCells() {
                     } else if (boundary_conditions[j] == 0) {
                         // outflow Particle p at boundary j
                         outflow(p);
-                    } else if (boundary_conditions[j] == 2) {
-                        // periodic Particle p at boundary j
-                        periodic(p, j);
                     }
                 } else if (indices[j] == cell_number[j] - 1) {
                     if (boundary_conditions[j + 3] == 1) {
@@ -258,9 +255,6 @@ void LinkedCellParticleContainer::updateCells() {
                     } else if (boundary_conditions[j + 3] == 0) {
                         // outflow Particle p at boundary j + 3
                         outflow(p);
-                    } else if (boundary_conditions[j + 3] == 2) {
-                        // periodic Particle p at boundary j + 3
-                        periodic(p, j + 3);
                     }
                 }
             }
@@ -268,6 +262,25 @@ void LinkedCellParticleContainer::updateCells() {
         // if a particle is active, it is added back to the pool of particles.
         if (p.getState() == 0) {
             cells[indices[0] + indices[1] * cell_number[0] + indices[2] * cell_number[0] * cell_number[1]].push_back(i);
+        }
+    }
+    // periodic boundaries need to be handled after updating the cells, to use the correct index
+    // we also only ever consider one side of the boundary pair to avoid duplicate force calculation
+    // if A is left and B is right, A' would interact with B the same way B' would interact with A
+    std::array<int64_t,3> stride = {1,cell_number[0],cell_number[0]*cell_number[1]};
+    for (int boundary = 0; boundary < 3; ++boundary) {
+        if (boundary_conditions[boundary] == 2) {
+            // perpendicular axes are used to find the correct cells of the boundary
+            const int perp_axis_1 = (boundary + 1) % 3;
+            const int perp_axis_2 = (boundary + 2) % 3;
+            for (int i = 0; i < cell_number[perp_axis_1]; ++i) {
+                for (int j = 0; j < cell_number[perp_axis_2]; ++j) {
+                    auto &cell = cells[i * stride[perp_axis_1] + j * stride[perp_axis_2]];
+                    for (int k = 0; k < cell.size(); ++k) {
+                        periodic(particles.at(cell[k]), boundary);
+                    }
+                }
+            }
         }
     }
 }
@@ -337,32 +350,34 @@ void LinkedCellParticleContainer::periodic(Particle &p, const int boundary) {
         counter_particle_X[0] = box_size[0] + counter_particle_X[0];
     } else if (boundary == 1) { // bottom
         counter_particle_X[1] = box_size[1] + counter_particle_X[1];
-    } else if (boundary == 2) { // bottom
+    } else if (boundary == 2) { // back
         counter_particle_X[2] = box_size[2] + counter_particle_X[2];
-    } else if (boundary == 3) { // right
-        counter_particle_X[0] = counter_particle_X[0] - box_size[0];
-    } else if (boundary == 4) { // top
-        counter_particle_X[1] = counter_particle_X[1] - box_size[1];
-    } else if (boundary == 5) { // top
-        counter_particle_X[2] = counter_particle_X[2] - box_size[2];
     }
     auto counter_particle = Particle(counter_particle_X, p.getV(), p.getM(),p.getEps(),p.getSig(), p.getType());
     std::array<int, 3> indices = {0, 0, 0};
     for (int j = 0; j < 3; ++j) {
         indices[j] = std::floor(counter_particle.getX()[j] / (box_size[j] / cell_number[j]));
     }
-    for (int i_x = indices[0] - 1; i_x < indices[0] + 2; ++i_x) {
-        for (int i_y = indices[1] - 1; i_y < indices[1] + 2; ++i_y) {
-            for (int i_z = indices[2] - 1; i_z < indices[2] + 2; ++i_z) {
-                if (i_x >= 0 && i_x < cell_number[0] &&
-                    i_y >= 0 && i_y < cell_number[1] &&
-                    i_z >= 0 && i_z < cell_number[2]) {
-                    auto &cell = cells[i_x + i_y * cell_number[0] + i_z * cell_number[0] * cell_number[1]];
-                    for (auto j = cell.begin(); j != cell.end(); ++j) {
-                        calculateF_LJ(counter_particle, particles.at(*j), cutoff);
-                    }
+    // this loop dynamically finds the correct nine cells to interact with based on the boundary
+    // we only want to calculate cells at the given boundary
+    const int perp_axis_1 = (boundary + 1) % 3;
+    const int perp_axis_2 = (boundary + 2) % 3;
+    for (int i_x = -1; i_x < 2; ++i_x) {
+        for (int i_y = -1; i_y < 2; ++i_y) {
+            std::array<int, 3> cell_idx = indices;
+            cell_idx[boundary] = indices[boundary] - 1;
+            cell_idx[perp_axis_1] = indices[perp_axis_1] + i_x;
+            cell_idx[perp_axis_2] = indices[perp_axis_2] + i_y;
+            if (cell_idx[perp_axis_1] >= 0 && cell_idx[perp_axis_1] < cell_number[perp_axis_1] &&
+                cell_idx[perp_axis_2] >= 0 && cell_idx[perp_axis_2] < cell_number[perp_axis_2]) {
+                auto &cell = cells[
+                    cell_idx[0] + cell_idx[1] * cell_number[0] + cell_idx[2] * cell_number[0] * cell_number[1]];
+                for (auto j = cell.begin(); j != cell.end(); ++j) {
+                    calculateF_LJ(counter_particle, particles.at(*j), cutoff);
                 }
             }
         }
     }
+    // transfer the accumulated forces to the original particle
+    p.setF(p.getF() + counter_particle.getF());
 }

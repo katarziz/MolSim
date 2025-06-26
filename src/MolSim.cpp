@@ -144,7 +144,6 @@ int main(int argc, char *argsv[]) {
     exit(0);
   }
   particles = new LinkedCellParticleContainer(box_dim, cell_num, r_c, bounds);
-  // particles = new LinkedCellParticleContainer(box_dim, cell_num, r_c, bounds);
   XMLReader::readFile(particles, input_file);
   if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
     lcparticles->setParameters(box_dim,cell_num,r_c,bounds);

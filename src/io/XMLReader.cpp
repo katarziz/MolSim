@@ -32,14 +32,17 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
         SPDLOG_LOGGER_INFO(spdlog::get("default"),
             "Simulation Parameters:\n\\"
             "Output Writer: {}\tOutput Name: {}\tOutput Frequency: {}\tCheckpoint Frequency: {}\n\\"
-            "Container Type: {}\tDelta t = {}\tEnd t = {}\tForce: {}\tGravitation: {}",
-            param.writer().c_str(), out_name, out_freq, checkpoint_freq, param.container().c_str(), delta_t, end_time,
+            "Delta t = {}\tEnd t = {}\tForce: {}\tGravitation: {}",
+            param.writer().c_str(), out_name, out_freq, checkpoint_freq, delta_t, end_time,
             param.force().c_str(), param.grav());
 
         //Set up initialization of Particle Container depending on param container
         //! int giving the number of dimensions based on the domain /box size
-        int dim=2;
-        if (param.box_size().z_size()!=1)
+        int dim;
+        if (param.box_size().z_size()==0)
+        {
+            dim=2;
+        }else
         {
             dim=3;
         }
@@ -48,14 +51,23 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
 
         thermostat.setParams(therm.T_targ(), therm.delta_T(), dim);
 
-        if (strcmp(param.container().c_str(), "LinkedCell")==0)
-        {  //! double representing the cutoff radius. Default:3.0
+        //! double representing the cutoff radius. Default:3.0
             double r_c=param.cutoff();
 
-            //! array of three doubles representing the cell size. Default:r_c x r_c x 1
-            box_dim={param.box_size().x_size(),param.box_size().y_size(),param.box_size().z_size()};
-            //! array of three ints representing the number of cells. Default:1x1x1
+            //! array of three doubles representing the domain size.
+            if (dim==2)
+            {
+                box_dim = {param.box_size().x_size(), param.box_size().y_size(), 1};
+            }else
+            {
+              box_dim = {param.box_size().x_size(), param.box_size().y_size(), param.box_size().z_size()};
+            }
+
+
+        //! array of three ints representing the number of cells. Default:1x1x1
             cell_num={static_cast<int64_t>(std::floor(box_dim[0] / r_c)),static_cast<int64_t>(ceil(box_dim[1]/r_c)),static_cast<int64_t>(ceil(box_dim[2]/r_c))};
+
+
             //! array of six ints representing the boundary conditions: left, bottom, back, right, top, front
             // outflow:0 ("out"), reflecting:1 ("ref"), periodic_2 ("per")
             //Default:outflow
@@ -70,12 +82,13 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
                 };
             if (!check_bounds(boundaries))
             {
-                //TODO: Exit/Exception and error message
+                cerr << "Periodic bounds must be set in pairs tp/bottom, left/right, front/back" << endl;
+                exit(1);
             } else
             {
                 bounds=boundaries;
             }
-            //particles = new LinkedCellParticleContainer(box_dim, cell_num, r_c, bounds);
+
 
             //Log Linked Cell Container Parameters
             SPDLOG_LOGGER_INFO(spdlog::get("default"),
@@ -86,10 +99,6 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename)
                 param.boundary_conditions().back_bound().c_str(), param.boundary_conditions().right_bound().c_str(),
                 param.boundary_conditions().top_bound().c_str(), param.boundary_conditions().front_bound().c_str());
 
-        } else
-        {
-            //particles = new BasicParticleContainer();
-        }
         if (particle_in.checkpoint().begin()!=particle_in.checkpoint().end())
         {
             FileReader::readCheckpoint(start_time, *particles, particle_in.checkpoint().begin()->checkpoint_file().data());

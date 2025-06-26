@@ -191,36 +191,6 @@ grav_default_value ()
   return grav_type (-9.81);
 }
 
-const Parameters::container_type& Parameters::
-container () const
-{
-  return this->container_.get ();
-}
-
-Parameters::container_type& Parameters::
-container ()
-{
-  return this->container_.get ();
-}
-
-void Parameters::
-container (const container_type& x)
-{
-  this->container_.set (x);
-}
-
-void Parameters::
-container (::std::unique_ptr< container_type > x)
-{
-  this->container_.set (std::move (x));
-}
-
-const Parameters::container_type& Parameters::
-container_default_value ()
-{
-  return container_default_value_;
-}
-
 const Parameters::checkpoint_freq_type& Parameters::
 checkpoint_freq () const
 {
@@ -680,7 +650,7 @@ z_size (const z_size_type& x)
 box_size::z_size_type box_size::
 z_size_default_value ()
 {
-  return z_size_type (1.0);
+  return z_size_type (.0);
 }
 
 
@@ -1756,9 +1726,6 @@ Molsim_Input::
 // Parameters
 //
 
-const Parameters::container_type Parameters::container_default_value_ (
-  "LinkedCell");
-
 const Parameters::writer_type Parameters::writer_default_value_ (
   "vtk");
 
@@ -1772,7 +1739,6 @@ Parameters::
 Parameters (const delta_t_type& delta_t,
             const t_end_type& t_end,
             const grav_type& grav,
-            const container_type& container,
             const checkpoint_freq_type& checkpoint_freq,
             const box_size_type& box_size,
             const boundary_conditions_type& boundary_conditions,
@@ -1785,7 +1751,6 @@ Parameters (const delta_t_type& delta_t,
   delta_t_ (delta_t, this),
   t_end_ (t_end, this),
   grav_ (grav, this),
-  container_ (container, this),
   checkpoint_freq_ (checkpoint_freq, this),
   box_size_ (box_size, this),
   boundary_conditions_ (boundary_conditions, this),
@@ -1801,7 +1766,6 @@ Parameters::
 Parameters (const delta_t_type& delta_t,
             const t_end_type& t_end,
             const grav_type& grav,
-            const container_type& container,
             const checkpoint_freq_type& checkpoint_freq,
             ::std::unique_ptr< box_size_type > box_size,
             ::std::unique_ptr< boundary_conditions_type > boundary_conditions,
@@ -1814,7 +1778,6 @@ Parameters (const delta_t_type& delta_t,
   delta_t_ (delta_t, this),
   t_end_ (t_end, this),
   grav_ (grav, this),
-  container_ (container, this),
   checkpoint_freq_ (checkpoint_freq, this),
   box_size_ (std::move (box_size), this),
   boundary_conditions_ (std::move (boundary_conditions), this),
@@ -1834,7 +1797,6 @@ Parameters (const Parameters& x,
   delta_t_ (x.delta_t_, f, this),
   t_end_ (x.t_end_, f, this),
   grav_ (x.grav_, f, this),
-  container_ (x.container_, f, this),
   checkpoint_freq_ (x.checkpoint_freq_, f, this),
   box_size_ (x.box_size_, f, this),
   boundary_conditions_ (x.boundary_conditions_, f, this),
@@ -1854,7 +1816,6 @@ Parameters (const ::xercesc::DOMElement& e,
   delta_t_ (this),
   t_end_ (this),
   grav_ (this),
-  container_ (this),
   checkpoint_freq_ (this),
   box_size_ (this),
   boundary_conditions_ (this),
@@ -1910,20 +1871,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!grav_.present ())
       {
         this->grav_.set (grav_traits::create (i, f, this));
-        continue;
-      }
-    }
-
-    // container
-    //
-    if (n.name () == "container" && n.namespace_ ().empty ())
-    {
-      ::std::unique_ptr< container_type > r (
-        container_traits::create (i, f, this));
-
-      if (!container_.present ())
-      {
-        this->container_.set (::std::move (r));
         continue;
       }
     }
@@ -2055,13 +2002,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
-  if (!container_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "container",
-      "");
-  }
-
   if (!checkpoint_freq_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
@@ -2135,7 +2075,6 @@ operator= (const Parameters& x)
     this->delta_t_ = x.delta_t_;
     this->t_end_ = x.t_end_;
     this->grav_ = x.grav_;
-    this->container_ = x.container_;
     this->checkpoint_freq_ = x.checkpoint_freq_;
     this->box_size_ = x.box_size_;
     this->boundary_conditions_ = x.boundary_conditions_;
@@ -4727,17 +4666,6 @@ operator<< (::xercesc::DOMElement& e, const Parameters& i)
         e));
 
     s << ::xml_schema::as_decimal(i.grav ());
-  }
-
-  // container
-  //
-  {
-    ::xercesc::DOMElement& s (
-      ::xsd::cxx::xml::dom::create_element (
-        "container",
-        e));
-
-    s << i.container ();
   }
 
   // checkpoint_freq

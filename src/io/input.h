@@ -1103,73 +1103,6 @@ class Parameters: public ::xml_schema::type
   //@}
 
   /**
-   * @name container
-   *
-   * @brief Accessor and modifier functions for the %container
-   * required element.
-   */
-  //@{
-
-  /**
-   * @brief Element type.
-   */
-  typedef ::xml_schema::string container_type;
-
-  /**
-   * @brief Element traits type.
-   */
-  typedef ::xsd::cxx::tree::traits< container_type, char > container_traits;
-
-  /**
-   * @brief Return a read-only (constant) reference to the element.
-   *
-   * @return A constant reference to the element.
-   */
-  const container_type&
-  container () const;
-
-  /**
-   * @brief Return a read-write reference to the element.
-   *
-   * @return A reference to the element.
-   */
-  container_type&
-  container ();
-
-  /**
-   * @brief Set the element value.
-   *
-   * @param x A new value to set.
-   *
-   * This function makes a copy of its argument and sets it as
-   * the new value of the element.
-   */
-  void
-  container (const container_type& x);
-
-  /**
-   * @brief Set the element value without copying.
-   *
-   * @param p A new value to use.
-   *
-   * This function will try to use the passed value directly
-   * instead of making a copy.
-   */
-  void
-  container (::std::unique_ptr< container_type > p);
-
-  /**
-   * @brief Return the default value for the element.
-   *
-   * @return A read-only (constant) reference to the element's
-   * default value.
-   */
-  static const container_type&
-  container_default_value ();
-
-  //@}
-
-  /**
    * @name checkpoint_freq
    *
    * @brief Accessor and modifier functions for the %checkpoint_freq
@@ -1663,7 +1596,6 @@ class Parameters: public ::xml_schema::type
   Parameters (const delta_t_type&,
               const t_end_type&,
               const grav_type&,
-              const container_type&,
               const checkpoint_freq_type&,
               const box_size_type&,
               const boundary_conditions_type&,
@@ -1684,7 +1616,6 @@ class Parameters: public ::xml_schema::type
   Parameters (const delta_t_type&,
               const t_end_type&,
               const grav_type&,
-              const container_type&,
               const checkpoint_freq_type&,
               ::std::unique_ptr< box_size_type >,
               ::std::unique_ptr< boundary_conditions_type >,
@@ -1767,8 +1698,6 @@ class Parameters: public ::xml_schema::type
   ::xsd::cxx::tree::one< delta_t_type > delta_t_;
   ::xsd::cxx::tree::one< t_end_type > t_end_;
   ::xsd::cxx::tree::one< grav_type > grav_;
-  ::xsd::cxx::tree::one< container_type > container_;
-  static const container_type container_default_value_;
   ::xsd::cxx::tree::one< checkpoint_freq_type > checkpoint_freq_;
   ::xsd::cxx::tree::one< box_size_type > box_size_;
   ::xsd::cxx::tree::one< boundary_conditions_type > boundary_conditions_;

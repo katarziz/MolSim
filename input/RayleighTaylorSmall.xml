@@ -6,18 +6,17 @@
         <delta_t>0.0005</delta_t>
         <t_end>25</t_end>
         <grav>-12.44</grav>
-        <container>LinkedCell</container>
         <checkpoint_freq/>
         <box_size>
             <x-size>63</x-size>
             <y-size>36</y-size>
-            <z-size>1</z-size>
+            <z-size>0</z-size>
         </box_size>
         <boundary_conditions>
             <top_bound>ref</top_bound>
-            <right_bound>per</right_bound>
+            <right_bound>ref</right_bound>
             <bottom_bound>ref</bottom_bound>
-            <left_bound>per</left_bound>
+            <left_bound>ref</left_bound>
             <front_bound>ref</front_bound>
             <back_bound>ref</back_bound>
         </boundary_conditions>

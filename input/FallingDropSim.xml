@@ -6,12 +6,11 @@
         <delta_t>0.0005</delta_t>
         <t_end>40</t_end>
         <grav>-12.44</grav>
-        <container>LinkedCell</container>
         <checkpoint_freq/>
         <box_size>
             <x-size>303</x-size>
             <y-size>180</y-size>
-            <z-size>1</z-size>
+            <z-size>0</z-size>
         </box_size>
         <boundary_conditions>
             <top_bound>ref</top_bound>
@@ -52,5 +51,8 @@
             <sigma>1.2</sigma>
             <spacing>1.2</spacing>
         </disc>
+        <checkpoint>
+            <checkpoint_file>checkpoint.bin</checkpoint_file>
+        </checkpoint>
     </Particles>
 </Molsim_Input>

@@ -55,8 +55,5 @@
             <sigma>1.2</sigma>
             <spacing>1.2</spacing>
         </disc>
-        <checkpoint>
-            <checkpoint_file>checkpoint.bin</checkpoint_file>
-        </checkpoint>
     </Particles>
 </Molsim_Input>

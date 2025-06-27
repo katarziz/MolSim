@@ -241,14 +241,14 @@ void calculateF() {
 void calculateX() {
   particles->applyUnary(
     [](Particle &p) {
-      p.setX(p.getX() + delta_t*p.getV() + delta_t*delta_t/(2*p.getM())*p.getF());
+      p.x = p.x + delta_t*p.v + delta_t*delta_t/(2*p.m)*p.f;
     });
 }
 
 void calculateV() {
   particles->applyUnary(
     [](Particle &p) {
-      p.setV(p.getV() + delta_t/(2*p.getM())*(p.getOldF() + p.getF()));
+      p.v = p.v + delta_t/(2*p.m)*(p.old_f + p.f);
     });
 }
 

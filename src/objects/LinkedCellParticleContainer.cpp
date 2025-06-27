@@ -91,7 +91,7 @@ void LinkedCellParticleContainer::addParticles(const std::vector<Particle> &p) {
 int LinkedCellParticleContainer::size() const {
     int size = 0;
     for (auto &p : particles) {
-        if (p.getState() == 0) {
+        if (p.state == 0) {
             size++;
         }
     }
@@ -121,7 +121,7 @@ std::vector<Particle>::const_iterator LinkedCellParticleContainer::end() const {
 void LinkedCellParticleContainer::applyUnary(const std::function<void(Particle &i)> fun) {
     for (auto &particle: particles) {
         // skip if deactivated
-        if (particle.getState() == 1) {
+        if (particle.state == 1) {
             continue;
         }
         fun(particle);
@@ -202,33 +202,33 @@ void LinkedCellParticleContainer::updateCells() {
     }
     for (unsigned int i = 0; i < particles.size(); ++i) {
         Particle &p = particles[i];
-        if (p.getState() == 1) {
+        if (p.state == 1) {
             continue;
         }
         std::array<int, 3> indices = {0, 0, 0};
         for (int j = 0; j < 3; ++j) {
-            indices[j] = std::floor(p.getX()[j] / (box_size[j] / cell_number[j]));
+            indices[j] = std::floor(p.x[j] / (box_size[j] / cell_number[j]));
             // particles outside the domain are deactivated
             if (indices[j] < 0 || indices[j] >= cell_number[j]) {
                 if (indices[j] < 0 && boundary_conditions[j] == 2) {
                     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
                                        p.getX()[0], p.getX()[1], p.getX()[2]);
                     indices[j] += cell_number[j];
-                    auto p_x = p.getX();
+                    auto p_x = p.x;
                     p_x[j] += box_size[j];
-                    p.setX(p_x);
+                    p.x = p_x;
                 } else if (indices[j] >= cell_number[j] && boundary_conditions[j + 3] == 2) {
                     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
                                        p.getX()[0], p.getX()[1], p.getX()[2]);
                     indices[j] -= cell_number[j];
-                    auto p_x = p.getX();
+                    auto p_x = p.x;
                     p_x[j] -= box_size[j];
-                    p.setX(p_x);
+                    p.x = p_x;
                 } else {
                     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} moved to halo.",
                                        p.getX()[0], p.getX()[1], p.getX()[2]);
                     halo.push_back(i);
-                    p.setState(1);
+                    p.state = 1;
                     break;
                 }
             }
@@ -260,7 +260,7 @@ void LinkedCellParticleContainer::updateCells() {
             }
         }
         // if a particle is active, it is added back to the pool of particles.
-        if (p.getState() == 0) {
+        if (p.state == 0) {
             cells[indices[0] + indices[1] * cell_number[0] + indices[2] * cell_number[0] * cell_number[1]].push_back(i);
         }
     }
@@ -311,20 +311,20 @@ void LinkedCellParticleContainer::applyUnaryToHalo(const std::function<void(Part
 void LinkedCellParticleContainer::deleteHalo() {
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "deleting halo.");
     applyUnaryToHalo([](Particle &i) {
-        i.setState(1);
+        i.state = 1;
     });
 }
 
 void LinkedCellParticleContainer::outflow(Particle &p) {
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced outflow.",
                        p.getX()[0], p.getX()[1], p.getX()[2]);
-    p.setState(1);
+    p.state = 1;
 }
 
 void LinkedCellParticleContainer::reflect(Particle &p, const int boundary) {
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced reflect.",
                        p.getX()[0], p.getX()[1], p.getX()[2]);
-    std::array<double, 3> counter_particle_X = p.getX();
+    std::array<double, 3> counter_particle_X = p.x;
     if (boundary == 0) { // left
         counter_particle_X[0] = 0 - counter_particle_X[0];
     } else if (boundary == 1) { // bottom
@@ -338,14 +338,14 @@ void LinkedCellParticleContainer::reflect(Particle &p, const int boundary) {
     } else if (boundary == 5) { // top
         counter_particle_X[2] = box_size[2] + (box_size[2] - counter_particle_X[2]);
     }
-    auto counter_particle = Particle(counter_particle_X, p.getV(), p.getM(),p.getEps(),p.getSig(), p.getType());
+    auto counter_particle = Particle(counter_particle_X, p.v, p.m,p.eps,p.sig, p.type);
     calculateF_LJ(p, counter_particle, cutoff);
 }
 
 void LinkedCellParticleContainer::periodic(Particle &p, const int boundary) {
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced periodic.",
-    p.getX()[0], p.getX()[1], p.getX()[2]);
-    std::array<double, 3> counter_particle_X = p.getX();
+        p.getX()[0], p.getX()[1], p.getX()[2]);
+    std::array<double, 3> counter_particle_X = p.x;
     if (boundary == 0) { // left
         counter_particle_X[0] = box_size[0] + counter_particle_X[0];
     } else if (boundary == 1) { // bottom
@@ -353,10 +353,10 @@ void LinkedCellParticleContainer::periodic(Particle &p, const int boundary) {
     } else if (boundary == 2) { // back
         counter_particle_X[2] = box_size[2] + counter_particle_X[2];
     }
-    auto counter_particle = Particle(counter_particle_X, p.getV(), p.getM(),p.getEps(),p.getSig(), p.getType());
+    auto counter_particle = Particle(counter_particle_X, p.v, p.m,p.eps,p.sig, p.type);
     std::array<int, 3> indices = {0, 0, 0};
     for (int j = 0; j < 3; ++j) {
-        indices[j] = std::floor(counter_particle.getX()[j] / (box_size[j] / cell_number[j]));
+        indices[j] = std::floor(counter_particle.x[j] / (box_size[j] / cell_number[j]));
     }
     // this loop dynamically finds the correct nine cells to interact with based on the boundary
     // we only want to calculate cells at the given boundary
@@ -379,5 +379,5 @@ void LinkedCellParticleContainer::periodic(Particle &p, const int boundary) {
         }
     }
     // transfer the accumulated forces to the original particle
-    p.setF(p.getF() + counter_particle.getF());
+    p.f = p.f + counter_particle.f;
 }

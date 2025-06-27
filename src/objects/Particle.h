@@ -12,7 +12,7 @@
 
 class Particle {
 
-private:
+public:
   /**
    * Position of the particle
    */
@@ -57,7 +57,6 @@ private:
    */
   int state;
 
-public:
   explicit Particle(int type = 0);
   //! Constructor for a Particle from another Particle
    /*!

@@ -9,14 +9,15 @@
 
 
 class Thermostat {
-    private:
-        double temp_target;
-        double delta_temp;
-        int dim;
+private:
+    double temp_target;
+    double delta_temp;
+    int dim;
 
-    public:
+public:
     //! Constructor to for a Thermostat
     Thermostat();
+
     //! Function to set the parameters of a Thermostat
     /*!
     \param temp_target_arg a double giving the Target Temperature
@@ -24,6 +25,7 @@ class Thermostat {
     \param dim int giving the dimensions of the simulation
     */
     void setParams(double temp_target_arg, double delta_temp_arg, int dim);
+
     //! Function to calculate the Temperature of a set of Particles
     /*!
     \param particles pointer to a ParticleContainer containing the Particles
@@ -35,11 +37,7 @@ class Thermostat {
     \param particles pointer to a ParticleContainer containing the Particles
     */
     void scaleV(ParticleContainer *particles) const;
-
-
-
 };
-
 
 
 #endif //THERMOSTAT_H

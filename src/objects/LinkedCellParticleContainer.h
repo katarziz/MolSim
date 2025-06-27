@@ -14,7 +14,7 @@ class LinkedCellParticleContainer : public ParticleContainer {
 private:
     std::array<double, 3> box_size;
     std::array<int64_t, 3> cell_number;
-    std::vector<std::vector<int>> cells;
+    std::vector<std::vector<int> > cells;
     std::vector<Particle> particles;
     std::vector<int> boundary;
     std::vector<int> halo;
@@ -47,6 +47,7 @@ public:
     LinkedCellParticleContainer(const std::vector<Particle> &particles_arg, const std::array<double, 3> &box_size_arg,
                                 const std::array<int64_t, 3> &cell_number_arg, const double &cutoff_arg,
                                 const std::array<int, 6> &bounds_arg);
+
     //! a function to set the parameters of a LinkedCellParticleContainer
     /*!
      \param box_size_arg a reference to a vector of doubles to set the size of cells
@@ -58,46 +59,55 @@ public:
     void setParameters(const std::array<double, 3> &box_size_arg,
                        const std::array<int64_t, 3> &cell_number_arg,
                        const double &cutoff_arg, const std::array<int, 6> &bounds_arg);
+
     //! A function to add a Particle to the ParticleContainer
     /*!
      \param p reference to the Particle to be added to the container
      */
     void addParticle(const Particle &p) override;
+
     //! A function to add a vector of Particles to the ParticleContainer
     /*!
      \param p reference to the vector of Particles to be added to the container
      */
     void addParticles(const std::vector<Particle> &p) override;
+
     //! A function to return the Particles int the ParticleContainer
     /*!
      \returns a vector of the Particles in the Container
      */
     [[nodiscard]] const std::vector<Particle> &getParticles() const override;
+
     //! A function to return the size of the ParticleContainer
     /*!
      \returns an int representing the number of Particles in the Container
      */
     [[nodiscard]] int size() const override;
+
     //! A function to return an iterator pointing to the beginning of the ParticleContainer
     /*!
      \returns an iterator pointing to the beginning of the ParticleContainer
      */
     std::vector<Particle>::iterator begin() override;
+
     //! A function to return an iterator pointing to the end of the ParticleContainer
     /*!
      \returns an iterator pointing to the bend of the ParticleContainer
      */
     std::vector<Particle>::iterator end() override;
+
     //! A function to return a constant iterator pointing to the beginning of the ParticleContainer
     /*!
      \returns a constant iterator pointing to the beginning of the ParticleContainer
      */
     [[nodiscard]] std::vector<Particle>::const_iterator begin() const override;
+
     //! A function to return a constant iterator pointing to the end of the ParticleContainer
     /*!
     \returns a constant iterator pointing to the end of the ParticleContainer
     */
     [[nodiscard]] std::vector<Particle>::const_iterator end() const override;
+
     //! A function to apply a unary function to the Particles in the ParticleContainer
     /*!
     \param fun a unary function to be applied to the Particles in the ParticleContainer
@@ -118,21 +128,50 @@ public:
         \param fun a binary function to be applied pairwise to the Particles in neighboring cells of the ParticleContainer
     */
     void applyBinary(std::function<void(Particle &i, Particle &j)> fun) override;
+
     //! A function to update the cells of the ParticleContainer
     /*!
         A function to update the cells of the ParticleContainer
     */
     void updateCells();
 
+    //! A function to apply a unary function to the particles in the boundary cells of the ParticleContainer
+    /*!
+     \param fun a unary function to be applied to the Particles in the boundary cells
+    */
     void applyUnaryToBoundary(const std::function<void(Particle &i)> &fun);
-
+    
+    //! A function to apply a unary function to the particles in the halo region of the ParticleContainer
+    /*!
+     \param fun a unary function to be applied to the Particles in the halo region
+    */
     void applyUnaryToHalo(const std::function<void(Particle &i)> &fun);
-
+    
+    //! A function to delete all particles in the halo region
+    /*!
+     This function deactivates all particles in the halo region by setting their state to 1
+    */
     void deleteHalo();
-
+    
+    //! A function to implement outflow boundary condition for a particle
+    /*!
+     \param p reference to the Particle that will be deactivated due to outflow
+    */
     void outflow(Particle &p);
-
+    
+    //! A function to implement reflective boundary condition for a particle
+    /*!
+     \param p reference to the Particle that will be reflected
+     \param boundary an integer indicating which boundary the particle is reflected at
+            0-2: left, bottom, back boundaries; 3-5: right, top, front boundaries
+    */
     void reflect(Particle &p, int boundary);
-
+    
+    //! A function to implement periodic boundary condition for a particle
+    /*!
+     \param p reference to the Particle that experiences periodic boundary condition
+     \param boundary an integer indicating which boundary the particle is at
+            0: left boundary, 1: bottom boundary, 2: back boundary
+    */
     void periodic(Particle &p, int boundary);
 };

@@ -90,7 +90,7 @@ void LinkedCellParticleContainer::addParticles(const std::vector<Particle> &p) {
 
 int LinkedCellParticleContainer::size() const {
     int size = 0;
-    for (auto &p : particles) {
+    for (auto &p: particles) {
         if (p.state == 0) {
             size++;
         }
@@ -196,7 +196,7 @@ void LinkedCellParticleContainer::updateCells() {
             cell_number[0] *
             cell_number[1] *
             cell_number[2];
-    cells = std::vector<std::vector<int>>(size);
+    cells = std::vector<std::vector<int> >(size);
     for (int i = 0; i < size; ++i) {
         cells[i] = std::vector<int>();
     }
@@ -212,14 +212,14 @@ void LinkedCellParticleContainer::updateCells() {
             if (indices[j] < 0 || indices[j] >= cell_number[j]) {
                 if (indices[j] < 0 && boundary_conditions[j] == 2) {
                     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
-                                       p.getX()[0], p.getX()[1], p.getX()[2]);
+                                        p.getX()[0], p.getX()[1], p.getX()[2]);
                     indices[j] += cell_number[j];
                     auto p_x = p.x;
                     p_x[j] += box_size[j];
                     p.x = p_x;
                 } else if (indices[j] >= cell_number[j] && boundary_conditions[j + 3] == 2) {
                     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
-                                       p.getX()[0], p.getX()[1], p.getX()[2]);
+                                        p.getX()[0], p.getX()[1], p.getX()[2]);
                     indices[j] -= cell_number[j];
                     auto p_x = p.x;
                     p_x[j] -= box_size[j];
@@ -239,7 +239,7 @@ void LinkedCellParticleContainer::updateCells() {
                     continue;
                 }
                 SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} detected in boundary.",
-                                   p.getX()[0], p.getX()[1], p.getX()[2]);
+                                    p.getX()[0], p.getX()[1], p.getX()[2]);
                 if (indices[j] == 0) {
                     if (boundary_conditions[j] == 1) {
                         // reflect Particle p at boundary j
@@ -267,7 +267,7 @@ void LinkedCellParticleContainer::updateCells() {
     // periodic boundaries need to be handled after updating the cells, to use the correct index
     // we also only ever consider one side of the boundary pair to avoid duplicate force calculation
     // if A is left and B is right, A' would interact with B the same way B' would interact with A
-    std::array<int64_t,3> stride = {1,cell_number[0],cell_number[0]*cell_number[1]};
+    std::array<int64_t, 3> stride = {1, cell_number[0], cell_number[0] * cell_number[1]};
     for (int boundary = 0; boundary < 3; ++boundary) {
         if (boundary_conditions[boundary] == 2 && cell_number[boundary] != 1) {
             // perpendicular axes are used to find the correct cells of the boundary
@@ -291,7 +291,7 @@ void LinkedCellParticleContainer::applyUnaryToBoundary(const std::function<void(
             cell_number[0] == cell_number[0] - 1) {
             auto p = particles.at(i);
             SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{}. applied unary to boundary.",
-                               p.getX()[0], p.getX()[1], p.getX()[2]);
+                                p.getX()[0], p.getX()[1], p.getX()[2]);
             for (auto j = cells[i].begin(); j != cells[i].end(); ++j) {
                 fun(particles.at(*j));
             }
@@ -303,7 +303,7 @@ void LinkedCellParticleContainer::applyUnaryToBoundary(const std::function<void(
 void LinkedCellParticleContainer::applyUnaryToHalo(const std::function<void(Particle &i)> &fun) {
     for (auto i = halo.begin(); i != halo.end(); ++i) {
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{}. applied unary to halo.",
-                           p.getX()[0], p.getX()[1], p.getX()[2]);
+                            p.getX()[0], p.getX()[1], p.getX()[2]);
         fun(particles.at(*i));
     }
 }
@@ -317,43 +317,52 @@ void LinkedCellParticleContainer::deleteHalo() {
 
 void LinkedCellParticleContainer::outflow(Particle &p) {
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced outflow.",
-                       p.getX()[0], p.getX()[1], p.getX()[2]);
+                        p.getX()[0], p.getX()[1], p.getX()[2]);
     p.state = 1;
 }
 
 void LinkedCellParticleContainer::reflect(Particle &p, const int boundary) {
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced reflect.",
-                       p.getX()[0], p.getX()[1], p.getX()[2]);
+                        p.getX()[0], p.getX()[1], p.getX()[2]);
     std::array<double, 3> counter_particle_X = p.x;
-    if (boundary == 0) { // left
+    if (boundary == 0) {
+        // left
         counter_particle_X[0] = 0 - counter_particle_X[0];
-    } else if (boundary == 1) { // bottom
+    } else if (boundary == 1) {
+        // bottom
         counter_particle_X[1] = 0 - counter_particle_X[1];
-    } else if (boundary == 2) { // bottom
+    } else if (boundary == 2) {
+        // bottom
         counter_particle_X[2] = 0 - counter_particle_X[2];
-    } else if (boundary == 3) { // right
+    } else if (boundary == 3) {
+        // right
         counter_particle_X[0] = box_size[0] + (box_size[0] - counter_particle_X[0]);
-    } else if (boundary == 4) { // top
+    } else if (boundary == 4) {
+        // top
         counter_particle_X[1] = box_size[1] + (box_size[1] - counter_particle_X[1]);
-    } else if (boundary == 5) { // top
+    } else if (boundary == 5) {
+        // top
         counter_particle_X[2] = box_size[2] + (box_size[2] - counter_particle_X[2]);
     }
-    auto counter_particle = Particle(counter_particle_X, p.v, p.m,p.eps,p.sig, p.type);
+    auto counter_particle = Particle(counter_particle_X, p.v, p.m, p.eps, p.sig, p.type);
     calculateF_LJ(p, counter_particle, cutoff);
 }
 
 void LinkedCellParticleContainer::periodic(Particle &p, const int boundary) {
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced periodic.",
-        p.getX()[0], p.getX()[1], p.getX()[2]);
+                        p.getX()[0], p.getX()[1], p.getX()[2]);
     std::array<double, 3> counter_particle_X = p.x;
-    if (boundary == 0) { // left
+    if (boundary == 0) {
+        // left
         counter_particle_X[0] = box_size[0] + counter_particle_X[0];
-    } else if (boundary == 1) { // bottom
+    } else if (boundary == 1) {
+        // bottom
         counter_particle_X[1] = box_size[1] + counter_particle_X[1];
-    } else if (boundary == 2) { // back
+    } else if (boundary == 2) {
+        // back
         counter_particle_X[2] = box_size[2] + counter_particle_X[2];
     }
-    auto counter_particle = Particle(counter_particle_X, p.v, p.m,p.eps,p.sig, p.type);
+    auto counter_particle = Particle(counter_particle_X, p.v, p.m, p.eps, p.sig, p.type);
     std::array<int, 3> indices = {0, 0, 0};
     for (int j = 0; j < 3; ++j) {
         indices[j] = std::floor(counter_particle.x[j] / (box_size[j] / cell_number[j]));

@@ -30,10 +30,11 @@ public:
      \returns a set-up cuboid of particles in a ParticleContainer
      */
     static void generateCube(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
-                                          const std::array<int64_t, 3> &number_of_particles, double spacing,
-                                          double mass,double eps, double sig,
-                                          const std::array<double, 3> &velocity, int type, int dim,
-                                          double brownian_motion_avg_velocity);
+                             const std::array<int64_t, 3> &number_of_particles, double spacing,
+                             double mass, double eps, double sig,
+                             const std::array<double, 3> &velocity, int type, int dim,
+                             double brownian_motion_avg_velocity);
+
     //! A constructor for a Particle Generator from given Parameters
     /*!
      \param particles The ParticleContainer to be generated
@@ -51,10 +52,11 @@ public:
      */
     static void generateDisc(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
                              const int &radius, const double &spacing, const double &mass,
-                              double eps,double sig,
+                             double eps, double sig,
                              const std::array<double, 3> &velocity,
-                              int type,  int dim,
+                             int type, int dim,
                              const double &brownian_motion_avg_velocity);
+
     //! A constructor for a Particle Generator from given Parameters
     /*!
      \param velocity Initial velocity v of the particles
@@ -62,6 +64,6 @@ public:
      \param brownian_motion_avg_velocity The mean-value of the velocity of the Brownian Motion
      \returns an array of the initial velocity of the particles with brownian motion applied
      */
-    static auto generateInitVel(const std::array<double, 3>& velocity, int dim,
-                                   const double& brownian_motion_avg_velocity) -> std::array<double, 3>;
+    static auto generateInitVel(const std::array<double, 3> &velocity, int dim,
+                                const double &brownian_motion_avg_velocity) -> std::array<double, 3>;
 };

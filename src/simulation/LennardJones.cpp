@@ -13,7 +13,7 @@ void calculateF_LJ(Particle &i, Particle &j, double cutoff) {
         return;
     }
     const double eps = sqrt(i.eps * j.eps);
-    const double sig = (i.sig + j.sig)/2;
+    const double sig = (i.sig + j.sig) / 2;
     const double sn2 = (sig * sig / squared_norm);
     const double sn6 = sn2 * sn2 * sn2;
     const double factor = 24 * eps * (2 * sn6 * sn6 - sn6) / squared_norm;

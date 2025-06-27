@@ -6,18 +6,28 @@
 #include "utils/ArrayUtils.h"
 
 
+
 void calculateF_LJ(Particle &i, Particle &j, double cutoff) {
     const std::array<double, 3> dist = i.getX() - j.getX();
-    const double squared_norm = dist[0] * dist[0] + dist[1] * dist[1] + dist[2] * dist[2];
-    if (squared_norm > cutoff * cutoff) {
+    const double norm = ArrayUtils::L2Norm(dist);
+    if (norm > cutoff) {
         return;
     }
-    const double eps = sqrt(i.getEps() * j.getEps());
-    const double sig = (i.getSig() + j.getSig())/2;
-    const double sn2 = (sig * sig / squared_norm);
-    const double sn6 = sn2 * sn2 * sn2;
-    const double factor = 24 * eps * (2 * sn6 * sn6 - sn6) / squared_norm;
-    const std::array<double, 3> force = factor * dist;
+    double eps;
+    double sig;
+    //TODO: Decide if this is if is necessary or if we calculate ever time?
+    if (i.getEps()==j.getEps()&&i.getSig()==j.getSig())
+    {
+        eps=i.getEps();
+        sig=i.getSig();
+    }else
+    {
+        eps=sqrt(i.getEps()*j.getEps());
+        sig= (i.getSig()+j.getSig())/2;
+    }
+    const double factor = std::pow(sig / norm, 6);
+    const std::array<double, 3> force =
+            24 * eps * (2 * factor * factor - factor) / (norm * norm) * dist;
     i.setF(i.getF() + force);
     j.setF(j.getF() - force);
 }

@@ -21,10 +21,10 @@ FileReader::FileReader() = default;
 FileReader::~FileReader() = default;
 
 void FileReader::readFile(ParticleContainer &particles, char *filename) {
-  std::array<double, 3> x{};
-  std::array<double, 3> v{};
+  std::array<double, 3> x;
+  std::array<double, 3> v;
   double m;
-  std::array<int64_t, 3> n{};
+  std::array<int64_t, 3> n;
   double h;
   int num_particles = 0;
 
@@ -108,15 +108,11 @@ void FileReader::readCheckpoint(double &time, ParticleContainer &particles, char
   }
   std::vector<Particle> particles_vector;
   input_file.read(reinterpret_cast<char *>(&time), sizeof(double));
-  std::streamsize size;
+  size_t size;
   input_file.read(reinterpret_cast<char *>(&size), sizeof(size));
   particles_vector.resize(size);
-  Particle p;
-  for (int i = 0; i < size; i++)
-  {
-    input_file.read(reinterpret_cast<char *>(&p), sizeof(Particle) );
-    particles.addParticle(p);
-  }
+  input_file.read(reinterpret_cast<char *>(particles_vector.data()), size * sizeof(Particle));
+  particles.addParticles(particles_vector);
 }
 
 void FileReader::writeCheckpoint(double &time, ParticleContainer &particles, char *filename) {
@@ -126,12 +122,8 @@ void FileReader::writeCheckpoint(double &time, ParticleContainer &particles, cha
     exit(-1);
   }
   output_file.write(reinterpret_cast<const char*>(&time), sizeof(double));
-  std::streamsize size = particles.getParticles().size();
+  size_t size = particles.getParticles().size();
   output_file.write(reinterpret_cast<const char*>(&size), sizeof(size));
-  for (auto i=0;i<particles.size();++i)
-  {
-    output_file.write(reinterpret_cast<const char*>(&particles.getParticles()[i]),sizeof(Particle));
-  }
-
+  output_file.write(reinterpret_cast<const char*>(particles.getParticles().data()), size * sizeof(Particle));
 }
 

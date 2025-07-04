@@ -183,9 +183,27 @@ int main(int argc, char *argsv[]) {
         // calculate new f
         calculateF();
         // calculate new v
+
         calculateV();
-        if (iteration % f_therm == 0) {
+        if (f_therm!=0&&iteration % f_therm == 0) {
             thermostat.scaleV(particles);
+        }
+
+        if (particles->getMembranes().size()!=0)
+        {
+            for (auto mem=particles->getMembranes().begin(); mem<particles->getMembranes().end(); ++mem)
+            {
+                particles->applyMembraneForces(*mem);
+                //TODO: Move Membrane Force to calculate F?? Z_Direction!!!!
+                if (iteration<15000){
+                particles->applyUnarytoMembrane(*mem,[mem](Particle &p) {
+                    if (p.x[0]*p.x[0] + p.x[1]*p.x[1] < 10)
+                    {
+                        p.f[2]=p.f[2]+ mem->get_f_up();
+                    }
+                    });
+                }
+            }
         }
 
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
@@ -241,13 +259,19 @@ void calculateF() {
 void calculateX() {
     particles->applyUnary(
         [](Particle &p) {
+            if ((p.state & 2) == 2) {
+                return;
+            }
             p.x = p.x + delta_t * p.v + delta_t * delta_t / (2 * p.m) * p.f;
         });
 }
 
 void calculateV() {
     particles->applyUnary(
-        [](Particle &p) {
+        [](Particle& p) {
+            if ((p.state & 2) == 2) {
+                return;
+            }
             p.v = p.v + delta_t / (2 * p.m) * (p.old_f + p.f);
         });
 }

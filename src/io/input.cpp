@@ -607,6 +607,24 @@ checkpoint (const checkpoint_sequence& s)
   this->checkpoint_ = s;
 }
 
+const Particles::membrane_sequence& Particles::
+membrane () const
+{
+  return this->membrane_;
+}
+
+Particles::membrane_sequence& Particles::
+membrane ()
+{
+  return this->membrane_;
+}
+
+void Particles::
+membrane (const membrane_sequence& s)
+{
+  this->membrane_ = s;
+}
+
 
 // box_size
 // 
@@ -1039,6 +1057,24 @@ sigma (const sigma_type& x)
   this->sigma_.set (x);
 }
 
+const cuboid::fixed_type& cuboid::
+fixed () const
+{
+  return this->fixed_.get ();
+}
+
+cuboid::fixed_type& cuboid::
+fixed ()
+{
+  return this->fixed_.get ();
+}
+
+void cuboid::
+fixed (const fixed_type& x)
+{
+  this->fixed_.set (x);
+}
+
 
 // particle
 // 
@@ -1167,6 +1203,24 @@ void particle::
 sigma (const sigma_type& x)
 {
   this->sigma_.set (x);
+}
+
+const particle::fixed_type& particle::
+fixed () const
+{
+  return this->fixed_.get ();
+}
+
+particle::fixed_type& particle::
+fixed ()
+{
+  return this->fixed_.get ();
+}
+
+void particle::
+fixed (const fixed_type& x)
+{
+  this->fixed_.set (x);
 }
 
 
@@ -1317,6 +1371,24 @@ sigma (const sigma_type& x)
   this->sigma_.set (x);
 }
 
+const disc::fixed_type& disc::
+fixed () const
+{
+  return this->fixed_.get ();
+}
+
+disc::fixed_type& disc::
+fixed ()
+{
+  return this->fixed_.get ();
+}
+
+void disc::
+fixed (const fixed_type& x)
+{
+  this->fixed_.set (x);
+}
+
 const disc::spacing_type& disc::
 spacing () const
 {
@@ -1361,6 +1433,256 @@ void checkpoint::
 checkpoint_file (::std::unique_ptr< checkpoint_file_type > x)
 {
   this->checkpoint_file_.set (std::move (x));
+}
+
+
+// membrane
+// 
+
+const membrane::base_coordinates_type& membrane::
+base_coordinates () const
+{
+  return this->base_coordinates_.get ();
+}
+
+membrane::base_coordinates_type& membrane::
+base_coordinates ()
+{
+  return this->base_coordinates_.get ();
+}
+
+void membrane::
+base_coordinates (const base_coordinates_type& x)
+{
+  this->base_coordinates_.set (x);
+}
+
+void membrane::
+base_coordinates (::std::unique_ptr< base_coordinates_type > x)
+{
+  this->base_coordinates_.set (std::move (x));
+}
+
+const membrane::plane_type& membrane::
+plane () const
+{
+  return this->plane_.get ();
+}
+
+membrane::plane_type& membrane::
+plane ()
+{
+  return this->plane_.get ();
+}
+
+void membrane::
+plane (const plane_type& x)
+{
+  this->plane_.set (x);
+}
+
+void membrane::
+plane (::std::unique_ptr< plane_type > x)
+{
+  this->plane_.set (std::move (x));
+}
+
+const membrane::number_particles_type& membrane::
+number_particles () const
+{
+  return this->number_particles_.get ();
+}
+
+membrane::number_particles_type& membrane::
+number_particles ()
+{
+  return this->number_particles_.get ();
+}
+
+void membrane::
+number_particles (const number_particles_type& x)
+{
+  this->number_particles_.set (x);
+}
+
+void membrane::
+number_particles (::std::unique_ptr< number_particles_type > x)
+{
+  this->number_particles_.set (std::move (x));
+}
+
+const membrane::velocity_type& membrane::
+velocity () const
+{
+  return this->velocity_.get ();
+}
+
+membrane::velocity_type& membrane::
+velocity ()
+{
+  return this->velocity_.get ();
+}
+
+void membrane::
+velocity (const velocity_type& x)
+{
+  this->velocity_.set (x);
+}
+
+void membrane::
+velocity (::std::unique_ptr< velocity_type > x)
+{
+  this->velocity_.set (std::move (x));
+}
+
+const membrane::spacing_type& membrane::
+spacing () const
+{
+  return this->spacing_.get ();
+}
+
+membrane::spacing_type& membrane::
+spacing ()
+{
+  return this->spacing_.get ();
+}
+
+void membrane::
+spacing (const spacing_type& x)
+{
+  this->spacing_.set (x);
+}
+
+const membrane::mass_type& membrane::
+mass () const
+{
+  return this->mass_.get ();
+}
+
+membrane::mass_type& membrane::
+mass ()
+{
+  return this->mass_.get ();
+}
+
+void membrane::
+mass (const mass_type& x)
+{
+  this->mass_.set (x);
+}
+
+const membrane::type_type& membrane::
+type () const
+{
+  return this->type_.get ();
+}
+
+membrane::type_type& membrane::
+type ()
+{
+  return this->type_.get ();
+}
+
+void membrane::
+type (const type_type& x)
+{
+  this->type_.set (x);
+}
+
+membrane::type_type membrane::
+type_default_value ()
+{
+  return type_type (0LL);
+}
+
+const membrane::eps_type& membrane::
+eps () const
+{
+  return this->eps_.get ();
+}
+
+membrane::eps_type& membrane::
+eps ()
+{
+  return this->eps_.get ();
+}
+
+void membrane::
+eps (const eps_type& x)
+{
+  this->eps_.set (x);
+}
+
+const membrane::sigma_type& membrane::
+sigma () const
+{
+  return this->sigma_.get ();
+}
+
+membrane::sigma_type& membrane::
+sigma ()
+{
+  return this->sigma_.get ();
+}
+
+void membrane::
+sigma (const sigma_type& x)
+{
+  this->sigma_.set (x);
+}
+
+const membrane::r_zero_type& membrane::
+r_zero () const
+{
+  return this->r_zero_.get ();
+}
+
+membrane::r_zero_type& membrane::
+r_zero ()
+{
+  return this->r_zero_.get ();
+}
+
+void membrane::
+r_zero (const r_zero_type& x)
+{
+  this->r_zero_.set (x);
+}
+
+const membrane::k_type& membrane::
+k () const
+{
+  return this->k_.get ();
+}
+
+membrane::k_type& membrane::
+k ()
+{
+  return this->k_.get ();
+}
+
+void membrane::
+k (const k_type& x)
+{
+  this->k_.set (x);
+}
+
+const membrane::F_up_type& membrane::
+F_up () const
+{
+  return this->F_up_.get ();
+}
+
+membrane::F_up_type& membrane::
+F_up ()
+{
+  return this->F_up_.get ();
+}
+
+void membrane::
+F_up (const F_up_type& x)
+{
+  this->F_up_.set (x);
 }
 
 
@@ -1593,6 +1915,46 @@ void position::
 z_coordinate (const z_coordinate_type& x)
 {
   this->z_coordinate_.set (x);
+}
+
+
+// number_particles1
+// 
+
+const number_particles1::width_type& number_particles1::
+width () const
+{
+  return this->width_.get ();
+}
+
+number_particles1::width_type& number_particles1::
+width ()
+{
+  return this->width_.get ();
+}
+
+void number_particles1::
+width (const width_type& x)
+{
+  this->width_.set (x);
+}
+
+const number_particles1::height_type& number_particles1::
+height () const
+{
+  return this->height_.get ();
+}
+
+number_particles1::height_type& number_particles1::
+height ()
+{
+  return this->height_.get ();
+}
+
+void number_particles1::
+height (const height_type& x)
+{
+  this->height_.set (x);
 }
 
 
@@ -2321,7 +2683,8 @@ Particles ()
   cuboid_ (this),
   particle_ (this),
   disc_ (this),
-  checkpoint_ (this)
+  checkpoint_ (this),
+  membrane_ (this)
 {
 }
 
@@ -2333,7 +2696,8 @@ Particles (const Particles& x,
   cuboid_ (x.cuboid_, f, this),
   particle_ (x.particle_, f, this),
   disc_ (x.disc_, f, this),
-  checkpoint_ (x.checkpoint_, f, this)
+  checkpoint_ (x.checkpoint_, f, this),
+  membrane_ (x.membrane_, f, this)
 {
 }
 
@@ -2345,7 +2709,8 @@ Particles (const ::xercesc::DOMElement& e,
   cuboid_ (this),
   particle_ (this),
   disc_ (this),
-  checkpoint_ (this)
+  checkpoint_ (this),
+  membrane_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -2408,6 +2773,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       continue;
     }
 
+    // membrane
+    //
+    if (n.name () == "membrane" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< membrane_type > r (
+        membrane_traits::create (i, f, this));
+
+      this->membrane_.push_back (::std::move (r));
+      continue;
+    }
+
     break;
   }
 }
@@ -2429,6 +2805,7 @@ operator= (const Particles& x)
     this->particle_ = x.particle_;
     this->disc_ = x.disc_;
     this->checkpoint_ = x.checkpoint_;
+    this->membrane_ = x.membrane_;
   }
 
   return *this;
@@ -2825,7 +3202,8 @@ cuboid (const base_coordinates_type& base_coordinates,
         const mass_type& mass,
         const type_type& type,
         const eps_type& eps,
-        const sigma_type& sigma)
+        const sigma_type& sigma,
+        const fixed_type& fixed)
 : ::xml_schema::type (),
   base_coordinates_ (base_coordinates, this),
   number_particles_ (number_particles, this),
@@ -2834,7 +3212,8 @@ cuboid (const base_coordinates_type& base_coordinates,
   mass_ (mass, this),
   type_ (type, this),
   eps_ (eps, this),
-  sigma_ (sigma, this)
+  sigma_ (sigma, this),
+  fixed_ (fixed, this)
 {
 }
 
@@ -2846,7 +3225,8 @@ cuboid (::std::unique_ptr< base_coordinates_type > base_coordinates,
         const mass_type& mass,
         const type_type& type,
         const eps_type& eps,
-        const sigma_type& sigma)
+        const sigma_type& sigma,
+        const fixed_type& fixed)
 : ::xml_schema::type (),
   base_coordinates_ (std::move (base_coordinates), this),
   number_particles_ (std::move (number_particles), this),
@@ -2855,7 +3235,8 @@ cuboid (::std::unique_ptr< base_coordinates_type > base_coordinates,
   mass_ (mass, this),
   type_ (type, this),
   eps_ (eps, this),
-  sigma_ (sigma, this)
+  sigma_ (sigma, this),
+  fixed_ (fixed, this)
 {
 }
 
@@ -2871,7 +3252,8 @@ cuboid (const cuboid& x,
   mass_ (x.mass_, f, this),
   type_ (x.type_, f, this),
   eps_ (x.eps_, f, this),
-  sigma_ (x.sigma_, f, this)
+  sigma_ (x.sigma_, f, this),
+  fixed_ (x.fixed_, f, this)
 {
 }
 
@@ -2887,7 +3269,8 @@ cuboid (const ::xercesc::DOMElement& e,
   mass_ (this),
   type_ (this),
   eps_ (this),
-  sigma_ (this)
+  sigma_ (this),
+  fixed_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -3003,6 +3386,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // fixed
+    //
+    if (n.name () == "fixed" && n.namespace_ ().empty ())
+    {
+      if (!fixed_.present ())
+      {
+        this->fixed_.set (fixed_traits::create (i, f, this));
+        continue;
+      }
+    }
+
     break;
   }
 
@@ -3061,6 +3455,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "sigma",
       "");
   }
+
+  if (!fixed_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "fixed",
+      "");
+  }
 }
 
 cuboid* cuboid::
@@ -3084,6 +3485,7 @@ operator= (const cuboid& x)
     this->type_ = x.type_;
     this->eps_ = x.eps_;
     this->sigma_ = x.sigma_;
+    this->fixed_ = x.fixed_;
   }
 
   return *this;
@@ -3103,14 +3505,16 @@ particle (const position_type& position,
           const mass_type& mass,
           const type_type& type,
           const eps_type& eps,
-          const sigma_type& sigma)
+          const sigma_type& sigma,
+          const fixed_type& fixed)
 : ::xml_schema::type (),
   position_ (position, this),
   velocity_ (velocity, this),
   mass_ (mass, this),
   type_ (type, this),
   eps_ (eps, this),
-  sigma_ (sigma, this)
+  sigma_ (sigma, this),
+  fixed_ (fixed, this)
 {
 }
 
@@ -3120,14 +3524,16 @@ particle (::std::unique_ptr< position_type > position,
           const mass_type& mass,
           const type_type& type,
           const eps_type& eps,
-          const sigma_type& sigma)
+          const sigma_type& sigma,
+          const fixed_type& fixed)
 : ::xml_schema::type (),
   position_ (std::move (position), this),
   velocity_ (std::move (velocity), this),
   mass_ (mass, this),
   type_ (type, this),
   eps_ (eps, this),
-  sigma_ (sigma, this)
+  sigma_ (sigma, this),
+  fixed_ (fixed, this)
 {
 }
 
@@ -3141,7 +3547,8 @@ particle (const particle& x,
   mass_ (x.mass_, f, this),
   type_ (x.type_, f, this),
   eps_ (x.eps_, f, this),
-  sigma_ (x.sigma_, f, this)
+  sigma_ (x.sigma_, f, this),
+  fixed_ (x.fixed_, f, this)
 {
 }
 
@@ -3155,7 +3562,8 @@ particle (const ::xercesc::DOMElement& e,
   mass_ (this),
   type_ (this),
   eps_ (this),
-  sigma_ (this)
+  sigma_ (this),
+  fixed_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -3246,6 +3654,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // fixed
+    //
+    if (n.name () == "fixed" && n.namespace_ ().empty ())
+    {
+      if (!fixed_.present ())
+      {
+        this->fixed_.set (fixed_traits::create (i, f, this));
+        continue;
+      }
+    }
+
     break;
   }
 
@@ -3290,6 +3709,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "sigma",
       "");
   }
+
+  if (!fixed_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "fixed",
+      "");
+  }
 }
 
 particle* particle::
@@ -3311,6 +3737,7 @@ operator= (const particle& x)
     this->type_ = x.type_;
     this->eps_ = x.eps_;
     this->sigma_ = x.sigma_;
+    this->fixed_ = x.fixed_;
   }
 
   return *this;
@@ -3332,6 +3759,7 @@ disc (const position_type& position,
       const type_type& type,
       const eps_type& eps,
       const sigma_type& sigma,
+      const fixed_type& fixed,
       const spacing_type& spacing)
 : ::xml_schema::type (),
   position_ (position, this),
@@ -3341,6 +3769,7 @@ disc (const position_type& position,
   type_ (type, this),
   eps_ (eps, this),
   sigma_ (sigma, this),
+  fixed_ (fixed, this),
   spacing_ (spacing, this)
 {
 }
@@ -3353,6 +3782,7 @@ disc (::std::unique_ptr< position_type > position,
       const type_type& type,
       const eps_type& eps,
       const sigma_type& sigma,
+      const fixed_type& fixed,
       const spacing_type& spacing)
 : ::xml_schema::type (),
   position_ (std::move (position), this),
@@ -3362,6 +3792,7 @@ disc (::std::unique_ptr< position_type > position,
   type_ (type, this),
   eps_ (eps, this),
   sigma_ (sigma, this),
+  fixed_ (fixed, this),
   spacing_ (spacing, this)
 {
 }
@@ -3378,6 +3809,7 @@ disc (const disc& x,
   type_ (x.type_, f, this),
   eps_ (x.eps_, f, this),
   sigma_ (x.sigma_, f, this),
+  fixed_ (x.fixed_, f, this),
   spacing_ (x.spacing_, f, this)
 {
 }
@@ -3394,6 +3826,7 @@ disc (const ::xercesc::DOMElement& e,
   type_ (this),
   eps_ (this),
   sigma_ (this),
+  fixed_ (this),
   spacing_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
@@ -3496,6 +3929,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // fixed
+    //
+    if (n.name () == "fixed" && n.namespace_ ().empty ())
+    {
+      if (!fixed_.present ())
+      {
+        this->fixed_.set (fixed_traits::create (i, f, this));
+        continue;
+      }
+    }
+
     // spacing
     //
     if (n.name () == "spacing" && n.namespace_ ().empty ())
@@ -3559,6 +4003,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
+  if (!fixed_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "fixed",
+      "");
+  }
+
   if (!spacing_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
@@ -3587,6 +4038,7 @@ operator= (const disc& x)
     this->type_ = x.type_;
     this->eps_ = x.eps_;
     this->sigma_ = x.sigma_;
+    this->fixed_ = x.fixed_;
     this->spacing_ = x.spacing_;
   }
 
@@ -3687,6 +4139,389 @@ operator= (const checkpoint& x)
 
 checkpoint::
 ~checkpoint ()
+{
+}
+
+// membrane
+//
+
+membrane::
+membrane (const base_coordinates_type& base_coordinates,
+          const plane_type& plane,
+          const number_particles_type& number_particles,
+          const velocity_type& velocity,
+          const spacing_type& spacing,
+          const mass_type& mass,
+          const type_type& type,
+          const eps_type& eps,
+          const sigma_type& sigma,
+          const r_zero_type& r_zero,
+          const k_type& k,
+          const F_up_type& F_up)
+: ::xml_schema::type (),
+  base_coordinates_ (base_coordinates, this),
+  plane_ (plane, this),
+  number_particles_ (number_particles, this),
+  velocity_ (velocity, this),
+  spacing_ (spacing, this),
+  mass_ (mass, this),
+  type_ (type, this),
+  eps_ (eps, this),
+  sigma_ (sigma, this),
+  r_zero_ (r_zero, this),
+  k_ (k, this),
+  F_up_ (F_up, this)
+{
+}
+
+membrane::
+membrane (::std::unique_ptr< base_coordinates_type > base_coordinates,
+          const plane_type& plane,
+          ::std::unique_ptr< number_particles_type > number_particles,
+          ::std::unique_ptr< velocity_type > velocity,
+          const spacing_type& spacing,
+          const mass_type& mass,
+          const type_type& type,
+          const eps_type& eps,
+          const sigma_type& sigma,
+          const r_zero_type& r_zero,
+          const k_type& k,
+          const F_up_type& F_up)
+: ::xml_schema::type (),
+  base_coordinates_ (std::move (base_coordinates), this),
+  plane_ (plane, this),
+  number_particles_ (std::move (number_particles), this),
+  velocity_ (std::move (velocity), this),
+  spacing_ (spacing, this),
+  mass_ (mass, this),
+  type_ (type, this),
+  eps_ (eps, this),
+  sigma_ (sigma, this),
+  r_zero_ (r_zero, this),
+  k_ (k, this),
+  F_up_ (F_up, this)
+{
+}
+
+membrane::
+membrane (const membrane& x,
+          ::xml_schema::flags f,
+          ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  base_coordinates_ (x.base_coordinates_, f, this),
+  plane_ (x.plane_, f, this),
+  number_particles_ (x.number_particles_, f, this),
+  velocity_ (x.velocity_, f, this),
+  spacing_ (x.spacing_, f, this),
+  mass_ (x.mass_, f, this),
+  type_ (x.type_, f, this),
+  eps_ (x.eps_, f, this),
+  sigma_ (x.sigma_, f, this),
+  r_zero_ (x.r_zero_, f, this),
+  k_ (x.k_, f, this),
+  F_up_ (x.F_up_, f, this)
+{
+}
+
+membrane::
+membrane (const ::xercesc::DOMElement& e,
+          ::xml_schema::flags f,
+          ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  base_coordinates_ (this),
+  plane_ (this),
+  number_particles_ (this),
+  velocity_ (this),
+  spacing_ (this),
+  mass_ (this),
+  type_ (this),
+  eps_ (this),
+  sigma_ (this),
+  r_zero_ (this),
+  k_ (this),
+  F_up_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
+    this->parse (p, f);
+  }
+}
+
+void membrane::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // base_coordinates
+    //
+    if (n.name () == "base_coordinates" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< base_coordinates_type > r (
+        base_coordinates_traits::create (i, f, this));
+
+      if (!base_coordinates_.present ())
+      {
+        this->base_coordinates_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // plane
+    //
+    if (n.name () == "plane" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< plane_type > r (
+        plane_traits::create (i, f, this));
+
+      if (!plane_.present ())
+      {
+        this->plane_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // number_particles
+    //
+    if (n.name () == "number_particles" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< number_particles_type > r (
+        number_particles_traits::create (i, f, this));
+
+      if (!number_particles_.present ())
+      {
+        this->number_particles_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // velocity
+    //
+    if (n.name () == "velocity" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< velocity_type > r (
+        velocity_traits::create (i, f, this));
+
+      if (!velocity_.present ())
+      {
+        this->velocity_.set (::std::move (r));
+        continue;
+      }
+    }
+
+    // spacing
+    //
+    if (n.name () == "spacing" && n.namespace_ ().empty ())
+    {
+      if (!spacing_.present ())
+      {
+        this->spacing_.set (spacing_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // mass
+    //
+    if (n.name () == "mass" && n.namespace_ ().empty ())
+    {
+      if (!mass_.present ())
+      {
+        this->mass_.set (mass_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // type
+    //
+    if (n.name () == "type" && n.namespace_ ().empty ())
+    {
+      if (!type_.present ())
+      {
+        this->type_.set (type_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // eps
+    //
+    if (n.name () == "eps" && n.namespace_ ().empty ())
+    {
+      if (!eps_.present ())
+      {
+        this->eps_.set (eps_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // sigma
+    //
+    if (n.name () == "sigma" && n.namespace_ ().empty ())
+    {
+      if (!sigma_.present ())
+      {
+        this->sigma_.set (sigma_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // r_zero
+    //
+    if (n.name () == "r_zero" && n.namespace_ ().empty ())
+    {
+      if (!r_zero_.present ())
+      {
+        this->r_zero_.set (r_zero_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // k
+    //
+    if (n.name () == "k" && n.namespace_ ().empty ())
+    {
+      if (!k_.present ())
+      {
+        this->k_.set (k_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // F_up
+    //
+    if (n.name () == "F_up" && n.namespace_ ().empty ())
+    {
+      if (!F_up_.present ())
+      {
+        this->F_up_.set (F_up_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!base_coordinates_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "base_coordinates",
+      "");
+  }
+
+  if (!plane_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "plane",
+      "");
+  }
+
+  if (!number_particles_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "number_particles",
+      "");
+  }
+
+  if (!velocity_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "velocity",
+      "");
+  }
+
+  if (!spacing_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "spacing",
+      "");
+  }
+
+  if (!mass_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "mass",
+      "");
+  }
+
+  if (!type_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "type",
+      "");
+  }
+
+  if (!eps_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "eps",
+      "");
+  }
+
+  if (!sigma_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "sigma",
+      "");
+  }
+
+  if (!r_zero_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "r_zero",
+      "");
+  }
+
+  if (!k_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "k",
+      "");
+  }
+
+  if (!F_up_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "F_up",
+      "");
+  }
+}
+
+membrane* membrane::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class membrane (*this, f, c);
+}
+
+membrane& membrane::
+operator= (const membrane& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->base_coordinates_ = x.base_coordinates_;
+    this->plane_ = x.plane_;
+    this->number_particles_ = x.number_particles_;
+    this->velocity_ = x.velocity_;
+    this->spacing_ = x.spacing_;
+    this->mass_ = x.mass_;
+    this->type_ = x.type_;
+    this->eps_ = x.eps_;
+    this->sigma_ = x.sigma_;
+    this->r_zero_ = x.r_zero_;
+    this->k_ = x.k_;
+    this->F_up_ = x.F_up_;
+  }
+
+  return *this;
+}
+
+membrane::
+~membrane ()
 {
 }
 
@@ -4227,6 +5062,118 @@ operator= (const position& x)
 
 position::
 ~position ()
+{
+}
+
+// number_particles1
+//
+
+number_particles1::
+number_particles1 (const width_type& width,
+                   const height_type& height)
+: ::xml_schema::type (),
+  width_ (width, this),
+  height_ (height, this)
+{
+}
+
+number_particles1::
+number_particles1 (const number_particles1& x,
+                   ::xml_schema::flags f,
+                   ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  width_ (x.width_, f, this),
+  height_ (x.height_, f, this)
+{
+}
+
+number_particles1::
+number_particles1 (const ::xercesc::DOMElement& e,
+                   ::xml_schema::flags f,
+                   ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  width_ (this),
+  height_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
+    this->parse (p, f);
+  }
+}
+
+void number_particles1::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // width
+    //
+    if (n.name () == "width" && n.namespace_ ().empty ())
+    {
+      if (!width_.present ())
+      {
+        this->width_.set (width_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // height
+    //
+    if (n.name () == "height" && n.namespace_ ().empty ())
+    {
+      if (!height_.present ())
+      {
+        this->height_.set (height_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!width_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "width",
+      "");
+  }
+
+  if (!height_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "height",
+      "");
+  }
+}
+
+number_particles1* number_particles1::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class number_particles1 (*this, f, c);
+}
+
+number_particles1& number_particles1::
+operator= (const number_particles1& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->width_ = x.width_;
+    this->height_ = x.height_;
+  }
+
+  return *this;
+}
+
+number_particles1::
+~number_particles1 ()
 {
 }
 
@@ -4939,6 +5886,20 @@ operator<< (::xercesc::DOMElement& e, const Particles& i)
 
     s << *b;
   }
+
+  // membrane
+  //
+  for (Particles::membrane_const_iterator
+       b (i.membrane ().begin ()), n (i.membrane ().end ());
+       b != n; ++b)
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "membrane",
+        e));
+
+    s << *b;
+  }
 }
 
 void
@@ -5144,6 +6105,17 @@ operator<< (::xercesc::DOMElement& e, const cuboid& i)
 
     s << ::xml_schema::as_decimal(i.sigma ());
   }
+
+  // fixed
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "fixed",
+        e));
+
+    s << i.fixed ();
+  }
 }
 
 void
@@ -5215,6 +6187,17 @@ operator<< (::xercesc::DOMElement& e, const particle& i)
         e));
 
     s << ::xml_schema::as_decimal(i.sigma ());
+  }
+
+  // fixed
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "fixed",
+        e));
+
+    s << i.fixed ();
   }
 }
 
@@ -5300,6 +6283,17 @@ operator<< (::xercesc::DOMElement& e, const disc& i)
     s << ::xml_schema::as_decimal(i.sigma ());
   }
 
+  // fixed
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "fixed",
+        e));
+
+    s << i.fixed ();
+  }
+
   // spacing
   //
   {
@@ -5326,6 +6320,144 @@ operator<< (::xercesc::DOMElement& e, const checkpoint& i)
         e));
 
     s << i.checkpoint_file ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const membrane& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // base_coordinates
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "base_coordinates",
+        e));
+
+    s << i.base_coordinates ();
+  }
+
+  // plane
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "plane",
+        e));
+
+    s << i.plane ();
+  }
+
+  // number_particles
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "number_particles",
+        e));
+
+    s << i.number_particles ();
+  }
+
+  // velocity
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "velocity",
+        e));
+
+    s << i.velocity ();
+  }
+
+  // spacing
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "spacing",
+        e));
+
+    s << ::xml_schema::as_decimal(i.spacing ());
+  }
+
+  // mass
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "mass",
+        e));
+
+    s << ::xml_schema::as_decimal(i.mass ());
+  }
+
+  // type
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "type",
+        e));
+
+    s << i.type ();
+  }
+
+  // eps
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "eps",
+        e));
+
+    s << ::xml_schema::as_decimal(i.eps ());
+  }
+
+  // sigma
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "sigma",
+        e));
+
+    s << ::xml_schema::as_decimal(i.sigma ());
+  }
+
+  // r_zero
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "r_zero",
+        e));
+
+    s << ::xml_schema::as_double(i.r_zero ());
+  }
+
+  // k
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "k",
+        e));
+
+    s << ::xml_schema::as_double(i.k ());
+  }
+
+  // F_up
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "F_up",
+        e));
+
+    s << ::xml_schema::as_double(i.F_up ());
   }
 }
 
@@ -5482,6 +6614,34 @@ operator<< (::xercesc::DOMElement& e, const position& i)
         e));
 
     s << ::xml_schema::as_decimal(i.z_coordinate ());
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const number_particles1& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // width
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "width",
+        e));
+
+    s << i.width ();
+  }
+
+  // height
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "height",
+        e));
+
+    s << i.height ();
   }
 }
 

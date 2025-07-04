@@ -120,7 +120,8 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename) {
 
         //Reading in all Particle discs
         readInParticles(particle_in, *particles, dim, therm.T_init());
-
+        //Reading in all Membranes
+        readInMembranes(particle_in,*particles,dim,therm.T_init());
 
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Finished reading in Particles.", iteration);
     } catch (const xml_schema::exception &e) {
@@ -160,7 +161,8 @@ void XMLReader::readoutParams(Parameters &param) {
     }
 }
 
-void XMLReader::readInCubes(Particles &particle_in, ParticleContainer &particles, int dim, double T_init) {
+void XMLReader::readInCubes(Particles &particle_in, ParticleContainer &particles, int dim, double T_init)
+{
     for (auto &cube: particle_in.cuboid()) {
         double f_i = sqrt(T_init / cube.mass());
         std::array<double, 3> x = {
@@ -170,6 +172,11 @@ void XMLReader::readInCubes(Particles &particle_in, ParticleContainer &particles
         std::array<int64_t, 3> n = {
             cube.number_particles().x_number(), cube.number_particles().y_number(), cube.number_particles().z_number()
         };
+        if (cube.fixed())
+        {
+            ParticleGenerator::generateFixedCube(particles, x, n, cube.spacing(), cube.mass(), cube.eps(), cube.sigma(), cube.type());
+
+        }else{
         std::array<double, 3> v = {
             cube.velocity().x_velocity(), cube.velocity().y_velocity(), cube.velocity().z_velocity()
         };
@@ -177,33 +184,82 @@ void XMLReader::readInCubes(Particles &particle_in, ParticleContainer &particles
                                         v, cube.type(), dim, f_i);
     }
 }
+}
 
-void XMLReader::readInDiscs(Particles &particle_in, ParticleContainer &particles, int dim, double T_init) {
-    for (auto &disc: particle_in.disc()) {
+void XMLReader::readInDiscs(Particles &particle_in, ParticleContainer &particles, int dim, double T_init)
+{
+    for (auto &disc: particle_in.disc())
+    {
         double f_i = sqrt(T_init / disc.mass());
         std::array<double, 3> x = {
             disc.position().x_coordinate(), disc.position().y_coordinate(), disc.position().z_coordinate()
         };
-        std::array<double, 3> v = {
-            disc.velocity().x_velocity(), disc.velocity().y_velocity(), disc.velocity().z_velocity()
-        };
-        ParticleGenerator::generateDisc(particles, x, disc.radius(), disc.spacing(), disc.mass(),
-                                        disc.eps(), disc.sigma(), v, disc.type(), dim, f_i);
+        if (disc.fixed())
+            {
+            ParticleGenerator::generateFixedDisc(particles, x, disc.radius(), disc.spacing(), disc.mass(),disc.eps(), disc.sigma(), disc.type());
+            } else
+            {
+            std::array<double, 3> v = {
+                disc.velocity().x_velocity(), disc.velocity().y_velocity(), disc.velocity().z_velocity()
+            };
+            ParticleGenerator::generateDisc(particles, x, disc.radius(), disc.spacing(), disc.mass(),
+                                            disc.eps(), disc.sigma(), v, disc.type(), dim, f_i);
+            }
+
     }
 }
 
 void XMLReader::readInParticles(Particles &particle_in, ParticleContainer &particles, int dim, double T_init) {
-    for (auto &part: particle_in.particle()) {
+    for (auto &part: particle_in.particle())
+    {
         double f_i = sqrt(T_init / part.mass());
         std::array<double, 3> x = {
             part.position().x_coordinate(), part.position().y_coordinate(), part.position().z_coordinate()
         };
-        std::array<double, 3> v = {
-            part.velocity().x_velocity(), part.velocity().y_velocity(), part.velocity().z_velocity()
-        };
-        v = ParticleGenerator::generateInitVel(v, dim, f_i);
-        particles.addParticle(Particle(x, v, part.mass(), part.eps(), part.sigma(), part.type(), 0));
+        if (part.fixed()){
+            particles.addParticle(Particle(x, {0,0,0}, part.mass(), part.eps(), part.sigma(), part.type(), 2));
+        } else
+        {
+            std::array<double, 3> v = {
+                part.velocity().x_velocity(), part.velocity().y_velocity(), part.velocity().z_velocity()
+            };
+            v = ParticleGenerator::generateInitVel(v, dim, f_i);
+            particles.addParticle(Particle(x, v, part.mass(), part.eps(), part.sigma(), part.type(), 0));
+        }
+
     }
+}
+
+void XMLReader::readInMembranes(const Particles& particle_in, ParticleContainer& particles, int dim,
+                                double T_init)
+{
+    for (auto &membrane: particle_in.membrane()) {
+    double f_i = sqrt(T_init / membrane.mass());
+    std::array<double, 3> x = {
+        membrane.base_coordinates().x_coordinate(), membrane.base_coordinates().y_coordinate(),
+        membrane.base_coordinates().z_coordinate()
+    };
+    std::array<int64_t, 3> n;
+    if (strcmp(membrane.plane().c_str(), "xy") == 0)
+    {
+         n = { membrane.number_particles().width(), membrane.number_particles().height(),1};
+
+    } else if (strcmp(membrane.plane().c_str(), "xz") == 0)
+    {
+         n = { membrane.number_particles().width(),1, membrane.number_particles().height()};
+    } else
+    {
+         n = {1, membrane.number_particles().height(), membrane.number_particles().width()};
+    }
+
+    std::array<double, 3> v = {
+        membrane.velocity().x_velocity(), membrane.velocity().y_velocity(), membrane.velocity().z_velocity()
+    };
+    ParticleGenerator::generateMembrane(particles, x, n, membrane.spacing(), membrane.mass(), membrane.eps(), membrane.sigma(),
+                                    v, membrane.type(), dim, f_i, membrane.k(),membrane.r_zero(), membrane.F_up());
+}
+
+
 }
 
 int XMLReader::parse_bound(const std::string &bound) {

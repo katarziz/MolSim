@@ -9,10 +9,12 @@
 
 BasicParticleContainer::BasicParticleContainer() {
     particles = std::vector<Particle>();
+    membranes=std::vector<Membrane>();
 }
 
 BasicParticleContainer::BasicParticleContainer(const std::vector<Particle> &particles_arg) {
     particles = particles_arg;
+    membranes=std::vector<Membrane>();
 }
 
 void BasicParticleContainer::addParticle(const Particle &p) {
@@ -25,6 +27,48 @@ void BasicParticleContainer::addParticles(const std::vector<Particle> &p){
 
 const std::vector<Particle> &BasicParticleContainer::getParticles() const {
     return particles;
+}
+
+void BasicParticleContainer::addMembrane(Membrane &mem)
+{
+    membranes.push_back(mem);
+}
+
+const std::vector<Membrane>& BasicParticleContainer::getMembranes() const
+{
+    return membranes;
+}
+
+void BasicParticleContainer::applyUnarytoMembrane(const Membrane &mem, const std::function<void(Particle &i)> fun)
+{
+    for (auto i=mem.get_offset();i<mem.get_offset()+mem.get_size();++i)
+    {
+        fun(particles[i]);
+    }
+}
+void BasicParticleContainer::applyMembraneForces(const Membrane &mem)
+{   int8_t begin=mem.get_offset();
+    int8_t end=mem.get_offset()+mem.get_size();
+    int8_t width=mem.get_width();
+    for (auto i=begin;i<end;++i)
+    {
+        if (i+1<end && (i-begin)/width== (i+1-begin)/width)
+        {
+            mem.calculateMem_Force(particles[i],particles[i+1]);
+        }
+        if (i+width<end)
+        {
+            mem.calculateMem_Force(particles[i],particles[i+width]);
+        }
+        if (i+width+1<end && (i-begin)/width+1== (i+width+1-begin)/width)
+        {
+            mem.calculateMem_Force_Diag(particles[i],particles[i+width+1]);
+        }
+        if (i+width-1<end && (i-begin)/width != (i+width-1-begin)/width)
+        {
+            mem.calculateMem_Force_Diag(particles[i],particles[i+width-1]);
+        }
+    }
 }
 
 int BasicParticleContainer::size() const {

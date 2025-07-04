@@ -89,6 +89,7 @@
                                         <xs:element name="type" type="xs:integer" default="0"/>
                                         <xs:element name="eps" type="xs:decimal"/>
                                         <xs:element name="sigma" type="xs:decimal"/>
+                                        <xs:element name="fixed" type="xs:boolean"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
@@ -117,6 +118,7 @@
                                         <xs:element name="type" type="xs:integer" default="0"/>
                                         <xs:element name="eps" type="xs:decimal"/>
                                         <xs:element name="sigma" type="xs:decimal"/>
+                                        <xs:element name="fixed" type="xs:boolean"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
@@ -146,6 +148,7 @@
                                         <xs:element name="type" type="xs:integer" default="0"/>
                                         <xs:element name="eps" type="xs:decimal"/>
                                         <xs:element name="sigma" type="xs:decimal"/>
+                                        <xs:element name="fixed" type="xs:boolean"/>
                                         <xs:element name="spacing" type="xs:decimal"/>
                                     </xs:sequence>
                                 </xs:complexType>
@@ -154,6 +157,47 @@
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element name="checkpoint_file" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="membrane" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="base_coordinates">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="x-coordinate" type="xs:decimal"/>
+                                                    <xs:element name="y-coordinate" type="xs:decimal"/>
+                                                    <xs:element name="z-coordinate" type="xs:decimal"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                       <xs:element name="plane" type="xs:string"/>
+                                        <xs:element name="number_particles">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="width" type="xs:integer"/>
+                                                    <xs:element name="height" type="xs:integer"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="velocity">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="x-velocity" type="xs:decimal"/>
+                                                    <xs:element name="y-velocity" type="xs:decimal"/>
+                                                    <xs:element name="z-velocity" type="xs:decimal"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="spacing" type="xs:decimal"/>
+                                        <xs:element name="mass" type="xs:decimal"/>
+                                        <xs:element name="type" type="xs:integer" default="0"/>
+                                        <xs:element name="eps" type="xs:decimal"/>
+                                        <xs:element name="sigma" type="xs:decimal"/>
+                                        <xs:element name="r_zero" type="xs:double"/>
+                                        <xs:element name="k" type="xs:double"/>
+                                        <xs:element name="F_up" type="xs:double"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>

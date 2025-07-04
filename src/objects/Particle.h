@@ -53,6 +53,9 @@ public:
 
     /**
      * The state of the particle. Is it to be considered active, disabled, or other options.
+     * lowest bit: disabled 1, enabled 0
+     * second-lowest bit: fixed 1, free 0
+     * third-lowest bit: membrane 1, free 0
      */
     int state;
 

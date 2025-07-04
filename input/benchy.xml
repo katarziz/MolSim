@@ -55,6 +55,7 @@
             <type>0</type>
             <eps>1.0</eps>
             <sigma>1.2</sigma>
+            <fixed>false</fixed>
         </cuboid>
         <cuboid>
             <base_coordinates>
@@ -77,6 +78,7 @@
             <type>1</type>
             <eps>1.0</eps>
             <sigma>1.1</sigma>
+            <fixed>false</fixed>
         </cuboid>
     </Particles>
 </Molsim_Input>

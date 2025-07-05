@@ -37,11 +37,11 @@ public:
      */
     double m;
     /**
-     * Lennard-Jones Parameter epsilon of this Particle
+     * Lennard-Jones Parameter epsilon of this Particle, sqrt(epsilon) stored for performance reasons
      */
     double eps;
     /**
-     * Lennard-Jones Parameter sigma of this Particle
+     * Lennard-Jones Parameter sigma of this Particle, sigma / 2 stored for performance reasons
      */
     double sig;
 

@@ -173,7 +173,7 @@ void XMLReader::readInCubes(Particles &particle_in, ParticleContainer &particles
         std::array<double, 3> v = {
             cube.velocity().x_velocity(), cube.velocity().y_velocity(), cube.velocity().z_velocity()
         };
-        ParticleGenerator::generateCube(particles, x, n, cube.spacing(), cube.mass(), cube.eps(), cube.sigma(),
+        ParticleGenerator::generateCube(particles, x, n, cube.spacing(), cube.mass(), std::sqrt(cube.eps()), cube.sigma() / 2,
                                         v, cube.type(), dim, f_i);
     }
 }
@@ -188,7 +188,7 @@ void XMLReader::readInDiscs(Particles &particle_in, ParticleContainer &particles
             disc.velocity().x_velocity(), disc.velocity().y_velocity(), disc.velocity().z_velocity()
         };
         ParticleGenerator::generateDisc(particles, x, disc.radius(), disc.spacing(), disc.mass(),
-                                        disc.eps(), disc.sigma(), v, disc.type(), dim, f_i);
+                                        std::sqrt(disc.eps()), disc.sigma() / 2, v, disc.type(), dim, f_i);
     }
 }
 
@@ -202,7 +202,7 @@ void XMLReader::readInParticles(Particles &particle_in, ParticleContainer &parti
             part.velocity().x_velocity(), part.velocity().y_velocity(), part.velocity().z_velocity()
         };
         v = ParticleGenerator::generateInitVel(v, dim, f_i);
-        particles.addParticle(Particle(x, v, part.mass(), part.eps(), part.sigma(), part.type(), 0));
+        particles.addParticle(Particle(x, v, part.mass(), std::sqrt(part.eps()), part.sigma() / 2, part.type(), 0));
     }
 }
 

@@ -190,32 +190,38 @@ int main(int argc, char *argsv[]) {
 
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
         iteration++;
+        current_time += delta_t;
         if (iteration % out_freq == 0) {
             // current MUPS/s
-            long MUPS_per_second = iteration * 1000000
-                                   / std::chrono::duration_cast<std::chrono::microseconds>(
-                                       clock::now() - start_time_clock).
-                                   count();
+            double MUPS_per_second = iteration * 1000000.0
+                                     / std::chrono::duration_cast<std::chrono::microseconds>(
+                                         clock::now() - start_time_clock).count();
             plotParticles(iteration);
-            std::cout << "\rProgress: " << std::ceil(1000 * current_time / end_time) / 10 << "%\t"
-                    "Current updates per second: " << MUPS_per_second << "MUPS/s    " << std::flush;
+            std::cout << fmt::format(
+                    "\rProgress: {:.1f}%\tCurrent updates per second: {:.1f}MUPS/s\t",
+                    current_time / end_time * 100, MUPS_per_second) << std::flush;
         }
+
         if (checkpoint_freq != 0 && iteration % checkpoint_freq == 0) {
             FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
         }
-
-        current_time += delta_t;
     }
+
     auto end_time_clock = clock::now();
-    auto time_taken = std::chrono::duration_cast<std::chrono::microseconds>(end_time_clock - start_time_clock);
+    auto time_taken = static_cast<double>(
+        std::chrono::duration_cast<std::chrono::microseconds>(end_time_clock - start_time_clock).count());
     std::cout << std::endl;
-    //! Write Final Checkpoint
+
+    // Write Final Checkpoint
     FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
+
     particles->~ParticleContainer();
+
     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
-    SPDLOG_LOGGER_INFO(spdlog::get("default"), "Time taken: {:.1f}s\tAverage updates per second: {}MUPS/s",
-                       static_cast<double>(time_taken.count()) / 1000000, iteration * 1000000 / time_taken.count());
+    SPDLOG_LOGGER_INFO(spdlog::get("default"), "Time taken: {:.1f}s\tAverage updates per second: {:.1f}MUPS/s",
+                       time_taken / 1000000.0, iteration * 1000000.0 / time_taken);
     SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation finished. Terminating...");
+
     return 0;
 }
 

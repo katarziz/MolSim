@@ -21,6 +21,7 @@ private:
     double cutoff;
     const int boundary_width = 1;
     std::array<int, 6> boundary_conditions;
+    int omp_strategy = 0;
 
 public:
     //! a constructor for an empty Particle Container
@@ -59,6 +60,13 @@ public:
     void setParameters(const std::array<double, 3> &box_size_arg,
                        const std::array<int64_t, 3> &cell_number_arg,
                        const double &cutoff_arg, const std::array<int, 6> &bounds_arg);
+
+    //! a function to set the omp strategy of a LinkedCellParticleContainer
+    /*!
+     \param omp_strategy_arg the strategy to use for computation
+            0: none/serial, 1: coarse/block-wise parallel, 2: granular/cell-wise parallel
+     */
+    void setOMPStrategy(const int &omp_strategy_arg);
 
     //! A function to add a Particle to the ParticleContainer
     /*!
@@ -123,11 +131,23 @@ public:
     void applyBinaryToCells(std::function<void(Particle &i, Particle &j)> fun, std::vector<int> &i_cell,
                             std::vector<int> &j_cell);
 
+    //! Applies a binary function to a particle at the specified index and its neighboring particles.
+    /*!
+     \param fun The binary function to be applied, taking two particles as arguments.
+     \param i_x The x index of the middle cell
+     \param i_y The y index of the middle cell
+     \param i_z The z index of the middle cell
+    */
+    void applyBinaryToNeighbors(std::function<void(Particle &i, Particle &j)> fun,
+                                const int &i_x, const int &i_y, const int &i_z);
+
     //! A function to apply a binary function to pairs of Particles in neighboring cells of the ParticleContainer
     /*!
         \param fun a binary function to be applied pairwise to the Particles in neighboring cells of the ParticleContainer
     */
     void applyBinary(std::function<void(Particle &i, Particle &j)> fun) override;
+
+    void applyBinaryAlt(std::function<void(Particle &i, Particle &j)> fun);
 
     //! A function to update the cells of the ParticleContainer
     /*!

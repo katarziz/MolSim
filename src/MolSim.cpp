@@ -151,6 +151,7 @@ int main(int argc, char *argsv[]) {
     XMLReader::readFile(particles, input_file);
     if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
         lcparticles->setParameters(box_dim, cell_num, r_c, bounds);
+        lcparticles->setOMPStrategy(1);
     }
 
     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");

@@ -46,6 +46,11 @@ target_link_libraries(MolSim
             spdlog::spdlog
 )
 
+find_package(OpenMP)
+if (OpenMP_CXX_FOUND)
+    target_link_libraries(MolSim PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
 # activate all compiler warnings. Clean up your code :P
 # depending on the compiler different flags are used
 target_compile_options(MolSim

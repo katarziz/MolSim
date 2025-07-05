@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <spdlog/spdlog.h>
+#include <omp.h>
 
 #include "simulation/LennardJones.h"
 #include "utils/ArrayUtils.h"
@@ -73,6 +74,11 @@ void LinkedCellParticleContainer::setParameters(const std::array<double, 3> &box
     boundary_conditions = bounds_arg;
 }
 
+void LinkedCellParticleContainer::setOMPStrategy(const int &omp_strategy_arg) {
+    omp_strategy = omp_strategy_arg;
+}
+
+
 void LinkedCellParticleContainer::addParticle(const Particle &p) {
     particles.push_back(p);
     // std::array<int, 3> indices = {0,0,0};
@@ -137,52 +143,77 @@ void LinkedCellParticleContainer::applyBinaryToCells(const std::function<void(Pa
     }
 }
 
+void LinkedCellParticleContainer::applyBinaryToNeighbors(std::function<void(Particle &i, Particle &j)> fun,
+                                                         const int &i_x, const int &i_y, const int &i_z) {
+    const int index = i_x + i_y * cell_number[0] + i_z * cell_number[0] * cell_number[1];
+    auto &i_cell = cells[index];
+    // calculations within i_cell to avoid duplicate calculations.
+    for (unsigned int i = 0; i < i_cell.size(); ++i) {
+        for (unsigned int j = 0; j < i; ++j) {
+            fun(particles.at(i_cell[i]), particles.at(i_cell[j]));
+        }
+    }
+
+    // the immediate and diagonal neighbors of i_cell are 26.
+    // to avoid calculating twice, only one side of each pair of neighbors is used for the calculation.
+    // a pair is such, that fun(a,a+offset) is the same as fun(b-offset,b) or fun(b,b-offset)
+    // we only need to calculate either +offset or -offset.
+    // were one to replace j = i - 1 with j = i + 1, this would calculate the other half.
+    int j_x = i_x - 1, j_y, j_z;
+    for (j_y = i_y - 1; j_y < i_y + 2; ++j_y) {
+        for (j_z = i_z - 1; j_z < i_z + 2; ++j_z) {
+            if (j_x >= 0 && j_x < cell_number[0] &&
+                j_y >= 0 && j_y < cell_number[1] &&
+                j_z >= 0 && j_z < cell_number[2]) {
+                auto &j_cell = cells[j_x + j_y * cell_number[0] + j_z * cell_number[0] * cell_number[1]];
+                applyBinaryToCells(fun, i_cell, j_cell);
+            }
+        }
+    }
+    j_x = i_x;
+    j_y = i_y - 1;
+    for (j_z = i_z - 1; j_z < i_z + 2; ++j_z) {
+        if (j_x >= 0 && j_x < cell_number[0] &&
+            j_y >= 0 && j_y < cell_number[1] &&
+            j_z >= 0 && j_z < cell_number[2]) {
+            auto &j_cell = cells[j_x + j_y * cell_number[0] + j_z * cell_number[0] * cell_number[1]];
+            applyBinaryToCells(fun, i_cell, j_cell);
+        }
+    }
+    j_y = i_y;
+    j_z = i_z - 1;
+    if (j_x >= 0 && j_x < cell_number[0] &&
+        j_y >= 0 && j_y < cell_number[1] &&
+        j_z >= 0 && j_z < cell_number[2]) {
+        auto &j_cell = cells[j_x + j_y * cell_number[0] + j_z * cell_number[0] * cell_number[1]];
+        applyBinaryToCells(fun, i_cell, j_cell);
+    }
+}
+
 void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle &i, Particle &j)> fun) {
-    for (int i_x = 0; i_x < cell_number[0]; ++i_x) {
-        for (int i_y = 0; i_y < cell_number[1]; ++i_y) {
-            for (int i_z = 0; i_z < cell_number[2]; ++i_z) {
-                const int index = i_x + i_y * cell_number[0] + i_z * cell_number[0] * cell_number[1];
-                auto &i_cell = cells[index];
-                // calculations within i_cell to avoid duplicate calculations.
-                for (unsigned int i = 0; i < i_cell.size(); ++i) {
-                    for (unsigned int j = 0; j < i; ++j) {
-                        fun(particles.at(i_cell[i]), particles.at(i_cell[j]));
+    if (omp_strategy < 2) {
+        for (int even = 0; even < 2; ++even) {
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic) if(omp_strategy == 1)
+#endif
+            for (int i_x = even; i_x < cell_number[0]; i_x += 2) {
+                for (int i_y = 0; i_y < cell_number[1]; ++i_y) {
+                    for (int i_z = 0; i_z < cell_number[2]; ++i_z) {
+                        applyBinaryToNeighbors(fun, i_x, i_y, i_z);
                     }
                 }
-                // TODO is this iteration good?
-                // the immediate and diagonal neighbors of i_cell are 26.
-                // to avoid calculating twice, only one side of each pair of neighbors is used for the calculation.
-                // a pair is such, that fun(a,a+offset) is the same as fun(b-offset,b) or fun(b,b-offset)
-                // we only need to calculate either +offset or -offset.
-                // were one to replace j = i - 1 with j = i + 1, this would calculate the other half.
-                int j_x = i_x - 1, j_y, j_z;
-                for (j_y = i_y - 1; j_y < i_y + 2; ++j_y) {
-                    for (j_z = i_z - 1; j_z < i_z + 2; ++j_z) {
-                        if (j_x >= 0 && j_x < cell_number[0] &&
-                            j_y >= 0 && j_y < cell_number[1] &&
-                            j_z >= 0 && j_z < cell_number[2]) {
-                            auto &j_cell = cells[j_x + j_y * cell_number[0] + j_z * cell_number[0] * cell_number[1]];
-                            applyBinaryToCells(fun, i_cell, j_cell);
-                        }
+            }
+        }
+    } else {
+        for (int color = 0; color < 27; ++color) {
+#ifdef _OPENMP
+#pragma omp parallel for collapse(3) schedule(dynamic)
+#endif
+            for (int i_x = color % 3; i_x < cell_number[0]; i_x += 3) {
+                for (int i_y = (color / 3) % 3; i_y < cell_number[1]; i_y += 3) {
+                    for (int i_z = (color / 9) % 3; i_z < cell_number[2]; i_z += 3) {
+                        applyBinaryToNeighbors(fun, i_x, i_y, i_z);
                     }
-                }
-                j_x = i_x;
-                j_y = i_y - 1;
-                for (j_z = i_z - 1; j_z < i_z + 2; ++j_z) {
-                    if (j_x >= 0 && j_x < cell_number[0] &&
-                        j_y >= 0 && j_y < cell_number[1] &&
-                        j_z >= 0 && j_z < cell_number[2]) {
-                        auto &j_cell = cells[j_x + j_y * cell_number[0] + j_z * cell_number[0] * cell_number[1]];
-                        applyBinaryToCells(fun, i_cell, j_cell);
-                    }
-                }
-                j_y = i_y;
-                j_z = i_z - 1;
-                if (j_x >= 0 && j_x < cell_number[0] &&
-                    j_y >= 0 && j_y < cell_number[1] &&
-                    j_z >= 0 && j_z < cell_number[2]) {
-                    auto &j_cell = cells[j_x + j_y * cell_number[0] + j_z * cell_number[0] * cell_number[1]];
-                    applyBinaryToCells(fun, i_cell, j_cell);
                 }
             }
         }
@@ -196,9 +227,11 @@ void LinkedCellParticleContainer::updateCells() {
             cell_number[0] *
             cell_number[1] *
             cell_number[2];
-    cells = std::vector<std::vector<int> >(size);
+    if (cells.size() != size) {
+        cells = std::vector<std::vector<int> >(size);
+    }
     for (int i = 0; i < size; ++i) {
-        cells[i] = std::vector<int>();
+        cells[i].clear();
     }
     for (unsigned int i = 0; i < particles.size(); ++i) {
         Particle &p = particles[i];
@@ -214,9 +247,13 @@ void LinkedCellParticleContainer::updateCells() {
                     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
                                         p.getX()[0], p.getX()[1], p.getX()[2]);
                     indices[j] += cell_number[j];
-                    auto p_x = p.x;
-                    p_x[j] += box_size[j];
-                    p.x = p_x;
+                    p.x[j] += box_size[j];
+                    if (p.v[j] < -box_size[j]) {
+                        SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} removed by whiplash.",
+                                            p.getX()[0], p.getX()[1], p.getX()[2]);
+                        p.state = 1;
+                        break;
+                    }
                 } else if (indices[j] >= cell_number[j] && boundary_conditions[j + 3] == 2) {
                     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
                                         p.getX()[0], p.getX()[1], p.getX()[2]);
@@ -224,6 +261,12 @@ void LinkedCellParticleContainer::updateCells() {
                     auto p_x = p.x;
                     p_x[j] -= box_size[j];
                     p.x = p_x;
+                    if (p.v[j] > box_size[j]) {
+                        SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} removed by whiplash.",
+                                            p.getX()[0], p.getX()[1], p.getX()[2]);
+                        p.state = 1;
+                        break;
+                    }
                 } else {
                     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} moved to halo.",
                                        p.getX()[0], p.getX()[1], p.getX()[2]);

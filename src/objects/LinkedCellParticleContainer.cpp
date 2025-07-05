@@ -205,13 +205,13 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
             }
         }
     } else {
-        for (int color = 0; color < 27; ++color) {
+        for (int color = 0; color < 18; ++color) {
 #ifdef _OPENMP
 #pragma omp parallel for collapse(3) schedule(dynamic)
 #endif
-            for (int i_x = color % 3; i_x < cell_number[0]; i_x += 3) {
-                for (int i_y = (color / 3) % 3; i_y < cell_number[1]; i_y += 3) {
-                    for (int i_z = (color / 9) % 3; i_z < cell_number[2]; i_z += 3) {
+            for (int i_x = color & 1; i_x < cell_number[0]; i_x += 2) {
+                for (int i_y = (color >> 1) % 3; i_y < cell_number[1]; i_y += 3) {
+                    for (int i_z = (color / 6) % 3; i_z < cell_number[2]; i_z += 3) {
                         applyBinaryToNeighbors(fun, i_x, i_y, i_z);
                     }
                 }

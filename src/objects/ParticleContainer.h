@@ -29,7 +29,7 @@ public:
 
     virtual std::vector<Particle>::const_iterator end() const = 0;
 
-    virtual void applyUnary(std::function<void(Particle &i)> fun) = 0;
+    virtual void applyUnary(const std::function<void(Particle &i)> &fun) = 0;
 
-    virtual void applyBinary(std::function<void(Particle &i, Particle &j)> fun) = 0;
+    virtual void applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) = 0;
 };

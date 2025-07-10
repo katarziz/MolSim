@@ -62,8 +62,8 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename) {
 
         //! array of three ints representing the number of cells. Default:1x1x1
         cell_num = {
-            static_cast<int64_t>(std::floor(box_dim[0] / r_c)), static_cast<int64_t>(ceil(box_dim[1] / r_c)),
-            static_cast<int64_t>(ceil(box_dim[2] / r_c))
+            static_cast<int>(std::ceil(box_dim[0] / r_c)), static_cast<int>(std::ceil(box_dim[1] / r_c)),
+            static_cast<int>(std::ceil(box_dim[2] / r_c))
         };
 
 

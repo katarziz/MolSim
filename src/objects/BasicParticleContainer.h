@@ -78,13 +78,13 @@ public:
     /*!
      \param fun a lambda function to be applied to all particles
      */
-    void applyUnary(std::function<void(Particle &i)> fun) override;
+    void applyUnary(const std::function<void(Particle &i)> &fun) override;
 
     //! method to iterate over all particles pairwise and apply a binary function
     /*!
      \param fun a lambda function to be applied to all particles pairwise
      */
-    void applyBinary(std::function<void(Particle &i, Particle &j)> fun) override;
+    void applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) override;
 
     //! Function which checks whether a Particle is present in a PArticleContainer
     /*!

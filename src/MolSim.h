@@ -35,7 +35,7 @@ inline double r_c = 3.0;
 //! array of three doubles representing the cell size. Default:r_c x r_c x 1
 inline std::array<double, 3> box_dim = {r_c, r_c, 1.0};
 //! array of three ints representing the number of cells. Default:1x1x1
-inline std::array<int64_t, 3> cell_num = {1, 1, 1};
+inline std::array<int, 3> cell_num = {1, 1, 1};
 //! array of six ints representing the boundary conditions: left, bottom, back, right, top, front
 // outflow:0 ("out"), reflecting:1 ("ref")
 // Default:outflow x outflow x outflow x outflow

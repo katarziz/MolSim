@@ -13,7 +13,7 @@
 class LinkedCellParticleContainer : public ParticleContainer {
 private:
     std::array<double, 3> box_size;
-    std::array<int64_t, 3> cell_number;
+    std::array<int, 3> cell_number;
     std::vector<std::vector<int> > cells;
     std::vector<Particle> particles;
     std::vector<int> boundary;
@@ -33,7 +33,7 @@ public:
             0: outflow, 1: reflective, 2: periodic
      */
     LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg,
-                                const std::array<int64_t, 3> &cell_number_arg,
+                                const std::array<int, 3> &cell_number_arg,
                                 const double &cutoff_arg, const std::array<int, 6> &bounds_arg);
 
     //! a constructor for a Particle Container
@@ -46,7 +46,7 @@ public:
             0: outflow, 1: reflective, 2: periodic
      */
     LinkedCellParticleContainer(const std::vector<Particle> &particles_arg, const std::array<double, 3> &box_size_arg,
-                                const std::array<int64_t, 3> &cell_number_arg, const double &cutoff_arg,
+                                const std::array<int, 3> &cell_number_arg, const double &cutoff_arg,
                                 const std::array<int, 6> &bounds_arg);
 
     //! a function to set the parameters of a LinkedCellParticleContainer
@@ -58,7 +58,7 @@ public:
             0: outflow, 1: reflective, 2: periodic
      */
     void setParameters(const std::array<double, 3> &box_size_arg,
-                       const std::array<int64_t, 3> &cell_number_arg,
+                       const std::array<int, 3> &cell_number_arg,
                        const double &cutoff_arg, const std::array<int, 6> &bounds_arg);
 
     //! a function to set the omp strategy of a LinkedCellParticleContainer
@@ -120,7 +120,15 @@ public:
     /*!
     \param fun a unary function to be applied to the Particles in the ParticleContainer
    */
-    void applyUnary(std::function<void(Particle &i)> fun) override;
+    void applyUnary(const std::function<void(Particle &i)> &fun) override;
+
+    //! A helper function to calculate the index of a flattened array based on three base indices
+    /*!
+     \param i_x the index on the x axis
+     \param i_y the index on the y axis
+     \param i_z the index on the z axis
+     */
+    [[nodiscard]] inline int calcIndex(const int &i_x, const int &i_y, const int &i_z) const;
 
     //! A function to apply a binary function to pairs of Particles between two cells of the ParticleContainer
     /*!
@@ -128,8 +136,8 @@ public:
         \param i_cell the first cell of the operation
         \param j_cell the second cell of the operation
     */
-    void applyBinaryToCells(std::function<void(Particle &i, Particle &j)> fun, std::vector<int> &i_cell,
-                            std::vector<int> &j_cell);
+    void applyBinaryToCells(const std::function<void(Particle &i, Particle &j)> &fun, const std::vector<int> &i_cell,
+                            const std::vector<int> &j_cell);
 
     //! Applies a binary function to a particle at the specified index and its neighboring particles.
     /*!
@@ -138,16 +146,14 @@ public:
      \param i_y The y index of the middle cell
      \param i_z The z index of the middle cell
     */
-    void applyBinaryToNeighbors(std::function<void(Particle &i, Particle &j)> fun,
+    void applyBinaryToNeighbors(const std::function<void(Particle &i, Particle &j)> &fun,
                                 const int &i_x, const int &i_y, const int &i_z);
 
     //! A function to apply a binary function to pairs of Particles in neighboring cells of the ParticleContainer
     /*!
         \param fun a binary function to be applied pairwise to the Particles in neighboring cells of the ParticleContainer
     */
-    void applyBinary(std::function<void(Particle &i, Particle &j)> fun) override;
-
-    void applyBinaryAlt(std::function<void(Particle &i, Particle &j)> fun);
+    void applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) override;
 
     //! A function to update the cells of the ParticleContainer
     /*!

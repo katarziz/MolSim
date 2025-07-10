@@ -48,13 +48,13 @@ std::vector<Particle>::const_iterator BasicParticleContainer::end() const {
     return particles.cend();
 }
 
-void BasicParticleContainer::applyUnary(std::function<void(Particle &i)> fun) {
+void BasicParticleContainer::applyUnary(const std::function<void(Particle &i)> &fun) {
     for (auto i = particles.begin(); i != particles.end(); ++i) {
         fun(*i);
     }
 }
 
-void BasicParticleContainer::applyBinary(std::function<void(Particle &i, Particle &j)> fun) {
+void BasicParticleContainer::applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) {
     for (auto i = particles.begin(); i != particles.end(); ++i) {
         for (auto j = particles.begin(); j != i; ++j) {
             fun(*i, *j);

@@ -23,10 +23,10 @@ void Thermostat::setParams(double temp_target_arg, double delta_temp_arg, int di
 double Thermostat::calculateTemp(ParticleContainer &particles) const {
     double e_kin = 0.0;
     for (const auto &particle: particles) {
-        if ((particle.state & 2) == 2)
+        if ((particle.state & 2) != 2)
         {
             e_kin += particle.getM() *
-            (particle.getV()[0] * particle.getV()[0]
+            (particle.v[0] * particle.getV()[0]
              + particle.getV()[1] * particle.getV()[1]
              + particle.getV()[2] * particle.getV()[2]);
         }
@@ -51,7 +51,7 @@ void Thermostat::scaleV(ParticleContainer *particles) const {
 
 
         for (auto particle = particles->begin(); particle != particles->end(); ++particle) {
-            if ((particle->state & 2) == 2)
+            if ((particle->state & 2) != 2)
             {
                 particle->setV(beta * particle->getV());
             }
@@ -73,7 +73,7 @@ double Thermostat::calculateTempAv(ParticleContainer& particles, const std::arra
 {
     double e_kin = 0.0;
     for (const auto &particle: particles) {
-        if ((particle.state & 2) == 2)
+        if ((particle.state & 2) != 2)
         {
             std::array<double, 3> therm_vel = particle.getV() - avg_vel;
             e_kin += particle.getM() *
@@ -104,7 +104,7 @@ void Thermostat::scaleVAv(ParticleContainer* particles) const
 
 
         for (auto particle = particles->begin(); particle != particles->end(); ++particle) {
-            if ((particle->state & 2) == 2)
+            if ((particle->state & 2) != 2)
             {
                 particle->setV((1-beta)*avg_vel + beta * particle->getV());
             }

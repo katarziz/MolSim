@@ -14,11 +14,12 @@ void ParticleGenerator::generateCube(ParticleContainer &particles,
                                      const double eps, const double sig,
                                      const std::array<double, 3> &velocity,
                                      const int type, const int dim,
-                                     const double brownian_motion_avg_velocity) {
+                                     const double brownian_motion_avg_velocity,int state) {
     // 3D-iteration over the cuboid
     for (int i = 0; i < number_of_particles[0]; ++i) {
         for (int j = 0; j < number_of_particles[1]; ++j) {
-            for (int k = 0; k < number_of_particles[2]; ++k) {
+            for (int k = 0; k < number_of_particles[2]; ++k)
+            {
                 // all particles are set up in a cuboid with a base velocity and an initial velocity-offset
                 // based on brownian motion and the Maxwell-Boltzmann Distribution
                 const std::array<double, 3> position = {
@@ -29,45 +30,24 @@ void ParticleGenerator::generateCube(ParticleContainer &particles,
                     // z-coordinate starting from "front-side"
                     base_coordinates[2] - spacing * k
                 };
-                std::array<double, 3> particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
-                particles.addParticle({position, particle_velocity, mass, eps, sig, type});
+                std::array<double, 3> particle_velocity={0,0,0};
+                if (state!=2)
+                {
+                particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
+                }
+                particles.addParticle({position, particle_velocity, mass, eps, sig, type,state});
             }
         }
     }
 }
 
-void ParticleGenerator::generateFixedCube(ParticleContainer &particles,
-                                     const std::array<double, 3> &base_coordinates,
-                                     const std::array<int64_t, 3> &number_of_particles,
-                                     const double spacing, const double mass,
-                                     const double eps, const double sig, const int type
-                                     ) {
-    // 3D-iteration over the cuboid
-    for (int i = 0; i < number_of_particles[0]; ++i) {
-        for (int j = 0; j < number_of_particles[1]; ++j) {
-            for (int k = 0; k < number_of_particles[2]; ++k) {
-                // all particles are set up in a cuboid with a base velocity and an initial velocity-offset
-                // based on brownian motion and the Maxwell-Boltzmann Distribution
-                const std::array<double, 3> position = {
-                    // x-coordinate starting from "left"
-                    base_coordinates[0] + spacing * i,
-                    // y-coordinate starting from "lower"
-                    base_coordinates[1] + spacing * j,
-                    // z-coordinate starting from "front-side"
-                    base_coordinates[2] - spacing * k
-                };
-                particles.addParticle({position, {0,0,0}, mass, eps, sig, type,2});
-            }
-        }
-    }
-}
 
 void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
                                      const int &radius, const double &spacing, const double &mass,
                                      const double eps, const double sig,
                                      const std::array<double, 3> &velocity,
                                      const int type, const int dim,
-                                     const double &brownian_motion_avg_velocity) {
+                                     const double &brownian_motion_avg_velocity,int state) {
     // 3D-iteration over the cuboid
     for (int i = 0; i <= radius; ++i) {
         for (int j = 0; j <= radius; ++j) {
@@ -75,81 +55,58 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
             if ((i * i) + (j * j) <= (radius * radius)) {
                 // all particles are set up in a disc with a base velocity and an initial velocity-offset
                 // based on brownian motion and the Maxwell-Boltzmann Distribution
-                std::array<double, 3> particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
+                std::array<double, 3> particle_velocity={0,0,0};
+                if (state!=2)
+                {
+                    particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
+                }
                 //Adding Particles in all 4 Quadrants of the disc
                 particles.addParticle(Particle((std::array<double, 3>){
                                                    base_coordinates[0] + spacing * i,
                                                    base_coordinates[1] + spacing * j,
                                                    base_coordinates[2]
-                                               }, particle_velocity, mass, eps, sig, type));
+                                               }, particle_velocity, mass, eps, sig, type,state));
                 if (j != 0) {
-                    particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
+                    particle_velocity={0,0,0};
+                    if (state!=2)
+                    {
+                        particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
+                    }
                     particles.addParticle(Particle((std::array<double, 3>){
                                                        base_coordinates[0] + spacing * i,
                                                        base_coordinates[1] - spacing * j,
                                                        base_coordinates[2]
-                                                   }, particle_velocity, mass, eps, sig, type));
+                                                   }, particle_velocity, mass, eps, sig, type,state));
                 }
                 if (i != 0) {
-                    particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
+                    particle_velocity={0,0,0};
+                    if (state!=2)
+                    {
+                        particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
+                    }
                     particles.addParticle(Particle((std::array<double, 3>){
                                                        base_coordinates[0] - spacing * i,
                                                        base_coordinates[1] + spacing * j,
                                                        base_coordinates[2]
-                                                   }, particle_velocity, mass, eps, sig, type));
+                                                   }, particle_velocity, mass, eps, sig, type,state));
                 }
                 if (i != 0 && j != 0) {
-                    particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
+                    particle_velocity={0,0,0};
+                    if (state!=2)
+                    {
+                        particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
+                    }
                     particles.addParticle(Particle((std::array<double, 3>){
                                                        base_coordinates[0] - spacing * i,
                                                        base_coordinates[1] - spacing * j,
                                                        base_coordinates[2]
-                                                   }, particle_velocity, mass, eps, sig, type));
+                                                   }, particle_velocity, mass, eps, sig, type,state));
                 }
             }
         }
     }
 }
 
-void ParticleGenerator::generateFixedDisc(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
-                                     const int &radius, const double &spacing, const double &mass,
-                                     const double eps, const double sig, const int type) {
-    // 3D-iteration over the cuboid
-    for (int i = 0; i <= radius; ++i) {
-        for (int j = 0; j <= radius; ++j) {
-            //Checking if Particle is within the disc radius
-            if ((i * i) + (j * j) <= (radius * radius)) {
-                 //Adding Particles in all 4 Quadrants of the disc
-                particles.addParticle(Particle((std::array<double, 3>){
-                                                   base_coordinates[0] + spacing * i,
-                                                   base_coordinates[1] + spacing * j,
-                                                   base_coordinates[2]
-                                               }, {0,0,0}, mass, eps, sig, type,2));
-                if (j != 0) {
-                    particles.addParticle(Particle((std::array<double, 3>){
-                                                       base_coordinates[0] + spacing * i,
-                                                       base_coordinates[1] - spacing * j,
-                                                       base_coordinates[2]
-                                                   }, {0,0,0}, mass, eps, sig, type,2));
-                }
-                if (i != 0) {
-                    particles.addParticle(Particle((std::array<double, 3>){
-                                                       base_coordinates[0] - spacing * i,
-                                                       base_coordinates[1] + spacing * j,
-                                                       base_coordinates[2]
-                                                   }, {0,0,0}, mass, eps, sig, type,2));
-                }
-                if (i != 0 && j != 0) {
-                    particles.addParticle(Particle((std::array<double, 3>){
-                                                       base_coordinates[0] - spacing * i,
-                                                       base_coordinates[1] - spacing * j,
-                                                       base_coordinates[2]
-                                                   }, {0,0,0},mass, eps, sig, type,2));
-                }
-            }
-        }
-    }
-}
 
 void ParticleGenerator::generateMembrane(ParticleContainer& particles, std::array<double, 3> base_coordinates,
     const std::array<int64_t, 3>& number_of_particles, double spacing, double mass, double eps, double sig,

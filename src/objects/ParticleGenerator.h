@@ -28,30 +28,15 @@ public:
      \param type int to denote the type of the particles
      \param dim int denoting the dimensions of the simulation to apply correct MB velocity
      \param brownian_motion_avg_velocity The mean-value of the velocity of the Brownian Motion
+     \param state_arg int giving the state of the particles: Default 0; Fixed: 2
      */
     static void generateCube(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
                              const std::array<int64_t, 3> &number_of_particles, double spacing,
                              double mass, double eps, double sig,
                              const std::array<double, 3> &velocity, int type, int dim,
-                             double brownian_motion_avg_velocity);
+                             double brownian_motion_avg_velocity, int state_arg=0);
 
 
-    //! A Function which adds a fixed cube of Particles with passed parameters to a Particle Container
-    /*!
-     \param particles The ParticleContainer to be generated
-     \param base_coordinates The coordinate of the lower left front-side corner of the cuboid
-     \param number_of_particles Number of particles per dimension N1 x N2 x N3
-     \param spacing Distance h of the particle (mesh width of the grid)
-     \param mass Mass m of one particle
-     \param eps  double containing Lennard-Jones Parameter epsilon of this Particle
-     \param sig  double containing Lennard-Jones Parameter sigma of this Particle
-     \param type int to denote the type of the particles
-     */
-    static void generateFixedCube(ParticleContainer &particles,
-                                     const std::array<double, 3> &base_coordinates,
-                                     const std::array<int64_t, 3> &number_of_particles,
-                                     const double spacing, const double mass,
-                                     const double eps, const double sig,const int type);
     //! A Function which adds a disc of Particles with passed parameters to a Particle Container
     /*!
      \param particles The ParticleContainer to be generated
@@ -65,28 +50,15 @@ public:
      \param type int to denote the type of the particles
      \param dim int denoting the dimensions of the simulation to apply correct MB velocity
      \param brownian_motion_avg_velocity The mean-value of the velocity of the Brownian Motion
+     \param state_arg int giving the state of the particles: Default 0; Fixed: 2
      */
     static void generateDisc(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
                              const int &radius, const double &spacing, const double &mass,
                              double eps, double sig,
                              const std::array<double, 3> &velocity,
                              int type, int dim,
-                             const double &brownian_motion_avg_velocity);
+                             const double &brownian_motion_avg_velocity,int state_arg=0);
 
-    //! A Function which adds a fixed disc of Particles with passed parameters to a Particle Container
-    /*!
-     \param particles The ParticleContainer to be generated
-     \param base_coordinates The coordinate of the lower left front-side corner of the cuboid
-     \param radius Number of particles forming the radius of the disc
-     \param spacing Distance h of the particle (mesh width of the grid)
-     \param mass Mass m of one particle
-     \param eps  double containing Lennard-Jones Parameter epsilon of this Particle
-     \param sig  double containing Lennard-Jones Parameter sigma of this Particle
-     \param type int to denote the type of the particles
-     */
-    static void generateFixedDisc(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
-                                                     const int &radius, const double &spacing, const double &mass,
-                                                     const double eps, const double sig, const int type);
     //! A FUnction to generate the particles belonging to a membrane
     /*!
      \param particles The ParticleContainer to be generated

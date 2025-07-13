@@ -177,19 +177,20 @@ void XMLReader::readInCubes(Particles &particle_in, ParticleContainer &particles
         std::array<int64_t, 3> n = {
             cube.number_particles().x_number(), cube.number_particles().y_number(), cube.number_particles().z_number()
         };
+        std::array<double, 3> v={0,0,0};
         if (cube.fixed())
         {
-            ParticleGenerator::generateFixedCube(particles, x, n, cube.spacing(), cube.mass(), cube.eps(), cube.sigma(), cube.type());
-
+            ParticleGenerator::generateCube(particles, x, n, cube.spacing(), cube.mass(), cube.eps(), cube.sigma(),
+                                       v, cube.type(), dim, f_i, 2);
         }else{
-        std::array<double, 3> v = {
-            cube.velocity().x_velocity(), cube.velocity().y_velocity(), cube.velocity().z_velocity()
-        };
-        ParticleGenerator::generateCube(particles, x, n, cube.spacing(), cube.mass(), cube.eps(), cube.sigma(),
+        std::array<double, 3> v = { cube.velocity().x_velocity(), cube.velocity().y_velocity(), cube.velocity().z_velocity()};
+            ParticleGenerator::generateCube(particles, x, n, cube.spacing(), cube.mass(), cube.eps(), cube.sigma(),
                                         v, cube.type(), dim, f_i);
+        };
+
     }
 }
-}
+
 
 void XMLReader::readInDiscs(Particles &particle_in, ParticleContainer &particles, int dim, double T_init)
 {
@@ -199,16 +200,16 @@ void XMLReader::readInDiscs(Particles &particle_in, ParticleContainer &particles
         std::array<double, 3> x = {
             disc.position().x_coordinate(), disc.position().y_coordinate(), disc.position().z_coordinate()
         };
+        std::array<double, 3> v={0,0,0};
         if (disc.fixed())
             {
-            ParticleGenerator::generateFixedDisc(particles, x, disc.radius(), disc.spacing(), disc.mass(),disc.eps(), disc.sigma(), disc.type());
-            } else
-            {
-            std::array<double, 3> v = {
-                disc.velocity().x_velocity(), disc.velocity().y_velocity(), disc.velocity().z_velocity()
-            };
             ParticleGenerator::generateDisc(particles, x, disc.radius(), disc.spacing(), disc.mass(),
+                                            disc.eps(), disc.sigma(), v, disc.type(), dim, f_i,2);
+            } else {
+             v = { disc.velocity().x_velocity(), disc.velocity().y_velocity(), disc.velocity().z_velocity()};
+             ParticleGenerator::generateDisc(particles, x, disc.radius(), disc.spacing(), disc.mass(),
                                             disc.eps(), disc.sigma(), v, disc.type(), dim, f_i);
+
             }
 
     }

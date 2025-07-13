@@ -1654,6 +1654,61 @@ class Parameters: public ::xml_schema::type
   //@}
 
   /**
+   * @name statistics_freq
+   *
+   * @brief Accessor and modifier functions for the %statistics_freq
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::integer statistics_freq_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< statistics_freq_type, char > statistics_freq_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const statistics_freq_type&
+  statistics_freq () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  statistics_freq_type&
+  statistics_freq ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  statistics_freq (const statistics_freq_type& x);
+
+  /**
+   * @brief Return the default value for the element.
+   *
+   * @return The element's default value.
+   */
+  static statistics_freq_type
+  statistics_freq_default_value ();
+
+  //@}
+
+  /**
    * @name Constructors
    */
   //@{
@@ -1673,7 +1728,8 @@ class Parameters: public ::xml_schema::type
               const writer_type&,
               const force_type&,
               const output_name_type&,
-              const output_frequency_type&);
+              const output_frequency_type&,
+              const statistics_freq_type&);
 
   /**
    * @brief Create an instance from the ultimate base and
@@ -1694,7 +1750,8 @@ class Parameters: public ::xml_schema::type
               const writer_type&,
               const force_type&,
               const output_name_type&,
-              const output_frequency_type&);
+              const output_frequency_type&,
+              const statistics_freq_type&);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -1782,6 +1839,7 @@ class Parameters: public ::xml_schema::type
   ::xsd::cxx::tree::one< output_name_type > output_name_;
   static const output_name_type output_name_default_value_;
   ::xsd::cxx::tree::one< output_frequency_type > output_frequency_;
+  ::xsd::cxx::tree::one< statistics_freq_type > statistics_freq_;
 
   //@endcond
 };
@@ -3769,6 +3827,14 @@ class cuboid: public ::xml_schema::type
   void
   fixed (const fixed_type& x);
 
+  /**
+   * @brief Return the default value for the element.
+   *
+   * @return The element's default value.
+   */
+  static fixed_type
+  fixed_default_value ();
+
   //@}
 
   /**
@@ -4256,6 +4322,14 @@ class particle: public ::xml_schema::type
   void
   fixed (const fixed_type& x);
 
+  /**
+   * @brief Return the default value for the element.
+   *
+   * @return The element's default value.
+   */
+  static fixed_type
+  fixed_default_value ();
+
   //@}
 
   /**
@@ -4544,6 +4618,61 @@ class disc: public ::xml_schema::type
   //@}
 
   /**
+   * @name sphere
+   *
+   * @brief Accessor and modifier functions for the %sphere
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::boolean sphere_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< sphere_type, char > sphere_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const sphere_type&
+  sphere () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  sphere_type&
+  sphere ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  sphere (const sphere_type& x);
+
+  /**
+   * @brief Return the default value for the element.
+   *
+   * @return The element's default value.
+   */
+  static sphere_type
+  sphere_default_value ();
+
+  //@}
+
+  /**
    * @name mass
    *
    * @brief Accessor and modifier functions for the %mass
@@ -4784,6 +4913,14 @@ class disc: public ::xml_schema::type
   void
   fixed (const fixed_type& x);
 
+  /**
+   * @brief Return the default value for the element.
+   *
+   * @return The element's default value.
+   */
+  static fixed_type
+  fixed_default_value ();
+
   //@}
 
   /**
@@ -4845,6 +4982,7 @@ class disc: public ::xml_schema::type
   disc (const position_type&,
         const velocity_type&,
         const radius_type&,
+        const sphere_type&,
         const mass_type&,
         const type_type&,
         const eps_type&,
@@ -4863,6 +5001,7 @@ class disc: public ::xml_schema::type
   disc (::std::unique_ptr< position_type >,
         ::std::unique_ptr< velocity_type >,
         const radius_type&,
+        const sphere_type&,
         const mass_type&,
         const type_type&,
         const eps_type&,
@@ -4943,6 +5082,7 @@ class disc: public ::xml_schema::type
   ::xsd::cxx::tree::one< position_type > position_;
   ::xsd::cxx::tree::one< velocity_type > velocity_;
   ::xsd::cxx::tree::one< radius_type > radius_;
+  ::xsd::cxx::tree::one< sphere_type > sphere_;
   ::xsd::cxx::tree::one< mass_type > mass_;
   ::xsd::cxx::tree::one< type_type > type_;
   ::xsd::cxx::tree::one< eps_type > eps_;

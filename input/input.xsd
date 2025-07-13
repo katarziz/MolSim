@@ -37,6 +37,7 @@
                             <xs:element name="force" type="xs:string" default="lennard-jones"/>
                             <xs:element name="output_name" type="xs:string" default="MD_vtk"/>
                             <xs:element name="output_frequency" type="xs:integer" default="50"/>
+                           <xs:element name="statistics_freq" type="xs:integer"  default="10000"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
@@ -89,7 +90,7 @@
                                         <xs:element name="type" type="xs:integer" default="0"/>
                                         <xs:element name="eps" type="xs:decimal"/>
                                         <xs:element name="sigma" type="xs:decimal"/>
-                                        <xs:element name="fixed" type="xs:boolean"/>
+                                        <xs:element name="fixed" type="xs:boolean" default="false"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
@@ -118,7 +119,7 @@
                                         <xs:element name="type" type="xs:integer" default="0"/>
                                         <xs:element name="eps" type="xs:decimal"/>
                                         <xs:element name="sigma" type="xs:decimal"/>
-                                        <xs:element name="fixed" type="xs:boolean"/>
+                                        <xs:element name="fixed" type="xs:boolean" default="false"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
@@ -144,11 +145,12 @@
                                             </xs:complexType>
                                         </xs:element>
                                         <xs:element name="radius" type="xs:integer"/>
+                                        <xs:element name="sphere" type="xs:boolean" default="false"/>
                                         <xs:element name="mass" type="xs:decimal"/>
                                         <xs:element name="type" type="xs:integer" default="0"/>
                                         <xs:element name="eps" type="xs:decimal"/>
                                         <xs:element name="sigma" type="xs:decimal"/>
-                                        <xs:element name="fixed" type="xs:boolean"/>
+                                        <xs:element name="fixed" type="xs:boolean" default="false"/>
                                         <xs:element name="spacing" type="xs:decimal"/>
                                     </xs:sequence>
                                 </xs:complexType>

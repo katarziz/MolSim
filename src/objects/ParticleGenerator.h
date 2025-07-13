@@ -53,7 +53,7 @@ public:
      \param state_arg int giving the state of the particles: Default 0; Fixed: 2
      */
     static void generateDisc(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
-                             const int &radius, const double &spacing, const double &mass,
+                             const int &radius,  const bool sphere, const double &spacing, const double &mass,
                              double eps, double sig,
                              const std::array<double, 3> &velocity,
                              int type, int dim,

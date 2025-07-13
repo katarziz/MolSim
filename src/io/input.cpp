@@ -431,6 +431,30 @@ output_frequency_default_value ()
   return output_frequency_type (50LL);
 }
 
+const Parameters::statistics_freq_type& Parameters::
+statistics_freq () const
+{
+  return this->statistics_freq_.get ();
+}
+
+Parameters::statistics_freq_type& Parameters::
+statistics_freq ()
+{
+  return this->statistics_freq_.get ();
+}
+
+void Parameters::
+statistics_freq (const statistics_freq_type& x)
+{
+  this->statistics_freq_.set (x);
+}
+
+Parameters::statistics_freq_type Parameters::
+statistics_freq_default_value ()
+{
+  return statistics_freq_type (10000LL);
+}
+
 
 // ThermostatParams
 // 
@@ -1075,6 +1099,12 @@ fixed (const fixed_type& x)
   this->fixed_.set (x);
 }
 
+cuboid::fixed_type cuboid::
+fixed_default_value ()
+{
+  return fixed_type (false);
+}
+
 
 // particle
 // 
@@ -1223,6 +1253,12 @@ fixed (const fixed_type& x)
   this->fixed_.set (x);
 }
 
+particle::fixed_type particle::
+fixed_default_value ()
+{
+  return fixed_type (false);
+}
+
 
 // disc
 // 
@@ -1291,6 +1327,30 @@ void disc::
 radius (const radius_type& x)
 {
   this->radius_.set (x);
+}
+
+const disc::sphere_type& disc::
+sphere () const
+{
+  return this->sphere_.get ();
+}
+
+disc::sphere_type& disc::
+sphere ()
+{
+  return this->sphere_.get ();
+}
+
+void disc::
+sphere (const sphere_type& x)
+{
+  this->sphere_.set (x);
+}
+
+disc::sphere_type disc::
+sphere_default_value ()
+{
+  return sphere_type (false);
 }
 
 const disc::mass_type& disc::
@@ -1387,6 +1447,12 @@ void disc::
 fixed (const fixed_type& x)
 {
   this->fixed_.set (x);
+}
+
+disc::fixed_type disc::
+fixed_default_value ()
+{
+  return fixed_type (false);
 }
 
 const disc::spacing_type& disc::
@@ -2142,7 +2208,8 @@ Parameters (const delta_t_type& delta_t,
             const writer_type& writer,
             const force_type& force,
             const output_name_type& output_name,
-            const output_frequency_type& output_frequency)
+            const output_frequency_type& output_frequency,
+            const statistics_freq_type& statistics_freq)
 : ::xml_schema::type (),
   delta_t_ (delta_t, this),
   t_end_ (t_end, this),
@@ -2155,7 +2222,8 @@ Parameters (const delta_t_type& delta_t,
   writer_ (writer, this),
   force_ (force, this),
   output_name_ (output_name, this),
-  output_frequency_ (output_frequency, this)
+  output_frequency_ (output_frequency, this),
+  statistics_freq_ (statistics_freq, this)
 {
 }
 
@@ -2171,7 +2239,8 @@ Parameters (const delta_t_type& delta_t,
             const writer_type& writer,
             const force_type& force,
             const output_name_type& output_name,
-            const output_frequency_type& output_frequency)
+            const output_frequency_type& output_frequency,
+            const statistics_freq_type& statistics_freq)
 : ::xml_schema::type (),
   delta_t_ (delta_t, this),
   t_end_ (t_end, this),
@@ -2184,7 +2253,8 @@ Parameters (const delta_t_type& delta_t,
   writer_ (writer, this),
   force_ (force, this),
   output_name_ (output_name, this),
-  output_frequency_ (output_frequency, this)
+  output_frequency_ (output_frequency, this),
+  statistics_freq_ (statistics_freq, this)
 {
 }
 
@@ -2204,7 +2274,8 @@ Parameters (const Parameters& x,
   writer_ (x.writer_, f, this),
   force_ (x.force_, f, this),
   output_name_ (x.output_name_, f, this),
-  output_frequency_ (x.output_frequency_, f, this)
+  output_frequency_ (x.output_frequency_, f, this),
+  statistics_freq_ (x.statistics_freq_, f, this)
 {
 }
 
@@ -2224,7 +2295,8 @@ Parameters (const ::xercesc::DOMElement& e,
   writer_ (this),
   force_ (this),
   output_name_ (this),
-  output_frequency_ (this)
+  output_frequency_ (this),
+  statistics_freq_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -2393,6 +2465,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // statistics_freq
+    //
+    if (n.name () == "statistics_freq" && n.namespace_ ().empty ())
+    {
+      if (!statistics_freq_.present ())
+      {
+        this->statistics_freq_.set (statistics_freq_traits::create (i, f, this));
+        continue;
+      }
+    }
+
     break;
   }
 
@@ -2479,6 +2562,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "output_frequency",
       "");
   }
+
+  if (!statistics_freq_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "statistics_freq",
+      "");
+  }
 }
 
 Parameters* Parameters::
@@ -2506,6 +2596,7 @@ operator= (const Parameters& x)
     this->force_ = x.force_;
     this->output_name_ = x.output_name_;
     this->output_frequency_ = x.output_frequency_;
+    this->statistics_freq_ = x.statistics_freq_;
   }
 
   return *this;
@@ -3755,6 +3846,7 @@ disc::
 disc (const position_type& position,
       const velocity_type& velocity,
       const radius_type& radius,
+      const sphere_type& sphere,
       const mass_type& mass,
       const type_type& type,
       const eps_type& eps,
@@ -3765,6 +3857,7 @@ disc (const position_type& position,
   position_ (position, this),
   velocity_ (velocity, this),
   radius_ (radius, this),
+  sphere_ (sphere, this),
   mass_ (mass, this),
   type_ (type, this),
   eps_ (eps, this),
@@ -3778,6 +3871,7 @@ disc::
 disc (::std::unique_ptr< position_type > position,
       ::std::unique_ptr< velocity_type > velocity,
       const radius_type& radius,
+      const sphere_type& sphere,
       const mass_type& mass,
       const type_type& type,
       const eps_type& eps,
@@ -3788,6 +3882,7 @@ disc (::std::unique_ptr< position_type > position,
   position_ (std::move (position), this),
   velocity_ (std::move (velocity), this),
   radius_ (radius, this),
+  sphere_ (sphere, this),
   mass_ (mass, this),
   type_ (type, this),
   eps_ (eps, this),
@@ -3805,6 +3900,7 @@ disc (const disc& x,
   position_ (x.position_, f, this),
   velocity_ (x.velocity_, f, this),
   radius_ (x.radius_, f, this),
+  sphere_ (x.sphere_, f, this),
   mass_ (x.mass_, f, this),
   type_ (x.type_, f, this),
   eps_ (x.eps_, f, this),
@@ -3822,6 +3918,7 @@ disc (const ::xercesc::DOMElement& e,
   position_ (this),
   velocity_ (this),
   radius_ (this),
+  sphere_ (this),
   mass_ (this),
   type_ (this),
   eps_ (this),
@@ -3881,6 +3978,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!radius_.present ())
       {
         this->radius_.set (radius_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // sphere
+    //
+    if (n.name () == "sphere" && n.namespace_ ().empty ())
+    {
+      if (!sphere_.present ())
+      {
+        this->sphere_.set (sphere_traits::create (i, f, this));
         continue;
       }
     }
@@ -3975,6 +4083,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
+  if (!sphere_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "sphere",
+      "");
+  }
+
   if (!mass_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
@@ -4034,6 +4149,7 @@ operator= (const disc& x)
     this->position_ = x.position_;
     this->velocity_ = x.velocity_;
     this->radius_ = x.radius_;
+    this->sphere_ = x.sphere_;
     this->mass_ = x.mass_;
     this->type_ = x.type_;
     this->eps_ = x.eps_;
@@ -5774,6 +5890,17 @@ operator<< (::xercesc::DOMElement& e, const Parameters& i)
 
     s << i.output_frequency ();
   }
+
+  // statistics_freq
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "statistics_freq",
+        e));
+
+    s << i.statistics_freq ();
+  }
 }
 
 void
@@ -6237,6 +6364,17 @@ operator<< (::xercesc::DOMElement& e, const disc& i)
         e));
 
     s << i.radius ();
+  }
+
+  // sphere
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "sphere",
+        e));
+
+    s << i.sphere ();
   }
 
   // mass

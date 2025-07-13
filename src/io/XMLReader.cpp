@@ -203,11 +203,11 @@ void XMLReader::readInDiscs(Particles &particle_in, ParticleContainer &particles
         std::array<double, 3> v={0,0,0};
         if (disc.fixed())
             {
-            ParticleGenerator::generateDisc(particles, x, disc.radius(), disc.spacing(), disc.mass(),
+            ParticleGenerator::generateDisc(particles, x, disc.radius(), disc.sphere(),disc.spacing(), disc.mass(),
                                             disc.eps(), disc.sigma(), v, disc.type(), dim, f_i,2);
             } else {
              v = { disc.velocity().x_velocity(), disc.velocity().y_velocity(), disc.velocity().z_velocity()};
-             ParticleGenerator::generateDisc(particles, x, disc.radius(), disc.spacing(), disc.mass(),
+             ParticleGenerator::generateDisc(particles, x, disc.radius(),disc.sphere(), disc.spacing(), disc.mass(),
                                             disc.eps(), disc.sigma(), v, disc.type(), dim, f_i);
 
             }

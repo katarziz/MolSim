@@ -51,6 +51,11 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename) {
 
         //! double representing the cutoff radius. Default:3.0
         double r_c = param.cutoff();
+        if (particle_in.membrane().begin()!=particle_in.membrane().end())
+        {
+            r_c= std::sqrt(std::cbrt(2))*particle_in.membrane().begin()->sigma();
+        }
+
 
         //! array of three doubles representing the domain size.
         if (dim == 2) {

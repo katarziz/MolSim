@@ -5,13 +5,14 @@
 #include "LinkedCellParticleContainer.h"
 
 #include <cmath>
+#include <fstream>
 #include <spdlog/spdlog.h>
 
 #include "simulation/LennardJones.h"
 #include "utils/ArrayUtils.h"
 
 LinkedCellParticleContainer::LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg,
-                                                         const std::array<int64_t, 3> &cell_number_arg,
+                                                         const std::array<int, 3> &cell_number_arg,
                                                          const double &cutoff_arg,
                                                          const std::array<int, 6> &bounds_arg) {
     box_size = box_size_arg;
@@ -35,7 +36,7 @@ LinkedCellParticleContainer::LinkedCellParticleContainer(const std::array<double
 
 LinkedCellParticleContainer::LinkedCellParticleContainer(const std::vector<Particle> &particles_arg,
                                                          const std::array<double, 3> &box_size_arg,
-                                                         const std::array<int64_t, 3> &cell_number_arg,
+                                                         const std::array<int, 3> &cell_number_arg,
                                                          const double &cutoff_arg,
                                                          const std::array<int, 6> &bounds_arg) {
     box_size = box_size_arg;
@@ -58,7 +59,7 @@ LinkedCellParticleContainer::LinkedCellParticleContainer(const std::vector<Parti
 }
 
 void LinkedCellParticleContainer::setParameters(const std::array<double, 3> &box_size_arg,
-                                                const std::array<int64_t, 3> &cell_number_arg,
+                                                const std::array<int, 3> &cell_number_arg,
                                                 const double &cutoff_arg,
                                                 const std::array<int, 6> &bounds_arg) {
     box_size = box_size_arg;
@@ -126,7 +127,7 @@ std::vector<Particle>::const_iterator LinkedCellParticleContainer::end() const {
     return particles.cend();
 }
 
-void LinkedCellParticleContainer::applyUnary(const std::function<void(Particle &i)> fun) {
+void LinkedCellParticleContainer::applyUnary(const std::function<void(Particle &i)> &fun) {
     for (auto &particle: particles) {
         // skip if deactivated
         if (particle.state == 1) {
@@ -136,8 +137,8 @@ void LinkedCellParticleContainer::applyUnary(const std::function<void(Particle &
     }
 }
 
-void LinkedCellParticleContainer::applyBinaryToCells(const std::function<void(Particle &i, Particle &j)> fun,
-                                                     std::vector<int> &i_cell, std::vector<int> &j_cell) {
+void LinkedCellParticleContainer::applyBinaryToCells(const std::function<void(Particle& i, Particle& j)>& fun,
+                                                     const std::vector<int>& i_cell, const std::vector<int>& j_cell) {
     for (unsigned int i = 0; i < i_cell.size(); ++i) {
         for (unsigned int j = 0; j < j_cell.size(); ++j) {
             fun(particles.at(i_cell[i]), particles.at(j_cell[j]));
@@ -145,7 +146,7 @@ void LinkedCellParticleContainer::applyBinaryToCells(const std::function<void(Pa
     }
 }
 
-void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle &i, Particle &j)> fun) {
+void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) {
     for (int i_x = 0; i_x < cell_number[0]; ++i_x) {
         for (int i_y = 0; i_y < cell_number[1]; ++i_y) {
             for (int i_z = 0; i_z < cell_number[2]; ++i_z) {
@@ -197,7 +198,12 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
     }
 }
 //TODO: Make Main Force not Apply to Membrane amongst itself (??? )and All Forces not apply on fixed Particles!!
-void LinkedCellParticleContainer::applyUnarytoMembrane(const Membrane &mem, const std::function<void(Particle &i)> fun)
+/**
+ *
+ * @param mem
+ * @param fun
+ */
+void LinkedCellParticleContainer::applyUnarytoMembrane(const Membrane &mem, const std::function<void(Particle &i)> & fun)
 {
        for (auto i=mem.get_offset();i<mem.get_offset()+mem.get_size();++i)
        {
@@ -216,22 +222,25 @@ void LinkedCellParticleContainer::applyMembraneForces(const Membrane& mem)
     {
         if (i + 1 < end && (i - begin) / width == (i + 1 - begin) / width)
         {
-            mem.calculateMem_Force(particles[i], particles[i + 1]);
+            mem.calculateF_Harm(particles[i], particles[i + 1]);
         }
         if (i + width < end)
         {
-            mem.calculateMem_Force(particles[i], particles[i + width]);
+            mem.calculateF_Harm(particles[i], particles[i + width]);
         }
         if (i + width + 1 < end && (i - begin) / width + 1 == (i + width + 1 - begin) / width)
         {
-            mem.calculateMem_Force_Diag(particles[i], particles[i + width + 1]);
+            mem.calculateF_Harm_Diag(particles[i], particles[i + width + 1]);
         }
         if (i + width - 1 < end && (i - begin) / width + 1 == (i + width - 1 - begin) / width)
         {
-            mem.calculateMem_Force_Diag(particles[i], particles[i + width - 1]);
+            mem.calculateF_Harm_Diag(particles[i], particles[i + width - 1]);
         }
     }
 }
+
+
+
 
 void LinkedCellParticleContainer::updateCells() {
     // cells is cleared by being reinitialized and particles are assigned the correct cell.
@@ -434,3 +443,36 @@ void LinkedCellParticleContainer::periodic(Particle &p, const int boundary) {
     // transfer the accumulated forces to the original particle
     p.f = p.f + counter_particle.f;
 }
+
+void LinkedCellParticleContainer::writeState(std::ofstream &vel_prof, std::ofstream &N_prof)
+{
+    for (int i_x=0; i_x<cell_number[0]; ++i_x)
+    {   int N=0;
+        std::array<double,3> vel={0,0,0};
+        for (int i_y=0;i_y<cell_number[1]*cell_number[2];++i_y)
+        {
+            auto &cell=cells[i_x+i_y*cell_number[0]];
+            for (unsigned int p = 0; p < cell.size(); ++p) {
+
+                if ((particles.at(p).state & 1)==1){continue;}
+                ++N;
+                vel=vel+particles.at(p).v;
+            }
+        }
+        if (N!=0)
+        {
+            vel=(1.0/N)*vel;
+        }
+        if (i_x!=0)
+        {
+            vel_prof<<",";
+            N_prof<<",";
+        }
+        vel_prof <<vel[0]<<","<<vel[1]<<","<<vel[2];
+        N_prof << N ;
+    }
+    vel_prof << std::endl;
+    N_prof << std::endl;
+}
+
+

@@ -13,7 +13,7 @@
 class LinkedCellParticleContainer : public ParticleContainer {
 private:
     std::array<double, 3> box_size;
-    std::array<int64_t, 3> cell_number;
+    std::array<int, 3> cell_number;
     std::vector<std::vector<int> > cells;
     std::vector<Particle> particles;
     std::vector<Membrane> membranes;
@@ -22,6 +22,7 @@ private:
     double cutoff;
     const int boundary_width = 1;
     std::array<int, 6> boundary_conditions;
+    int omp_strategy = 0;
 
 public:
     //! a constructor for an empty Particle Container
@@ -33,7 +34,7 @@ public:
             0: outflow, 1: reflective, 2: periodic
      */
     LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg,
-                                const std::array<int64_t, 3> &cell_number_arg,
+                                const std::array<int, 3> &cell_number_arg,
                                 const double &cutoff_arg, const std::array<int, 6> &bounds_arg);
 
     //! a constructor for a Particle Container
@@ -46,7 +47,7 @@ public:
             0: outflow, 1: reflective, 2: periodic
      */
     LinkedCellParticleContainer(const std::vector<Particle> &particles_arg, const std::array<double, 3> &box_size_arg,
-                                const std::array<int64_t, 3> &cell_number_arg, const double &cutoff_arg,
+                                const std::array<int, 3> &cell_number_arg, const double &cutoff_arg,
                                 const std::array<int, 6> &bounds_arg);
 
     //! a function to set the parameters of a LinkedCellParticleContainer
@@ -58,8 +59,9 @@ public:
             0: outflow, 1: reflective, 2: periodic
      */
     void setParameters(const std::array<double, 3> &box_size_arg,
-                       const std::array<int64_t, 3> &cell_number_arg,
+                       const std::array<int, 3> &cell_number_arg,
                        const double &cutoff_arg, const std::array<int, 6> &bounds_arg);
+
 
     //! A function to add a Particle to the ParticleContainer
     /*!
@@ -127,7 +129,7 @@ public:
     /*!
     \param fun a unary function to be applied to the Particles in the ParticleContainer
    */
-    void applyUnary(std::function<void(Particle &i)> fun) override;
+    void applyUnary(const std::function<void(Particle &i)> &fun) override;
 
     //! A function to apply a binary function to pairs of Particles between two cells of the ParticleContainer
     /*!
@@ -135,17 +137,20 @@ public:
         \param i_cell the first cell of the operation
         \param j_cell the second cell of the operation
     */
-    void applyBinaryToCells(std::function<void(Particle &i, Particle &j)> fun, std::vector<int> &i_cell,
-                            std::vector<int> &j_cell);
+    void applyBinaryToCells(const std::function<void(Particle &i, Particle &j)> &fun, const std::vector<int> &i_cell,
+                            const std::vector<int> &j_cell);
+
 
     //! A function to apply a binary function to pairs of Particles in neighboring cells of the ParticleContainer
     /*!
         \param fun a binary function to be applied pairwise to the Particles in neighboring cells of the ParticleContainer
     */
-    void applyBinary(std::function<void(Particle &i, Particle &j)> fun) override;
-    void applyUnarytoMembrane(const Membrane& mem, std::function<void(Particle& i)> fun) override;
+    void applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) override;
+
+    void applyUnarytoMembrane(const Membrane& mem, const std::function<void(Particle& i)>& fun) override;
 
     void applyMembraneForces(const Membrane& mem) override;
+
     //! A function to update the cells of the ParticleContainer
     /*!
         A function to update the cells of the ParticleContainer
@@ -191,4 +196,5 @@ public:
             0: left boundary, 1: bottom boundary, 2: back boundary
     */
     void periodic(Particle &p, int boundary);
+    void writeState(std::ofstream & vel_prof, std::ofstream & N_prof);
 };

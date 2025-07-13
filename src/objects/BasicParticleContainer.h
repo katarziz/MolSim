@@ -59,7 +59,7 @@ public:
      */
     const std::vector<Membrane> &getMembranes() const override;
 
-    void applyUnarytoMembrane(const Membrane& mem, std::function<void(Particle& i)> fun) override;
+    void applyUnarytoMembrane(const Membrane& mem, const std::function<void(Particle& i)>& fun) override;
 
     void applyMembraneForces(const Membrane& mem) override;
     //! A function to get the number of Particles in a Container
@@ -96,13 +96,13 @@ public:
     /*!
      \param fun a lambda function to be applied to all particles
      */
-    void applyUnary(std::function<void(Particle &i)> fun) override;
+    void applyUnary(const std::function<void(Particle &i)> & fun) override;
 
     //! method to iterate over all particles pairwise and apply a binary function
     /*!
      \param fun a lambda function to be applied to all particles pairwise
      */
-    void applyBinary(std::function<void(Particle &i, Particle &j)> fun) override;
+    void applyBinary(const std::function<void(Particle &i, Particle &j)> & fun) override;
 
     //! Function which checks whether a Particle is present in a PArticleContainer
     /*!

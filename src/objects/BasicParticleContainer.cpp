@@ -39,7 +39,7 @@ const std::vector<Membrane>& BasicParticleContainer::getMembranes() const
     return membranes;
 }
 
-void BasicParticleContainer::applyUnarytoMembrane(const Membrane &mem, const std::function<void(Particle &i)> fun)
+void BasicParticleContainer::applyUnarytoMembrane(const Membrane &mem, const std::function<void(Particle &i)> &fun)
 {
     for (auto i=mem.get_offset();i<mem.get_offset()+mem.get_size();++i)
     {
@@ -54,19 +54,19 @@ void BasicParticleContainer::applyMembraneForces(const Membrane &mem)
     {
         if (i+1<end && (i-begin)/width== (i+1-begin)/width)
         {
-            mem.calculateMem_Force(particles[i],particles[i+1]);
+            mem.calculateF_Harm(particles[i],particles[i+1]);
         }
         if (i+width<end)
         {
-            mem.calculateMem_Force(particles[i],particles[i+width]);
+            mem.calculateF_Harm(particles[i],particles[i+width]);
         }
         if (i+width+1<end && (i-begin)/width+1== (i+width+1-begin)/width)
         {
-            mem.calculateMem_Force_Diag(particles[i],particles[i+width+1]);
+            mem.calculateF_Harm_Diag(particles[i],particles[i+width+1]);
         }
         if (i+width-1<end && (i-begin)/width != (i+width-1-begin)/width)
         {
-            mem.calculateMem_Force_Diag(particles[i],particles[i+width-1]);
+            mem.calculateF_Harm_Diag(particles[i],particles[i+width-1]);
         }
     }
 }
@@ -92,13 +92,13 @@ std::vector<Particle>::const_iterator BasicParticleContainer::end() const {
     return particles.cend();
 }
 
-void BasicParticleContainer::applyUnary(std::function<void(Particle &i)> fun) {
+void BasicParticleContainer::applyUnary(const std::function<void(Particle &i)> & fun) {
     for (auto i = particles.begin(); i != particles.end(); ++i) {
         fun(*i);
     }
 }
 
-void BasicParticleContainer::applyBinary(std::function<void(Particle &i, Particle &j)> fun) {
+void BasicParticleContainer::applyBinary(const std::function<void(Particle &i, Particle &j)>  & fun) {
     for (auto i = particles.begin(); i != particles.end(); ++i) {
         for (auto j = particles.begin(); j != i; ++j) {
             fun(*i, *j);
@@ -124,4 +124,3 @@ bool BasicParticleContainer::cont_sem_eq(BasicParticleContainer& c1, BasicPartic
     }
     return true;
 }
-

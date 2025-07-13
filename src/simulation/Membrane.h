@@ -6,7 +6,6 @@
 #define MEMBRANE_H
 #include "LennardJones.h"
 #include "utils/ArrayUtils.h"
-const double trunc_const=std::cbrt(2);
 class Membrane{
 private:
 
@@ -17,15 +16,6 @@ private:
     double r_0;
     double r_0_root;
     double F_up;
-
-    /**
- *
- * @param i
- * @param j
- */
-void calculateF_Harm(Particle &i, Particle &j);
-void calculateF_Harm_Diag(Particle &i, Particle &j);
-void calculateF_LJ_Trunc(Particle &i, Particle &j);
 
 public:
 
@@ -39,23 +29,15 @@ public:
      * @param F_up
      */
     Membrane(int8_t offset, int8_t size,int8_t width, double k, double r_0, double F_up);
-    /**
-     *
-     * @param i
-     * @param j
-     */
-    void calculateMem_Force(Particle &i, Particle &j) const;
-    /**
-     *
-     * @param i
-     * @param j
-     */
-    void calculateMem_Force_Diag(Particle &i, Particle &j) const;
 
     [[nodiscard]] int8_t get_offset() const
     {
         return offset;
     }
+    void calculateF_Harm(Particle &i, Particle &j) const;
+    void calculateF_Harm_Diag(Particle &i, Particle &j) const ;
+    void calculateF_LJ_Trunc(Particle &i, Particle &j) const;
+
 
     void set_offset(int8_t offset)
     {

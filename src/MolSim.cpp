@@ -150,8 +150,7 @@ int main(int argc, char *argsv[]) {
     particles = reinterpret_cast<ParticleContainer *>(particles_buffer);
     XMLReader::readFile(particles, input_file);
     if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
-        lcparticles->setParameters(box_dim, cell_num, r_c, bounds);
-    }
+        lcparticles->setParameters(box_dim, cell_num, r_c, bounds);}
 
     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG
@@ -175,9 +174,14 @@ int main(int argc, char *argsv[]) {
 
     using clock = std::chrono::steady_clock;
     auto start_time_clock = clock::now();
+    std::ofstream vel_file;
+    vel_file.open ("vel_prof.csv", std::ofstream::out );
+    std::ofstream n_file;
+    n_file.open("n_prof.csv",std::ofstream::out);
 
     // for this loop, we assume: current x, current f and current v are known
-    while (current_time < end_time) {
+    while (current_time < end_time)
+    {
         // calculate new x
         calculateX();
         // calculate new f
@@ -188,7 +192,6 @@ int main(int argc, char *argsv[]) {
         if (f_therm!=0&&iteration % f_therm == 0) {
             thermostat.scaleV(particles);
         }
-
         if (particles->getMembranes().size()!=0)
         {
             for (auto mem=particles->getMembranes().begin(); mem<particles->getMembranes().end(); ++mem)
@@ -197,7 +200,7 @@ int main(int argc, char *argsv[]) {
                 //TODO: Move Membrane Force to calculate F?? Z_Direction!!!!
                 if (iteration<15000){
                 particles->applyUnarytoMembrane(*mem,[mem](Particle &p) {
-                    if (p.x[0]*p.x[0] + p.x[1]*p.x[1] < 10)
+                    if ((p.x[0]-19.5)*(p.x[0]-19.5) + (p.x[1]-19.5)*(p.x[1]-19.5) < 5 )
                     {
                         p.f[2]=p.f[2]+ mem->get_f_up();
                     }
@@ -208,22 +211,35 @@ int main(int argc, char *argsv[]) {
 
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
         iteration++;
+        if (vel_file.is_open()&&n_file.is_open()&&iteration % 10000==0){
+            if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
+
+                lcparticles->writeState(vel_file,n_file);
+            }
+        }
         if (iteration % out_freq == 0) {
             // current MUPS/s
-            long MUPS_per_second = iteration * 1000000
-                                   / std::chrono::duration_cast<std::chrono::microseconds>(
-                                       clock::now() - start_time_clock).
-                                   count();
+            double MUPS_per_second = iteration * 1000000.0
+                                     / std::chrono::duration_cast<std::chrono::microseconds>(
+                                         clock::now() - start_time_clock).count();
             plotParticles(iteration);
-            std::cout << "\rProgress: " << std::ceil(1000 * current_time / end_time) / 10 << "%\t"
-                    "Current updates per second: " << MUPS_per_second << "MUPS/s    " << std::flush;
+            std::cout << fmt::format(
+                    "\rProgress: {:.1f}%\tCurrent updates per second: {:.1f}MUPS/s\t",
+                    current_time / end_time * 100, MUPS_per_second) << std::flush;
         }
+
         if (checkpoint_freq != 0 && iteration % checkpoint_freq == 0) {
             FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
         }
 
         current_time += delta_t;
     }
+    if (vel_file.is_open()&&n_file.is_open())
+    {
+        vel_file.close();
+        n_file.close();
+    }
+
     auto end_time_clock = clock::now();
     auto time_taken = std::chrono::duration_cast<std::chrono::microseconds>(end_time_clock - start_time_clock);
     std::cout << std::endl;
@@ -284,7 +300,7 @@ void plotParticles(int iteration) {
         outputWriter::VTKWriter writer;
         writer.initializeOutput(particles->size());
         for (auto &p: *particles) {
-            if (p.getState() == 1) {
+            if ((p.getState() & 1) == 1) {
                 continue;
             }
             writer.plotParticle(p);

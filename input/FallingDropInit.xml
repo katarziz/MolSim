@@ -26,6 +26,7 @@
         <force/>
         <output_name>FallingDropInit</output_name>
         <output_frequency/>
+        <statistics_freq>0</statistics_freq>
     </Parameters>
     <ThermostatParams>
         <T_init>0.5</T_init>
@@ -55,6 +56,7 @@
             <type>0</type>
             <eps>1.0</eps>
             <sigma>1.2</sigma>
+            <fixed>false</fixed>
         </cuboid>
     </Particles>
 </Molsim_Input>

@@ -26,6 +26,7 @@
         <force/>
         <output_name>RT_small</output_name>
         <output_frequency/>
+        <statistics_freq>0</statistics_freq>
     </Parameters>
     <ThermostatParams>
         <T_init>40</T_init>
@@ -55,6 +56,7 @@
             <type>0</type>
             <eps>1.0</eps>
             <sigma>1.0</sigma>
+            <fixed>false</fixed>
         </cuboid>
         <cuboid>
             <base_coordinates>
@@ -77,6 +79,7 @@
             <type>1</type>
             <eps>1.0</eps>
             <sigma>0.9412</sigma>
+            <fixed>false</fixed>
         </cuboid>
     </Particles>
 </Molsim_Input>

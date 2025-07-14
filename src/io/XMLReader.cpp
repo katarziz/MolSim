@@ -153,6 +153,7 @@ void XMLReader::readoutParams(Parameters &param) {
     out_name = param.output_name().c_str();
     out_freq = param.output_frequency();
     checkpoint_freq = param.checkpoint_freq();
+    stat_freq=param.statistics_freq();
 
     if (strcmp(param.writer().c_str(), "xyz") == 0) {
         writer_flag = 1;

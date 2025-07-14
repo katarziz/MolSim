@@ -68,6 +68,13 @@ inline int force_flag = 0;
 */
 inline int checkpoint_freq = 0;
 
+//! int giving the frequency of velocity and number profile being recorded.
+/*!
+* default=0 -> no writout
+*/
+inline int stat_freq = 0;
+
+
 inline std::string checkpoint_name = "checkpoint.bin";
 
 inline std::string out_name = "MD_vtk";

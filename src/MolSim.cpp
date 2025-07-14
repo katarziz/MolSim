@@ -174,10 +174,14 @@ int main(int argc, char *argsv[]) {
 
     using clock = std::chrono::steady_clock;
     auto start_time_clock = clock::now();
+
     std::ofstream vel_file;
-    vel_file.open ("vel_prof.csv", std::ofstream::out );
     std::ofstream n_file;
-    n_file.open("n_prof.csv",std::ofstream::out);
+    if (stat_freq!=0)
+    {
+        vel_file.open ("vel_prof.csv", std::ofstream::out );
+        n_file.open("n_prof.csv",std::ofstream::out);
+    }
 
     // for this loop, we assume: current x, current f and current v are known
     while (current_time < end_time)
@@ -197,7 +201,7 @@ int main(int argc, char *argsv[]) {
             for (auto mem=particles->getMembranes().begin(); mem<particles->getMembranes().end(); ++mem)
             {
                 particles->applyMembraneForces(*mem);
-                //TODO: Move Membrane Force to calculate F?? Z_Direction!!!!
+
                 if (iteration<15000){
                 particles->applyUnarytoMembrane(*mem,[mem](Particle &p) {
                     if ((p.x[0]-19.5)*(p.x[0]-19.5) + (p.x[1]-19.5)*(p.x[1]-19.5) < 5 )
@@ -211,7 +215,7 @@ int main(int argc, char *argsv[]) {
 
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
         iteration++;
-        if (vel_file.is_open()&&n_file.is_open()&&iteration % 10000==0){
+        if (vel_file.is_open()&&n_file.is_open()&&iteration % stat_freq==0){
             if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
 
                 lcparticles->writeState(vel_file,n_file);

@@ -149,8 +149,6 @@ int main(int argc, char *argsv[]) {
     char particles_buffer[std::max(sizeof(LinkedCellParticleContainer), sizeof(BasicParticleContainer))];
     particles = reinterpret_cast<ParticleContainer *>(particles_buffer);
     XMLReader::readFile(particles, input_file);
-    if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
-        lcparticles->setParameters(box_dim, cell_num, r_c, bounds);}
 
     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG

@@ -453,31 +453,29 @@ void LinkedCellParticleContainer::periodic(Particle &p, const int boundary) {
 }
 
 void LinkedCellParticleContainer::writeState(std::ofstream &vel_prof, std::ofstream &N_prof)
-{
-    for (int i_x=0; i_x<cell_number[0]; ++i_x)
-    {   int N=0;
-        std::array<double,3> vel={0,0,0};
-        for (int i_y=0;i_y<cell_number[1]*cell_number[2];++i_y)
-        {
-            auto &cell=cells[i_x+i_y*cell_number[0]];
-            for (unsigned int p = 0; p < cell.size(); ++p) {
-
-                if ((particles.at(p).state & 1)==1){continue;}
-                ++N;
-                vel=vel+particles.at(p).v;
-            }
-        }
-        if (N!=0)
-        {
-            vel=(1.0/N)*vel;
-        }
-        if (i_x!=0)
+{   std::array<int,50> N;
+    std::array<std::array<double,3>,50> vel;
+    for (auto i=0;i<N.size();++i)
+    {
+        N[i]=0;
+        vel[i]={0,0,0};
+    }
+    for (auto p=particles.begin();p!=particles.end();++p)
+    {   if ((p->state & 1)==1){continue;}
+        int index=floor(p->x[0] / (box_size[0] / 50));
+        N[index]++;
+        vel[index]=vel[index]+p->v;
+    }
+    for (auto i=0;i<N.size();++i)
+    {
+        if (N[i]!=0){ vel[i]=(1.0/N[i])*vel[i];}
+        if (i!=0)
         {
             vel_prof<<",";
             N_prof<<",";
         }
-        vel_prof <<vel[0]<<","<<vel[1]<<","<<vel[2];
-        N_prof << N ;
+        vel_prof <<vel[i][0]<<","<<vel[i][1]<<","<<vel[i][2];
+        N_prof << N[i] ;
     }
     vel_prof << std::endl;
     N_prof << std::endl;

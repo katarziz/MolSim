@@ -6,7 +6,7 @@
 
 #include "MolSim.h"
 
-Membrane::Membrane(int8_t offset_arg, int8_t size_arg, int8_t width_arg, double k_arg, double r_0_arg, double F_up_arg)
+Membrane::Membrane(int offset_arg, int size_arg, int width_arg, double k_arg, double r_0_arg, double F_up_arg)
 {
     offset = offset_arg;
     size = size_arg;

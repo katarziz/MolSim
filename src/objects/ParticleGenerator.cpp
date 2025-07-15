@@ -167,9 +167,9 @@ void ParticleGenerator::generateMembrane(ParticleContainer& particles, std::arra
     const std::array<double, 3>& velocity, int type, int dim, double brownian_motion_avg_velocity,
     const double k_arg,const double r_0, const double F_up)
 {
-  int8_t offset=  particles.size();
-  int8_t size=number_of_particles[0]*number_of_particles[1]*number_of_particles[2]+offset;
-  int8_t width=std::max(number_of_particles[0],number_of_particles[1]);
+  int offset=  particles.size();
+  int size=number_of_particles[0]*number_of_particles[1]*number_of_particles[2]+offset;
+  int width=std::max(number_of_particles[0],number_of_particles[1]);
   Membrane mem=Membrane(offset,size,width, k_arg,r_0, F_up);
   particles.addMembrane(mem);
     int k=0;

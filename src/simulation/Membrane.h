@@ -9,9 +9,9 @@
 class Membrane{
 private:
 
-    int8_t offset;
-    int8_t size;
-    int8_t width;
+    int offset;
+    int size;
+    int width;
     double k;
     double r_0;
     double r_0_root;
@@ -28,9 +28,9 @@ public:
      * @param r_0
      * @param F_up
      */
-    Membrane(int8_t offset, int8_t size,int8_t width, double k, double r_0, double F_up);
+    Membrane(int offset, int size, int width, double k, double r_0, double F_up);
 
-    [[nodiscard]] int8_t get_offset() const
+    [[nodiscard]] int get_offset() const
     {
         return offset;
     }
@@ -39,27 +39,27 @@ public:
     void calculateF_LJ_Trunc(Particle &i, Particle &j) const;
 
 
-    void set_offset(int8_t offset)
+    void set_offset(int offset)
     {
         this->offset = offset;
     }
 
-    [[nodiscard]] int8_t get_size() const
+    [[nodiscard]] int get_size() const
     {
         return size;
     }
 
-    void set_size(int8_t size)
+    void set_size(int size)
     {
         this->size = size;
     }
 
-    [[nodiscard]] int8_t get_width() const
+    [[nodiscard]] int get_width() const
     {
         return width;
     }
 
-    void set_width(int8_t width)
+    void set_width(int width)
     {
         this->width = width;
     }

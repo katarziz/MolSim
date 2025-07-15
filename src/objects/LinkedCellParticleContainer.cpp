@@ -216,7 +216,7 @@ void LinkedCellParticleContainer::applyMembraneForces(const Membrane& mem)
 {
     int begin = mem.get_offset();
     int end = mem.get_offset() + mem.get_size();
-    int8_t width = mem.get_width();
+    int width = mem.get_width();
     //TODO: Check conditions & Decide wether to keep diag functions...
     for (auto i = begin; i < end; ++i)
     {

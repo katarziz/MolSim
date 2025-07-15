@@ -46,6 +46,16 @@ void BasicParticleContainer::applyUnarytoMembrane(const Membrane &mem, const std
         fun(particles[i]);
     }
 }
+
+
+void BasicParticleContainer::applyPerpForce(const Membrane &mem)
+{
+    for (auto p=mem.get_force_particles().begin(); p!=mem.get_force_particles().end();++p)
+    {
+        particles[*p].f=particles[*p].f+mem.get_f_up();
+    }
+}
+
 void BasicParticleContainer::applyMembraneForces(const Membrane &mem)
 {   int8_t begin=mem.get_offset();
     int8_t end=mem.get_offset()+mem.get_size();

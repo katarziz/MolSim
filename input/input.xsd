@@ -199,7 +199,24 @@
                                         <xs:element name="sigma" type="xs:decimal"/>
                                         <xs:element name="r_zero" type="xs:double"/>
                                         <xs:element name="k" type="xs:double"/>
-                                        <xs:element name="F_up" type="xs:double"/>
+                                        <xs:element name="F_mem" minOccurs="0" >
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="F_up" type="xs:double"/>
+                                                    <xs:element name="Area" maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="width_begin" type="xs:decimal"/>
+                                                                <xs:element name="width_end" type="xs:decimal"/>
+                                                                <xs:element name="height_begin" type="xs:decimal"/>
+                                                                <xs:element name="height_end" type="xs:decimal"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                            </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>

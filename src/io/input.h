@@ -632,6 +632,8 @@ class number_particles;
 class velocity;
 class position;
 class number_particles1;
+class F_mem;
+class Area;
 
 #include <memory>    // ::std::unique_ptr
 #include <limits>    // std::numeric_limits
@@ -5823,38 +5825,44 @@ class membrane: public ::xml_schema::type
   //@}
 
   /**
-   * @name F_up
+   * @name F_mem
    *
-   * @brief Accessor and modifier functions for the %F_up
-   * required element.
+   * @brief Accessor and modifier functions for the %F_mem
+   * optional element.
    */
   //@{
 
   /**
    * @brief Element type.
    */
-  typedef ::xml_schema::double_ F_up_type;
+  typedef ::F_mem F_mem_type;
+
+  /**
+   * @brief Element optional container type.
+   */
+  typedef ::xsd::cxx::tree::optional< F_mem_type > F_mem_optional;
 
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< F_up_type, char, ::xsd::cxx::tree::schema_type::double_ > F_up_traits;
+  typedef ::xsd::cxx::tree::traits< F_mem_type, char > F_mem_traits;
 
   /**
-   * @brief Return a read-only (constant) reference to the element.
+   * @brief Return a read-only (constant) reference to the element
+   * container.
    *
-   * @return A constant reference to the element.
+   * @return A constant reference to the optional container.
    */
-  const F_up_type&
-  F_up () const;
+  const F_mem_optional&
+  F_mem () const;
 
   /**
-   * @brief Return a read-write reference to the element.
+   * @brief Return a read-write reference to the element container.
    *
-   * @return A reference to the element.
+   * @return A reference to the optional container.
    */
-  F_up_type&
-  F_up ();
+  F_mem_optional&
+  F_mem ();
 
   /**
    * @brief Set the element value.
@@ -5865,7 +5873,30 @@ class membrane: public ::xml_schema::type
    * the new value of the element.
    */
   void
-  F_up (const F_up_type& x);
+  F_mem (const F_mem_type& x);
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x An optional container with the new value to set.
+   *
+   * If the value is present in @a x then this function makes a copy 
+   * of this value and sets it as the new value of the element.
+   * Otherwise the element container is set the 'not present' state.
+   */
+  void
+  F_mem (const F_mem_optional& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly instead
+   * of making a copy.
+   */
+  void
+  F_mem (::std::unique_ptr< F_mem_type > p);
 
   //@}
 
@@ -5888,8 +5919,7 @@ class membrane: public ::xml_schema::type
             const eps_type&,
             const sigma_type&,
             const r_zero_type&,
-            const k_type&,
-            const F_up_type&);
+            const k_type&);
 
   /**
    * @brief Create an instance from the ultimate base and
@@ -5909,8 +5939,7 @@ class membrane: public ::xml_schema::type
             const eps_type&,
             const sigma_type&,
             const r_zero_type&,
-            const k_type&,
-            const F_up_type&);
+            const k_type&);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -5993,7 +6022,7 @@ class membrane: public ::xml_schema::type
   ::xsd::cxx::tree::one< sigma_type > sigma_;
   ::xsd::cxx::tree::one< r_zero_type > r_zero_;
   ::xsd::cxx::tree::one< k_type > k_;
-  ::xsd::cxx::tree::one< F_up_type > F_up_;
+  F_mem_optional F_mem_;
 
   //@endcond
 };
@@ -7144,6 +7173,500 @@ class number_particles1: public ::xml_schema::type
   //@endcond
 };
 
+/**
+ * @brief Class corresponding to the %F_mem schema type.
+ *
+ * @nosubgrouping
+ */
+class F_mem: public ::xml_schema::type
+{
+  public:
+  /**
+   * @name F_up
+   *
+   * @brief Accessor and modifier functions for the %F_up
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::double_ F_up_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< F_up_type, char, ::xsd::cxx::tree::schema_type::double_ > F_up_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const F_up_type&
+  F_up () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  F_up_type&
+  F_up ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  F_up (const F_up_type& x);
+
+  //@}
+
+  /**
+   * @name Area
+   *
+   * @brief Accessor and modifier functions for the %Area
+   * sequence element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::Area Area_type;
+
+  /**
+   * @brief Element sequence container type.
+   */
+  typedef ::xsd::cxx::tree::sequence< Area_type > Area_sequence;
+
+  /**
+   * @brief Element iterator type.
+   */
+  typedef Area_sequence::iterator Area_iterator;
+
+  /**
+   * @brief Element constant iterator type.
+   */
+  typedef Area_sequence::const_iterator Area_const_iterator;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< Area_type, char > Area_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element
+   * sequence.
+   *
+   * @return A constant reference to the sequence container.
+   */
+  const Area_sequence&
+  Area () const;
+
+  /**
+   * @brief Return a read-write reference to the element sequence.
+   *
+   * @return A reference to the sequence container.
+   */
+  Area_sequence&
+  Area ();
+
+  /**
+   * @brief Copy elements from a given sequence.
+   *
+   * @param s A sequence to copy elements from.
+   *
+   * For each element in @a s this function makes a copy and adds it 
+   * to the sequence. Note that this operation completely changes the 
+   * sequence and all old elements will be lost.
+   */
+  void
+  Area (const Area_sequence& s);
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  F_mem (const F_up_type&);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  F_mem (const ::xercesc::DOMElement& e,
+         ::xml_schema::flags f = 0,
+         ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  F_mem (const F_mem& x,
+         ::xml_schema::flags f = 0,
+         ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual F_mem*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  /**
+   * @brief Copy assignment operator.
+   *
+   * @param x An instance to make a copy of.
+   * @return A reference to itself.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  F_mem&
+  operator= (const F_mem& x);
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~F_mem ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< F_up_type > F_up_;
+  Area_sequence Area_;
+
+  //@endcond
+};
+
+/**
+ * @brief Class corresponding to the %Area schema type.
+ *
+ * @nosubgrouping
+ */
+class Area: public ::xml_schema::type
+{
+  public:
+  /**
+   * @name width_begin
+   *
+   * @brief Accessor and modifier functions for the %width_begin
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::decimal width_begin_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< width_begin_type, char, ::xsd::cxx::tree::schema_type::decimal > width_begin_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const width_begin_type&
+  width_begin () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  width_begin_type&
+  width_begin ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  width_begin (const width_begin_type& x);
+
+  //@}
+
+  /**
+   * @name width_end
+   *
+   * @brief Accessor and modifier functions for the %width_end
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::decimal width_end_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< width_end_type, char, ::xsd::cxx::tree::schema_type::decimal > width_end_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const width_end_type&
+  width_end () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  width_end_type&
+  width_end ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  width_end (const width_end_type& x);
+
+  //@}
+
+  /**
+   * @name height_begin
+   *
+   * @brief Accessor and modifier functions for the %height_begin
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::decimal height_begin_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< height_begin_type, char, ::xsd::cxx::tree::schema_type::decimal > height_begin_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const height_begin_type&
+  height_begin () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  height_begin_type&
+  height_begin ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  height_begin (const height_begin_type& x);
+
+  //@}
+
+  /**
+   * @name height_end
+   *
+   * @brief Accessor and modifier functions for the %height_end
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::decimal height_end_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< height_end_type, char, ::xsd::cxx::tree::schema_type::decimal > height_end_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const height_end_type&
+  height_end () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  height_end_type&
+  height_end ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  height_end (const height_end_type& x);
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  Area (const width_begin_type&,
+        const width_end_type&,
+        const height_begin_type&,
+        const height_end_type&);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  Area (const ::xercesc::DOMElement& e,
+        ::xml_schema::flags f = 0,
+        ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  Area (const Area& x,
+        ::xml_schema::flags f = 0,
+        ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual Area*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  /**
+   * @brief Copy assignment operator.
+   *
+   * @param x An instance to make a copy of.
+   * @return A reference to itself.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  Area&
+  operator= (const Area& x);
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~Area ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< width_begin_type > width_begin_;
+  ::xsd::cxx::tree::one< width_end_type > width_end_;
+  ::xsd::cxx::tree::one< height_begin_type > height_begin_;
+  ::xsd::cxx::tree::one< height_end_type > height_end_;
+
+  //@endcond
+};
+
 #include <iosfwd>
 
 #include <xercesc/sax/InputSource.hpp>
@@ -7617,6 +8140,12 @@ operator<< (::xercesc::DOMElement&, const position&);
 
 void
 operator<< (::xercesc::DOMElement&, const number_particles1&);
+
+void
+operator<< (::xercesc::DOMElement&, const F_mem&);
+
+void
+operator<< (::xercesc::DOMElement&, const Area&);
 
 #include <xsd/cxx/post.hxx>
 

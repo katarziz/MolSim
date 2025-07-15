@@ -130,7 +130,7 @@ std::vector<Particle>::const_iterator LinkedCellParticleContainer::end() const {
 void LinkedCellParticleContainer::applyUnary(const std::function<void(Particle &i)> &fun) {
     for (auto &particle: particles) {
         // skip if deactivated
-        if (particle.state == 1) {
+        if ((particle.state & 1) == 1) {
             continue;
         }
         fun(particle);
@@ -209,6 +209,14 @@ void LinkedCellParticleContainer::applyUnarytoMembrane(const Membrane &mem, cons
        {
            fun(particles[i]);
        }
+}
+
+void LinkedCellParticleContainer::applyPerpForce(const Membrane &mem)
+{
+    for (int i=0;i<mem.get_force_particles().size();++i)
+    {
+        particles[mem.get_force_particles()[i]].f=particles[mem.get_force_particles()[i]].f+mem.get_f_up();
+    }
 }
 //TODO: What if pieces of Membrane are marked disabled???
 //TODO: Parallelize Rows??

@@ -165,12 +165,12 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
 void ParticleGenerator::generateMembrane(ParticleContainer& particles, std::array<double, 3> base_coordinates,
     const std::array<int64_t, 3>& number_of_particles, double spacing, double mass, double eps, double sig,
     const std::array<double, 3>& velocity, int type, int dim, double brownian_motion_avg_velocity,
-    const double k_arg,const double r_0, const double F_up)
+    const double k_arg,const double r_0,std::array<double,3> f,std::vector<int> f_part)
 {
   int offset=  particles.size();
   int size=number_of_particles[0]*number_of_particles[1]*number_of_particles[2]+offset;
   int width=std::max(number_of_particles[0],number_of_particles[1]);
-  Membrane mem=Membrane(offset,size,width, k_arg,r_0, F_up);
+  Membrane mem=Membrane(offset,size,width, k_arg,r_0, f, f_part);
   particles.addMembrane(mem);
     int k=0;
   if (number_of_particles[0]==1){k=1;} else if (number_of_particles[1]==1){k=2;}

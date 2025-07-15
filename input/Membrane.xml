@@ -18,7 +18,7 @@
             <right_bound>out</right_bound>
             <bottom_bound>out</bottom_bound>
             <left_bound>out</left_bound>
-            <front_bound>out</front_bound>
+            <front_bound>ref</front_bound>
             <back_bound>ref</back_bound>
         </boundary_conditions>
         <cutoff>4</cutoff>
@@ -58,7 +58,15 @@
             <sigma>1</sigma>
             <r_zero>2.2</r_zero>
             <k>300</k>
-            <F_up>0.8</F_up>
+            <F_mem>
+                <F_up>0.8</F_up>
+                <Area>
+                    <width_begin>17</width_begin>
+                    <width_end>18</width_end>
+                    <height_begin>24</height_begin>
+                    <height_end>25</height_end>
+                </Area>
+            </F_mem>
         </membrane>
     </Particles>
     </Molsim_Input>

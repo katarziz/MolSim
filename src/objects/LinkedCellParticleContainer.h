@@ -148,6 +148,7 @@ public:
     void applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) override;
 
     void applyUnarytoMembrane(const Membrane& mem, const std::function<void(Particle& i)>& fun) override;
+    void applyPerpForce(const Membrane& mem);
 
     void applyMembraneForces(const Membrane& mem) override;
 

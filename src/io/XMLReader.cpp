@@ -248,23 +248,38 @@ void XMLReader::readInMembranes(const Particles& particle_in, ParticleContainer&
         membrane.base_coordinates().z_coordinate()
     };
     std::array<int64_t, 3> n;
+    std::array<double,3> f;
     if (strcmp(membrane.plane().c_str(), "xy") == 0)
     {
          n = { membrane.number_particles().width(), membrane.number_particles().height(),1};
+         f={0,0,membrane.F_mem()->F_up()};
 
     } else if (strcmp(membrane.plane().c_str(), "xz") == 0)
     {
-         n = { membrane.number_particles().width(),1, membrane.number_particles().height()};
+         n = { membrane.number_particles().height(),1, membrane.number_particles().width()};
+         f={0,membrane.F_mem()->F_up(),0};
     } else
     {
-         n = {1, membrane.number_particles().height(), membrane.number_particles().width()};
+         n = {1, membrane.number_particles().width(), membrane.number_particles().height()};
+         f={membrane.F_mem()->F_up(),0,0};
     }
 
     std::array<double, 3> v = {
         membrane.velocity().x_velocity(), membrane.velocity().y_velocity(), membrane.velocity().z_velocity()
     };
+    std::vector<int> f_part;
+        for (auto a =membrane.F_mem()->Area().begin();a!=membrane.F_mem()->Area().end();++a)
+        {
+            for (auto wid=a->width_begin();wid<=a->width_end();++wid)
+            {
+                for (auto height=a->width_begin();height<=a->width_end();++height)
+                {
+                    f_part.push_back(wid+height* membrane.number_particles().width());
+                }
+            }
+        }
     ParticleGenerator::generateMembrane(particles, x, n, membrane.spacing(), membrane.mass(), membrane.eps(), membrane.sigma(),
-                                    v, membrane.type(), dim, f_i, membrane.k(),membrane.r_zero(), membrane.F_up());
+                                    v, membrane.type(), dim, f_i, membrane.k(),membrane.r_zero(), f, f_part);
 }
 
 

@@ -1733,22 +1733,34 @@ k (const k_type& x)
   this->k_.set (x);
 }
 
-const membrane::F_up_type& membrane::
-F_up () const
+const membrane::F_mem_optional& membrane::
+F_mem () const
 {
-  return this->F_up_.get ();
+  return this->F_mem_;
 }
 
-membrane::F_up_type& membrane::
-F_up ()
+membrane::F_mem_optional& membrane::
+F_mem ()
 {
-  return this->F_up_.get ();
+  return this->F_mem_;
 }
 
 void membrane::
-F_up (const F_up_type& x)
+F_mem (const F_mem_type& x)
 {
-  this->F_up_.set (x);
+  this->F_mem_.set (x);
+}
+
+void membrane::
+F_mem (const F_mem_optional& x)
+{
+  this->F_mem_ = x;
+}
+
+void membrane::
+F_mem (::std::unique_ptr< F_mem_type > x)
+{
+  this->F_mem_.set (std::move (x));
 }
 
 
@@ -2021,6 +2033,122 @@ void number_particles1::
 height (const height_type& x)
 {
   this->height_.set (x);
+}
+
+
+// F_mem
+// 
+
+const F_mem::F_up_type& F_mem::
+F_up () const
+{
+  return this->F_up_.get ();
+}
+
+F_mem::F_up_type& F_mem::
+F_up ()
+{
+  return this->F_up_.get ();
+}
+
+void F_mem::
+F_up (const F_up_type& x)
+{
+  this->F_up_.set (x);
+}
+
+const F_mem::Area_sequence& F_mem::
+Area () const
+{
+  return this->Area_;
+}
+
+F_mem::Area_sequence& F_mem::
+Area ()
+{
+  return this->Area_;
+}
+
+void F_mem::
+Area (const Area_sequence& s)
+{
+  this->Area_ = s;
+}
+
+
+// Area
+// 
+
+const Area::width_begin_type& Area::
+width_begin () const
+{
+  return this->width_begin_.get ();
+}
+
+Area::width_begin_type& Area::
+width_begin ()
+{
+  return this->width_begin_.get ();
+}
+
+void Area::
+width_begin (const width_begin_type& x)
+{
+  this->width_begin_.set (x);
+}
+
+const Area::width_end_type& Area::
+width_end () const
+{
+  return this->width_end_.get ();
+}
+
+Area::width_end_type& Area::
+width_end ()
+{
+  return this->width_end_.get ();
+}
+
+void Area::
+width_end (const width_end_type& x)
+{
+  this->width_end_.set (x);
+}
+
+const Area::height_begin_type& Area::
+height_begin () const
+{
+  return this->height_begin_.get ();
+}
+
+Area::height_begin_type& Area::
+height_begin ()
+{
+  return this->height_begin_.get ();
+}
+
+void Area::
+height_begin (const height_begin_type& x)
+{
+  this->height_begin_.set (x);
+}
+
+const Area::height_end_type& Area::
+height_end () const
+{
+  return this->height_end_.get ();
+}
+
+Area::height_end_type& Area::
+height_end ()
+{
+  return this->height_end_.get ();
+}
+
+void Area::
+height_end (const height_end_type& x)
+{
+  this->height_end_.set (x);
 }
 
 
@@ -4272,8 +4400,7 @@ membrane (const base_coordinates_type& base_coordinates,
           const eps_type& eps,
           const sigma_type& sigma,
           const r_zero_type& r_zero,
-          const k_type& k,
-          const F_up_type& F_up)
+          const k_type& k)
 : ::xml_schema::type (),
   base_coordinates_ (base_coordinates, this),
   plane_ (plane, this),
@@ -4286,7 +4413,7 @@ membrane (const base_coordinates_type& base_coordinates,
   sigma_ (sigma, this),
   r_zero_ (r_zero, this),
   k_ (k, this),
-  F_up_ (F_up, this)
+  F_mem_ (this)
 {
 }
 
@@ -4301,8 +4428,7 @@ membrane (::std::unique_ptr< base_coordinates_type > base_coordinates,
           const eps_type& eps,
           const sigma_type& sigma,
           const r_zero_type& r_zero,
-          const k_type& k,
-          const F_up_type& F_up)
+          const k_type& k)
 : ::xml_schema::type (),
   base_coordinates_ (std::move (base_coordinates), this),
   plane_ (plane, this),
@@ -4315,7 +4441,7 @@ membrane (::std::unique_ptr< base_coordinates_type > base_coordinates,
   sigma_ (sigma, this),
   r_zero_ (r_zero, this),
   k_ (k, this),
-  F_up_ (F_up, this)
+  F_mem_ (this)
 {
 }
 
@@ -4335,7 +4461,7 @@ membrane (const membrane& x,
   sigma_ (x.sigma_, f, this),
   r_zero_ (x.r_zero_, f, this),
   k_ (x.k_, f, this),
-  F_up_ (x.F_up_, f, this)
+  F_mem_ (x.F_mem_, f, this)
 {
 }
 
@@ -4355,7 +4481,7 @@ membrane (const ::xercesc::DOMElement& e,
   sigma_ (this),
   r_zero_ (this),
   k_ (this),
-  F_up_ (this)
+  F_mem_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -4507,13 +4633,16 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
-    // F_up
+    // F_mem
     //
-    if (n.name () == "F_up" && n.namespace_ ().empty ())
+    if (n.name () == "F_mem" && n.namespace_ ().empty ())
     {
-      if (!F_up_.present ())
+      ::std::unique_ptr< F_mem_type > r (
+        F_mem_traits::create (i, f, this));
+
+      if (!this->F_mem_)
       {
-        this->F_up_.set (F_up_traits::create (i, f, this));
+        this->F_mem_.set (::std::move (r));
         continue;
       }
     }
@@ -4597,13 +4726,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "k",
       "");
   }
-
-  if (!F_up_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "F_up",
-      "");
-  }
 }
 
 membrane* membrane::
@@ -4630,7 +4752,7 @@ operator= (const membrane& x)
     this->sigma_ = x.sigma_;
     this->r_zero_ = x.r_zero_;
     this->k_ = x.k_;
-    this->F_up_ = x.F_up_;
+    this->F_mem_ = x.F_mem_;
   }
 
   return *this;
@@ -5290,6 +5412,268 @@ operator= (const number_particles1& x)
 
 number_particles1::
 ~number_particles1 ()
+{
+}
+
+// F_mem
+//
+
+F_mem::
+F_mem (const F_up_type& F_up)
+: ::xml_schema::type (),
+  F_up_ (F_up, this),
+  Area_ (this)
+{
+}
+
+F_mem::
+F_mem (const F_mem& x,
+       ::xml_schema::flags f,
+       ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  F_up_ (x.F_up_, f, this),
+  Area_ (x.Area_, f, this)
+{
+}
+
+F_mem::
+F_mem (const ::xercesc::DOMElement& e,
+       ::xml_schema::flags f,
+       ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  F_up_ (this),
+  Area_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
+    this->parse (p, f);
+  }
+}
+
+void F_mem::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // F_up
+    //
+    if (n.name () == "F_up" && n.namespace_ ().empty ())
+    {
+      if (!F_up_.present ())
+      {
+        this->F_up_.set (F_up_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // Area
+    //
+    if (n.name () == "Area" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< Area_type > r (
+        Area_traits::create (i, f, this));
+
+      this->Area_.push_back (::std::move (r));
+      continue;
+    }
+
+    break;
+  }
+
+  if (!F_up_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "F_up",
+      "");
+  }
+}
+
+F_mem* F_mem::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class F_mem (*this, f, c);
+}
+
+F_mem& F_mem::
+operator= (const F_mem& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->F_up_ = x.F_up_;
+    this->Area_ = x.Area_;
+  }
+
+  return *this;
+}
+
+F_mem::
+~F_mem ()
+{
+}
+
+// Area
+//
+
+Area::
+Area (const width_begin_type& width_begin,
+      const width_end_type& width_end,
+      const height_begin_type& height_begin,
+      const height_end_type& height_end)
+: ::xml_schema::type (),
+  width_begin_ (width_begin, this),
+  width_end_ (width_end, this),
+  height_begin_ (height_begin, this),
+  height_end_ (height_end, this)
+{
+}
+
+Area::
+Area (const Area& x,
+      ::xml_schema::flags f,
+      ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  width_begin_ (x.width_begin_, f, this),
+  width_end_ (x.width_end_, f, this),
+  height_begin_ (x.height_begin_, f, this),
+  height_end_ (x.height_end_, f, this)
+{
+}
+
+Area::
+Area (const ::xercesc::DOMElement& e,
+      ::xml_schema::flags f,
+      ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  width_begin_ (this),
+  width_end_ (this),
+  height_begin_ (this),
+  height_end_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
+    this->parse (p, f);
+  }
+}
+
+void Area::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // width_begin
+    //
+    if (n.name () == "width_begin" && n.namespace_ ().empty ())
+    {
+      if (!width_begin_.present ())
+      {
+        this->width_begin_.set (width_begin_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // width_end
+    //
+    if (n.name () == "width_end" && n.namespace_ ().empty ())
+    {
+      if (!width_end_.present ())
+      {
+        this->width_end_.set (width_end_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // height_begin
+    //
+    if (n.name () == "height_begin" && n.namespace_ ().empty ())
+    {
+      if (!height_begin_.present ())
+      {
+        this->height_begin_.set (height_begin_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // height_end
+    //
+    if (n.name () == "height_end" && n.namespace_ ().empty ())
+    {
+      if (!height_end_.present ())
+      {
+        this->height_end_.set (height_end_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!width_begin_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "width_begin",
+      "");
+  }
+
+  if (!width_end_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "width_end",
+      "");
+  }
+
+  if (!height_begin_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "height_begin",
+      "");
+  }
+
+  if (!height_end_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "height_end",
+      "");
+  }
+}
+
+Area* Area::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class Area (*this, f, c);
+}
+
+Area& Area::
+operator= (const Area& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->width_begin_ = x.width_begin_;
+    this->width_end_ = x.width_end_;
+    this->height_begin_ = x.height_begin_;
+    this->height_end_ = x.height_end_;
+  }
+
+  return *this;
+}
+
+Area::
+~Area ()
 {
 }
 
@@ -6587,15 +6971,16 @@ operator<< (::xercesc::DOMElement& e, const membrane& i)
     s << ::xml_schema::as_double(i.k ());
   }
 
-  // F_up
+  // F_mem
   //
+  if (i.F_mem ())
   {
     ::xercesc::DOMElement& s (
       ::xsd::cxx::xml::dom::create_element (
-        "F_up",
+        "F_mem",
         e));
 
-    s << ::xml_schema::as_double(i.F_up ());
+    s << *i.F_mem ();
   }
 }
 
@@ -6780,6 +7165,87 @@ operator<< (::xercesc::DOMElement& e, const number_particles1& i)
         e));
 
     s << i.height ();
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const F_mem& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // F_up
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "F_up",
+        e));
+
+    s << ::xml_schema::as_double(i.F_up ());
+  }
+
+  // Area
+  //
+  for (F_mem::Area_const_iterator
+       b (i.Area ().begin ()), n (i.Area ().end ());
+       b != n; ++b)
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "Area",
+        e));
+
+    s << *b;
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const Area& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // width_begin
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "width_begin",
+        e));
+
+    s << ::xml_schema::as_decimal(i.width_begin ());
+  }
+
+  // width_end
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "width_end",
+        e));
+
+    s << ::xml_schema::as_decimal(i.width_end ());
+  }
+
+  // height_begin
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "height_begin",
+        e));
+
+    s << ::xml_schema::as_decimal(i.height_begin ());
+  }
+
+  // height_end
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "height_end",
+        e));
+
+    s << ::xml_schema::as_decimal(i.height_end ());
   }
 }
 

@@ -15,7 +15,8 @@ private:
     double k;
     double r_0;
     double r_0_root;
-    double F_up;
+    std::array<double,3> F_up;
+    std::vector<int> force_particles;
 
 public:
 
@@ -28,7 +29,7 @@ public:
      * @param r_0
      * @param F_up
      */
-    Membrane(int offset, int size, int width, double k, double r_0, double F_up);
+    Membrane(int offset, int size, int width, double k, double r_0,std::array<double,3> f,std::vector<int> f_part);
 
     [[nodiscard]] int get_offset() const
     {
@@ -38,6 +39,10 @@ public:
     void calculateF_Harm_Diag(Particle &i, Particle &j) const ;
     void calculateF_LJ_Trunc(Particle &i, Particle &j) const;
 
+    [[nodiscard]] std::vector<int> get_force_particles() const
+    {
+        return force_particles;
+    }
 
     void set_offset(int offset)
     {
@@ -64,12 +69,12 @@ public:
         this->width = width;
     }
 
-    [[nodiscard]] double get_f_up() const
+    [[nodiscard]] std::array<double,3> get_f_up() const
     {
         return F_up;
     }
 
-    void set_f_up(double f_up)
+    void set_f_up(std::array<double,3>  f_up)
     {
         F_up = f_up;
     }

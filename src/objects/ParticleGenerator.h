@@ -72,10 +72,14 @@ public:
      \param type int to denote the type of the particles
      \param dim int denoting the dimensions of the simulation to apply correct MB velocity
      \param brownian_motion_avg_velocity The mean-value of the velocity of the Brownian Motion
+     \param k the spring constant of the harmonich potential binging the particles
+     \param r_0 the bond length of the harmonic potential etween the particles
+     \param f the force acting perpendicular to the membrane on particles in f_part
+     \param f_part the indices of the particles on which the force f acts
      */
     static void generateMembrane(ParticleContainer& particles, std::array<double, 3> base_coordinates, const std::array<int64_t, 3>& number_of_particles, double spacing,double mass, double eps,
                         double sig, const std::array<double, 3>& velocity, int type, int dim, double  brownian_motion_avg_velocity
-                        , const double k,const double r_0, const double F_up);
+                        , const double k,const double r_0,std::array<double,3> f,std::vector<int> f_part);
 
     //! A constructor for a Particle Generator from given Parameters
     /*!

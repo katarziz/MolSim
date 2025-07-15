@@ -9,9 +9,9 @@
         <container>LinkedCell</container>
         <checkpoint_freq>10000</checkpoint_freq>
         <box_size>
-            <x-size>25</x-size>
-            <y-size>25</y-size>
-            <z-size>25</z-size>
+            <x-size>45</x-size>
+            <y-size>45</y-size>
+            <z-size>45</z-size>
         </box_size>
         <boundary_conditions>
             <top_bound>out</top_bound>
@@ -43,8 +43,8 @@
             </base_coordinates>
             <plane>xy</plane>
             <number_particles>
-                <width>5</width>
-                <height>5</height>
+                <width>10</width>
+                <height>10</height>
             </number_particles>
             <velocity>
                 <x-velocity>0</x-velocity>
@@ -58,7 +58,15 @@
             <sigma>1</sigma>
             <r_zero>2.2</r_zero>
             <k>300</k>
-            <F_up>0.8</F_up>
+            <F_mem>
+                <F_up>0.8</F_up>
+                <Area>
+                    <width_begin>4</width_begin>
+                    <width_end>5</width_end>
+                    <height_begin>4</height_begin>
+                    <height_end>5</height_end>
+                </Area>
+            </F_mem>
         </membrane>
     </Particles>
     </Molsim_Input>

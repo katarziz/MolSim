@@ -24,6 +24,8 @@ public:
 
     virtual void applyUnarytoMembrane(const Membrane& mem, const std::function<void(Particle& i)>& fun) = 0;
 
+    virtual void applyPerpForce(const Membrane& mem)=0;
+
     virtual void applyMembraneForces(const Membrane& mem) = 0;
 
     virtual const std::vector<Particle> &getParticles() const = 0;

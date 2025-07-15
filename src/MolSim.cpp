@@ -200,13 +200,9 @@ int main(int argc, char *argsv[]) {
             {
                 particles->applyMembraneForces(*mem);
 
-                if (iteration<(1.0/delta_t)* 150){
-                particles->applyUnarytoMembrane(*mem,[mem](Particle &p) {
-                    if ((p.x[0]-51.4)*(p.x[0]-51.4) + (p.x[1]-66.8)*(p.x[1]-66.8) < 5 )
-                    {
-                        p.f[2]=p.f[2]+ mem->get_f_up();
-                    }
-                    });
+                if (iteration<(1.0/delta_t)* 150)
+                {
+                    particles->applyPerpForce(*mem);
                 }
             }
         }

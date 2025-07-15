@@ -6,7 +6,7 @@
 
 #include "MolSim.h"
 
-Membrane::Membrane(int offset_arg, int size_arg, int width_arg, double k_arg, double r_0_arg, double F_up_arg)
+Membrane::Membrane(int offset_arg, int size_arg, int width_arg, double k_arg, double r_0_arg,std::array<double,3> f,std::vector<int> f_part)
 {
     offset = offset_arg;
     size = size_arg;
@@ -14,7 +14,8 @@ Membrane::Membrane(int offset_arg, int size_arg, int width_arg, double k_arg, do
     k = k_arg;
     r_0 = r_0_arg;
     r_0_root=sqrt(2)*r_0;
-    F_up = F_up_arg;
+    F_up = f;
+    force_particles = f_part;
 }
 
 

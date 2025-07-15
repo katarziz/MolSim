@@ -60,6 +60,7 @@ public:
     const std::vector<Membrane> &getMembranes() const override;
 
     void applyUnarytoMembrane(const Membrane& mem, const std::function<void(Particle& i)>& fun) override;
+    void applyPerpForce(const Membrane& mem);
 
     void applyMembraneForces(const Membrane& mem) override;
     //! A function to get the number of Particles in a Container

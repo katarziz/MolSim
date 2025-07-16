@@ -26,6 +26,7 @@
         <force/>
         <output_name>FallingDrop</output_name>
         <output_frequency/>
+        <statistics_freq>0</statistics_freq>
     </Parameters>
     <ThermostatParams>
         <T_init>0</T_init>
@@ -49,6 +50,7 @@
                 <z-velocity>0</z-velocity>
             </velocity>
             <radius>20</radius>
+            <sphere>false</sphere>
             <mass>1.0</mass>
             <type>0</type>
             <eps>1.0</eps>

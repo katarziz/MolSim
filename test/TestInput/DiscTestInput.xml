@@ -6,7 +6,7 @@
         <delta_t>0.002</delta_t>
         <t_end> 1.0 </t_end>
         <grav>0</grav>
-        <container>LinkedCell</container>
+        <container>Basic</container>
         <checkpoint_freq>0</checkpoint_freq>
         <box_size>
             <x-size/>
@@ -26,6 +26,7 @@
         <force/>
         <output_name/>
         <output_frequency/>
+        <statistics_freq>0</statistics_freq>
     </Parameters>
     <ThermostatParams>
         <T_init>0</T_init>
@@ -46,10 +47,12 @@
                 <z-velocity>0.0</z-velocity>
             </velocity>
             <radius>2</radius>
+            <sphere>false</sphere>
             <mass>1.0</mass>
             <type>0</type>
             <eps>5</eps>
             <sigma>1</sigma>
+            <fixed>false</fixed>
             <spacing>1.0</spacing>
         </disc>
     </Particles>

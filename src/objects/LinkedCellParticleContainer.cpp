@@ -299,7 +299,7 @@ void LinkedCellParticleContainer::applyBoundaryConditions() {
         int reflect = 0; // this will be a combined indicator for the boundary conditions.
         for (int dim = 0; dim < 3; ++dim) {
             indices[dim] = std::floor(p.x[dim] / (box_size[dim] / cell_number[dim]));
-            if (indices[dim] == 0 || indices[dim] == cell_number[dim] - 1) {
+            if ((indices[dim] == 0 && boundary_conditions[dim] == 1) || (indices[dim] == cell_number[dim] - 1 && boundary_conditions[dim + 3] == 1)) {
                 position[dim] = -p.x[dim] + 2 * box_size[dim] * (indices[dim] / (cell_number[dim] - 1));
                 reflect |= 1 << dim;
             }
@@ -360,27 +360,33 @@ void LinkedCellParticleContainer::applyBoundaryConditions() {
     for (i[0] = 0; i[0] < cell_number[0]; ++i[0]) {
         for (i[1] = 0; i[1] < cell_number[1]; ++i[1]) {
             for (i[2] = 0; i[2] < cell_number[2]; ++i[2]) {
-                if (i[0] != 0 && i[0] != cell_number[0] &&
-                    i[1] != 0 && i[1] != cell_number[1] &&
-                    i[2] != 0 && i[2] != cell_number[2]) {
+                if (!(
+                    ((i[0] == 0 || i[0] == cell_number[0] - 1) && boundary_conditions[0] == 2) ||
+                    ((i[1] == 0 || i[1] == cell_number[1] - 1) && boundary_conditions[1] == 2) ||
+                    ((i[2] == 0 || i[2] == cell_number[2] - 1) && boundary_conditions[2] == 2)
+                    )) {
                     continue;
                 }
                 auto &i_cell = cells[calcIndex(i[0], i[1], i[2])];
                 std::array<double, 3> displacement = {0, 0, 0};
+                std::array<int, 3> displacement_index = {i[0], i[1], i[2]};
                 for (int j = 0; j < 3; ++j) {
                     if (boundary_conditions[j] == 2) {
                         if (i[j] == 0) {
                             displacement[j] = box_size[j];
+                            displacement_index[j] = cell_number[j] - 1;
                         }
                         if (i[j] == cell_number[j] - 1) {
                             displacement[j] = -box_size[j];
+                            displacement_index[j] = 0;
                         }
                     }
                 }
                 for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
                     particles[*i_index].x = particles[*i_index].x + displacement;
                 }
-                applyBinaryToNeighbors([this](Particle &i_p, Particle&j_p){calculateF_LJ(i_p,j_p,cutoff);}, i[0], i[1], i[2]);
+                applyBinaryToNeighbors([this](Particle &i_p, Particle&j_p){calculateF_LJ(i_p,j_p,cutoff);},
+                    displacement_index[0], displacement_index[1], displacement_index[2]);
                 for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
                     particles[*i_index].x = particles[*i_index].x - displacement;
                 }

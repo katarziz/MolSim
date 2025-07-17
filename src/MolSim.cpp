@@ -150,7 +150,6 @@ int main(int argc, char *argsv[]) {
     particles = reinterpret_cast<ParticleContainer *>(particles_buffer);
     XMLReader::readFile(particles, input_file);
     if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
-        lcparticles->setParameters(box_dim, cell_num, r_c, bounds);
         lcparticles->setOMPStrategy(1);
     }
 
@@ -177,6 +176,14 @@ int main(int argc, char *argsv[]) {
     using clock = std::chrono::steady_clock;
     auto start_time_clock = clock::now();
 
+    std::ofstream vel_file;
+    std::ofstream n_file;
+    if (stat_freq!=0)
+    {
+        vel_file.open ("vel_prof.csv", std::ofstream::out );
+        n_file.open("n_prof.csv",std::ofstream::out);
+    }
+
     // for this loop, we assume: current x, current f and current v are known
     while (current_time < end_time) {
         // calculate new x
@@ -185,13 +192,31 @@ int main(int argc, char *argsv[]) {
         calculateF();
         // calculate new v
         calculateV();
-        if (iteration % f_therm == 0) {
+        if (f_therm!=0&&iteration % f_therm == 0) {
             thermostat.scaleV(particles);
+        }
+        if (particles->getMembranes().size()!=0)
+        {
+            for (auto mem=particles->getMembranes().begin(); mem<particles->getMembranes().end(); ++mem)
+            {
+                particles->applyMembraneForces(*mem);
+
+                if (iteration<(1.0/delta_t)* 150)
+                {
+                    particles->applyPerpForce(*mem);
+                }
+            }
         }
 
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
         iteration++;
         current_time += delta_t;
+        if (vel_file.is_open()&&n_file.is_open()&&iteration % stat_freq==0){
+            if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
+
+                lcparticles->writeState(vel_file,n_file);
+            }
+        }
         if (iteration % out_freq == 0) {
             // current MUPS/s
             double MUPS_per_second = iteration * 1000000.0
@@ -202,10 +227,14 @@ int main(int argc, char *argsv[]) {
                     "\rProgress: {:.1f}%\tCurrent updates per second: {:.1f}MUPS/s\t",
                     current_time / end_time * 100, MUPS_per_second) << std::flush;
         }
-
         if (checkpoint_freq != 0 && iteration % checkpoint_freq == 0) {
             FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
         }
+    }
+    if (vel_file.is_open()&&n_file.is_open())
+    {
+        vel_file.close();
+        n_file.close();
     }
 
     auto end_time_clock = clock::now();
@@ -249,13 +278,19 @@ void calculateF() {
 void calculateX() {
     particles->applyUnary(
         [](Particle &p) {
+            if ((p.state & 2) == 2) {
+                return;
+            }
             p.x = p.x + delta_t * p.v + delta_t * delta_t / (2 * p.m) * p.f;
         });
 }
 
 void calculateV() {
     particles->applyUnary(
-        [](Particle &p) {
+        [](Particle& p) {
+            if ((p.state & 2) == 2) {
+                return;
+            }
             p.v = p.v + delta_t / (2 * p.m) * (p.old_f + p.f);
         });
 }
@@ -268,7 +303,7 @@ void plotParticles(int iteration) {
         outputWriter::VTKWriter writer;
         writer.initializeOutput(particles->size());
         for (auto &p: *particles) {
-            if (p.getState() == 1) {
+            if ((p.getState() & 1) == 1) {
                 continue;
             }
             writer.plotParticle(p);

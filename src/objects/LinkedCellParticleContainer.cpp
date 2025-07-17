@@ -5,11 +5,13 @@
 #include "LinkedCellParticleContainer.h"
 
 #include <cmath>
+#include <fstream>
 #include <spdlog/spdlog.h>
 #include <omp.h>
 
 #include "simulation/LennardJones.h"
 #include "utils/ArrayUtils.h"
+
 
 LinkedCellParticleContainer::LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg,
                                                          const std::array<int, 3> &cell_number_arg,
@@ -31,6 +33,7 @@ LinkedCellParticleContainer::LinkedCellParticleContainer(const std::array<double
     halo = std::vector<int>();
     cutoff = cutoff_arg;
     boundary_conditions = bounds_arg;
+    membranes={};
 }
 
 LinkedCellParticleContainer::LinkedCellParticleContainer(const std::vector<Particle> &particles_arg,
@@ -54,7 +57,10 @@ LinkedCellParticleContainer::LinkedCellParticleContainer(const std::vector<Parti
     halo = std::vector<int>();
     cutoff = cutoff_arg;
     boundary_conditions = bounds_arg;
+    membranes={};
 }
+
+
 
 void LinkedCellParticleContainer::setParameters(const std::array<double, 3> &box_size_arg,
                                                 const std::array<int, 3> &cell_number_arg,
@@ -92,7 +98,7 @@ void LinkedCellParticleContainer::addParticles(const std::vector<Particle> &p) {
 int LinkedCellParticleContainer::size() const {
     int size = 0;
     for (auto &p: particles) {
-        if (p.state == 0) {
+        if ((p.state & 1) != 1) {
             size++;
         }
     }
@@ -101,6 +107,16 @@ int LinkedCellParticleContainer::size() const {
 
 const std::vector<Particle> &LinkedCellParticleContainer::getParticles() const {
     return particles;
+}
+
+void LinkedCellParticleContainer::addMembrane(Membrane &mem)
+{
+    membranes.push_back(mem);
+}
+
+const std::vector<Membrane> &LinkedCellParticleContainer::getMembranes() const
+{
+    return membranes;
 }
 
 std::vector<Particle>::iterator LinkedCellParticleContainer::begin() {
@@ -122,7 +138,7 @@ std::vector<Particle>::const_iterator LinkedCellParticleContainer::end() const {
 void LinkedCellParticleContainer::applyUnary(const std::function<void(Particle &i)> &fun) {
     for (auto &particle: particles) {
         // skip if deactivated
-        if (particle.state == 1) {
+        if ((particle.state & 1) == 1) {
             continue;
         }
         fun(particle);
@@ -226,6 +242,58 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
     }
 }
 
+//TODO: Make Main Force not Apply to Membrane amongst itself (??? )and All Forces not apply on fixed Particles!!
+/**
+ *
+ * @param mem
+ * @param fun
+ */
+void LinkedCellParticleContainer::applyUnarytoMembrane(const Membrane &mem, const std::function<void(Particle &i)> & fun)
+{
+    for (auto i=mem.get_offset();i<mem.get_offset()+mem.get_size();++i)
+    {
+        fun(particles[i]);
+    }
+}
+
+void LinkedCellParticleContainer::applyPerpForce(const Membrane &mem)
+{
+    for (int i=0;i<mem.get_force_particles().size();++i)
+    {
+        particles[mem.get_force_particles()[i]].f=particles[mem.get_force_particles()[i]].f+mem.get_f_up();
+    }
+}
+//TODO: What if pieces of Membrane are marked disabled???
+//TODO: Parallelize Rows??
+void LinkedCellParticleContainer::applyMembraneForces(const Membrane& mem)
+{
+    int begin = mem.get_offset();
+    int end = mem.get_offset() + mem.get_size();
+    int width = mem.get_width();
+    //TODO: Check conditions & Decide wether to keep diag functions...
+    for (auto i = begin; i < end; ++i)
+    {
+        if (i + 1 < end && (i - begin) / width == (i + 1 - begin) / width)
+        {
+            mem.calculateF_Harm(particles[i], particles[i + 1]);
+        }
+        if (i + width < end)
+        {
+            mem.calculateF_Harm(particles[i], particles[i + width]);
+        }
+        if (i + width + 1 < end && (i - begin) / width + 1 == (i + width + 1 - begin) / width)
+        {
+            mem.calculateF_Harm_Diag(particles[i], particles[i + width + 1]);
+        }
+        if (i + width - 1 < end && (i - begin) / width + 1 == (i + width - 1 - begin) / width)
+        {
+            mem.calculateF_Harm_Diag(particles[i], particles[i + width - 1]);
+        }
+    }
+}
+
+
+
 void LinkedCellParticleContainer::updateCells() {
     // cells is cleared by being reinitialized and particles are assigned the correct cell.
     // this is resource intensive, but more efficient than removing and adding a Particle each time they change cells.
@@ -246,7 +314,7 @@ void LinkedCellParticleContainer::updateCells() {
     boundary.clear();
     for (int i = 0; i < particles.size(); ++i) {
         Particle &p = particles[i];
-        if (p.state == 1) {
+        if ((p.state & 1)  == 1) {
             continue;
         }
         bool in_boundary = false;
@@ -269,7 +337,7 @@ void LinkedCellParticleContainer::updateCells() {
                     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} moved to halo.",
                                        p.getX()[0], p.getX()[1], p.getX()[2]);
                     halo.push_back(i);
-                    p.state = 1;
+                    p.state |= 1;
                     break;
                 }
             }
@@ -280,7 +348,7 @@ void LinkedCellParticleContainer::updateCells() {
             }
         }
         // if a particle is active, it is added back to the pool of particles.
-        if (p.state == 0) {
+        if ((p.state & 1) == 0) {
             cells[calcIndex(indices[0], indices[1], indices[2])].push_back(i);
         }
     }
@@ -530,77 +598,33 @@ void LinkedCellParticleContainer::deleteHalo() {
     });
 }
 
-void LinkedCellParticleContainer::outflow(Particle &p) {
-    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced outflow.",
-                        p.getX()[0], p.getX()[1], p.getX()[2]);
-    p.state = 1;
-}
-
-void LinkedCellParticleContainer::reflect(Particle &p, const int boundary) {
-    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced reflect.",
-                        p.getX()[0], p.getX()[1], p.getX()[2]);
-    std::array<double, 3> counter_particle_X = p.x;
-    if (boundary == 0) {
-        // left
-        counter_particle_X[0] = 0 - counter_particle_X[0];
-    } else if (boundary == 1) {
-        // bottom
-        counter_particle_X[1] = 0 - counter_particle_X[1];
-    } else if (boundary == 2) {
-        // back
-        counter_particle_X[2] = 0 - counter_particle_X[2];
-    } else if (boundary == 3) {
-        // right
-        counter_particle_X[0] = box_size[0] + (box_size[0] - counter_particle_X[0]);
-    } else if (boundary == 4) {
-        // top
-        counter_particle_X[1] = box_size[1] + (box_size[1] - counter_particle_X[1]);
-    } else if (boundary == 5) {
-        // front
-        counter_particle_X[2] = box_size[2] + (box_size[2] - counter_particle_X[2]);
+void LinkedCellParticleContainer::writeState(std::ofstream &vel_prof, std::ofstream &N_prof)
+{   std::array<int,50> N;
+    std::array<std::array<double,3>,50> vel;
+    for (auto i=0;i<N.size();++i)
+    {
+        N[i]=0;
+        vel[i]={0,0,0};
     }
-    auto counter_particle = Particle(counter_particle_X, p.v, p.m, p.eps, p.sig, p.type);
-    calculateF_LJ(p, counter_particle, cutoff);
-}
-
-void LinkedCellParticleContainer::periodic(Particle &p, const int boundary) {
-    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced periodic.",
-                        p.getX()[0], p.getX()[1], p.getX()[2]);
-    std::array<double, 3> counter_particle_X = p.x;
-    if (boundary == 0) {
-        // left
-        counter_particle_X[0] = box_size[0] + counter_particle_X[0];
-    } else if (boundary == 1) {
-        // bottom
-        counter_particle_X[1] = box_size[1] + counter_particle_X[1];
-    } else if (boundary == 2) {
-        // back
-        counter_particle_X[2] = box_size[2] + counter_particle_X[2];
+    for (auto p=particles.begin();p!=particles.end();++p)
+    {   if ((p->state & 1)==1){continue;}
+        int index=floor(p->x[0] / (box_size[0] / 50));
+        N[index]++;
+        vel[index]=vel[index]+p->v;
     }
-    auto counter_particle = Particle(counter_particle_X, p.v, p.m, p.eps, p.sig, p.type);
-    std::array<int, 3> indices = {0, 0, 0};
-    for (int j = 0; j < 3; ++j) {
-        indices[j] = std::floor(counter_particle.x[j] / (box_size[j] / cell_number[j]));
-    }
-    // this loop dynamically finds the correct nine cells to interact with based on the boundary
-    // we only want to calculate cells at the given boundary
-    const int perp_axis_1 = (boundary + 1) % 3;
-    const int perp_axis_2 = (boundary + 2) % 3;
-    for (int i_x = -1; i_x < 2; ++i_x) {
-        for (int i_y = -1; i_y < 2; ++i_y) {
-            std::array<int, 3> cell_idx = indices;
-            cell_idx[boundary] = indices[boundary] - 1;
-            cell_idx[perp_axis_1] = indices[perp_axis_1] + i_x;
-            cell_idx[perp_axis_2] = indices[perp_axis_2] + i_y;
-            if (cell_idx[perp_axis_1] >= 0 && cell_idx[perp_axis_1] < cell_number[perp_axis_1] &&
-                cell_idx[perp_axis_2] >= 0 && cell_idx[perp_axis_2] < cell_number[perp_axis_2]) {
-                auto &cell = cells[calcIndex(cell_idx[0], cell_idx[1], cell_idx[2])];
-                for (auto j = cell.begin(); j != cell.end(); ++j) {
-                    calculateF_LJ(counter_particle, particles.at(*j), cutoff);
-                }
-            }
+    for (auto i=0;i<N.size();++i)
+    {
+        if (N[i]!=0){ vel[i]=(1.0/N[i])*vel[i];}
+        if (i!=0)
+        {
+            vel_prof<<",";
+            N_prof<<",";
         }
+        vel_prof <<vel[i][0]<<","<<vel[i][1]<<","<<vel[i][2];
+        N_prof << N[i] ;
     }
-    // transfer the accumulated forces to the original particle
-    p.f = p.f + counter_particle.f;
+    vel_prof << std::endl;
+    N_prof << std::endl;
 }
+
+

@@ -4,29 +4,29 @@
               xsi:noNamespaceSchemaLocation="input.xsd">
     <Parameters>
         <delta_t>0.0005</delta_t>
-        <t_end>50</t_end>
+        <t_end>10</t_end>
         <grav>-12.44</grav>
         <container>LinkedCell</container>
-        <checkpoint_freq/>
+        <checkpoint_freq>1000000</checkpoint_freq>
         <box_size>
-            <x-size>300</x-size>
-            <y-size>54</y-size>
-            <z-size>0</z-size>
+            <x-size>60</x-size>
+            <y-size>60</y-size>
+            <z-size>60</z-size>
         </box_size>
         <boundary_conditions>
             <top_bound>ref</top_bound>
             <right_bound>per</right_bound>
             <bottom_bound>ref</bottom_bound>
             <left_bound>per</left_bound>
-            <front_bound>ref</front_bound>
-            <back_bound>ref</back_bound>
+            <front_bound>per</front_bound>
+            <back_bound>per</back_bound>
         </boundary_conditions>
-        <cutoff>3.0</cutoff>
+        <cutoff>3.6</cutoff>
         <writer/>
         <force/>
-        <output_name>RT_big</output_name>
-        <output_frequency/>
-        <statistics_freq>0</statistics_freq>
+        <output_name>speedup</output_name>
+        <output_frequency>1000000</output_frequency>
+        <statistics_freq>1000000</statistics_freq>
     </Parameters>
     <ThermostatParams>
         <T_init>40</T_init>
@@ -38,13 +38,13 @@
         <cuboid>
             <base_coordinates>
                 <x-coordinate>0.6</x-coordinate>
-                <y-coordinate>2.0</y-coordinate>
-                <z-coordinate>0.0</z-coordinate>
+                <y-coordinate>0.6</y-coordinate>
+                <z-coordinate>0.6</z-coordinate>
             </base_coordinates>
             <number_particles>
-                <x-number>250</x-number>
+                <x-number>50</x-number>
                 <y-number>20</y-number>
-                <z-number>1</z-number>
+                <z-number>50</z-number>
             </number_particles>
             <velocity>
                 <x-velocity>0.0</x-velocity>
@@ -61,13 +61,13 @@
         <cuboid>
             <base_coordinates>
                 <x-coordinate>0.6</x-coordinate>
-                <y-coordinate>27</y-coordinate>
-                <z-coordinate>0</z-coordinate>
+                <y-coordinate>24.6</y-coordinate>
+                <z-coordinate>0.6</z-coordinate>
             </base_coordinates>
             <number_particles>
-                <x-number>250</x-number>
+                <x-number>50</x-number>
                 <y-number>20</y-number>
-                <z-number>1</z-number>
+                <z-number>50</z-number>
             </number_particles>
             <velocity>
                 <x-velocity>0.0</x-velocity>

@@ -162,7 +162,7 @@ public:
      \param i_z The z index of the middle cell
     */
     void applyBinaryToNeighbors(const std::function<void(Particle &i, Particle &j)> &fun,
-                                const int &i_x, const int &i_y, const int &i_z);
+                                const int &i_x, const int &i_y, const int &i_z, const std::vector<int> &i_cell);
 
     //! A function to apply a binary function to pairs of Particles in neighboring cells of the ParticleContainer
     /*!

@@ -150,7 +150,6 @@ int main(int argc, char *argsv[]) {
     particles = reinterpret_cast<ParticleContainer *>(particles_buffer);
     XMLReader::readFile(particles, input_file);
     if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
-        lcparticles->setParameters(box_dim, cell_num, r_c, bounds);
         lcparticles->setOMPStrategy(1);
     }
 

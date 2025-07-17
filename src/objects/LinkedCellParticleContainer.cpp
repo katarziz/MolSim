@@ -146,12 +146,6 @@ void LinkedCellParticleContainer::applyBinaryToCells(const std::function<void(Pa
 void LinkedCellParticleContainer::applyBinaryToNeighbors(const std::function<void(Particle &i, Particle &j)> &fun,
                                                          const int &i_x, const int &i_y, const int &i_z) {
     auto &i_cell = cells[calcIndex(i_x, i_y, i_z)];
-    // calculations within i_cell to avoid duplicate calculations.
-    for (unsigned int i = 0; i < i_cell.size(); ++i) {
-        for (unsigned int j = 0; j < i; ++j) {
-            fun(particles.at(i_cell[i]), particles.at(i_cell[j]));
-        }
-    }
 
     // the immediate and diagonal neighbors of i_cell are 26.
     // to avoid calculating twice, only one side of each pair of neighbors is used for the calculation.
@@ -198,6 +192,13 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
             for (int i_x = even; i_x < cell_number[0]; i_x += 2) {
                 for (int i_y = 0; i_y < cell_number[1]; ++i_y) {
                     for (int i_z = 0; i_z < cell_number[2]; ++i_z) {
+                        auto &i_cell = cells[calcIndex(i_x, i_y, i_z)];
+                        // calculations within i_cell to avoid duplicate calculations.
+                        for (unsigned int i = 0; i < i_cell.size(); ++i) {
+                            for (unsigned int j = 0; j < i; ++j) {
+                                fun(particles.at(i_cell[i]), particles.at(i_cell[j]));
+                            }
+                        }
                         applyBinaryToNeighbors(fun, i_x, i_y, i_z);
                     }
                 }
@@ -211,6 +212,13 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
             for (int i_x = color & 1; i_x < cell_number[0]; i_x += 2) {
                 for (int i_y = (color >> 1) % 3; i_y < cell_number[1]; i_y += 3) {
                     for (int i_z = (color / 6) % 3; i_z < cell_number[2]; i_z += 3) {
+                        auto &i_cell = cells[calcIndex(i_x, i_y, i_z)];
+                        // calculations within i_cell to avoid duplicate calculations.
+                        for (unsigned int i = 0; i < i_cell.size(); ++i) {
+                            for (unsigned int j = 0; j < i; ++j) {
+                                fun(particles.at(i_cell[i]), particles.at(i_cell[j]));
+                            }
+                        }
                         applyBinaryToNeighbors(fun, i_x, i_y, i_z);
                     }
                 }
@@ -242,36 +250,22 @@ void LinkedCellParticleContainer::updateCells() {
         if (p.state == 1) {
             continue;
         }
+        bool in_boundary = false;
         std::array<int, 3> indices = {0, 0, 0};
         for (int j = 0; j < 3; ++j) {
             indices[j] = std::floor(p.x[j] / (box_size[j] / cell_number[j]));
             // particles outside the domain are deactivated
             if (indices[j] < 0 || indices[j] >= cell_number[j]) {
-                boundary.push_back(i);
                 if (indices[j] < 0 && boundary_conditions[j] == 2) {
                     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
                                         p.getX()[0], p.getX()[1], p.getX()[2]);
                     indices[j] += cell_number[j];
                     p.x[j] += box_size[j];
-                    if (p.v[j] < -box_size[j]) {
-                        SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} removed by whiplash.",
-                                           p.getX()[0], p.getX()[1], p.getX()[2]);
-                        p.state = 1;
-                        break;
-                    }
                 } else if (indices[j] >= cell_number[j] && boundary_conditions[j + 3] == 2) {
                     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
                                         p.getX()[0], p.getX()[1], p.getX()[2]);
                     indices[j] -= cell_number[j];
-                    auto p_x = p.x;
-                    p_x[j] -= box_size[j];
-                    p.x = p_x;
-                    if (p.v[j] > box_size[j]) {
-                        SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} removed by whiplash.",
-                                           p.getX()[0], p.getX()[1], p.getX()[2]);
-                        p.state = 1;
-                        break;
-                    }
+                    p.x[j] -= box_size[j];
                 } else {
                     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} moved to halo.",
                                        p.getX()[0], p.getX()[1], p.getX()[2]);
@@ -281,30 +275,9 @@ void LinkedCellParticleContainer::updateCells() {
                 }
             }
             // boundary conditions are applied to particles in the boundary
-            if (indices[j] == 0 || indices[j] == cell_number[j] - 1) {
-                // a simulation is considered 2d, if the box size  in the third dimension is 0
-                if (j == 2 && cell_number[2] == 1) {
-                    continue;
-                }
-                SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} detected in boundary.",
-                                    p.getX()[0], p.getX()[1], p.getX()[2]);
-                if (indices[j] == 0) {
-                    if (boundary_conditions[j] == 1) {
-                        // reflect Particle p at boundary j
-                        reflect(p, j);
-                    } else if (boundary_conditions[j] == 0 && cell_number[j] != 1) {
-                        // outflow Particle p at boundary j if dimension exists
-                        outflow(p);
-                    }
-                } else if (indices[j] == cell_number[j] - 1) {
-                    if (boundary_conditions[j + 3] == 1) {
-                        // reflect Particle p at boundary j + 3
-                        reflect(p, j + 3);
-                    } else if (boundary_conditions[j + 3] == 0 && cell_number[j] != 1) {
-                        // outflow Particle p at boundary j + 3 if dimension exists
-                        outflow(p);
-                    }
-                }
+            if ((indices[j] == 0 || indices[j] == cell_number[j] - 1) && cell_number[j] > 1 && !in_boundary) {
+                boundary.push_back(i);
+                in_boundary = true;
             }
         }
         // if a particle is active, it is added back to the pool of particles.
@@ -312,21 +285,104 @@ void LinkedCellParticleContainer::updateCells() {
             cells[calcIndex(indices[0], indices[1], indices[2])].push_back(i);
         }
     }
-    // periodic boundaries need to be handled after updating the cells, to use the correct index
-    // we also only ever consider one side of the boundary pair to avoid duplicate force calculation
-    // if A is left and B is right, A' would interact with B the same way B' would interact with A
-    std::array<int64_t, 3> stride = {1, cell_number[0], cell_number[0] * cell_number[1]};
-    for (int boundary = 0; boundary < 3; ++boundary) {
-        if (boundary_conditions[boundary] == 2 && cell_number[boundary] != 1) {
-            // perpendicular axes are used to find the correct cells of the boundary
-            const int perp_axis_1 = (boundary + 1) % 3;
-            const int perp_axis_2 = (boundary + 2) % 3;
-            for (int i = 0; i < cell_number[perp_axis_1]; ++i) {
-                for (int j = 0; j < cell_number[perp_axis_2]; ++j) {
-                    auto &cell = cells[i * stride[perp_axis_1] + j * stride[perp_axis_2]];
-                    for (int k = 0; k < cell.size(); ++k) {
-                        periodic(particles.at(cell[k]), boundary);
+}
+
+void LinkedCellParticleContainer::applyBoundaryConditions() {
+    // this handling of reflective boundaries is particle based.
+    // this means, that everything is calculated, regardless of location being corner/edge/face
+    // on the other hand this is far more parallelizable and less complex
+    for (auto p_index = boundary.begin(); p_index != boundary.end(); ++p_index) {
+        Particle &p = particles.at(*p_index);
+        std::array<int, 3> indices = {0, 0, 0};
+        // precomputing the mirrored x values avoids recomputation and the need to differentiate x==0 and x==max
+        std::array<double, 3> position = {0, 0, 0};
+        int reflect = 0; // this will be a combined indicator for the boundary conditions.
+        for (int dim = 0; dim < 3; ++dim) {
+            indices[dim] = std::floor(p.x[dim] / (box_size[dim] / cell_number[dim]));
+            if (indices[dim] == 0 || indices[dim] == cell_number[dim] - 1) {
+                position[dim] = -p.x[dim] + 2 * box_size[dim] * (indices[dim] / (cell_number[dim] - 1));
+                reflect |= 1 << dim;
+            }
+        }
+
+        // combinations of reflective boundaries are ordered/executed based on Grey Code.
+        // therefore all combinations are accounted for and only one value needs to be changed between computations.
+        auto virtual_particle = Particle(p);
+        if (reflect & 1) {
+            virtual_particle.x[0] = position[0]; // 000 -> 100
+            calculateF_LJ(p, virtual_particle, cutoff); // 100
+            if (reflect & 2) {
+                virtual_particle.x[1] = position[1]; // 100 -> 110
+                calculateF_LJ(p, virtual_particle, cutoff); // 110
+                virtual_particle.x[0] = p.x[0]; // 110 -> 010
+                calculateF_LJ(p, virtual_particle, cutoff); // 010
+                if (reflect & 4) {
+                    virtual_particle.x[2] = position[2]; // 010 -> 011
+                    calculateF_LJ(p, virtual_particle, cutoff); // 011
+                    virtual_particle.x[0] = position[0]; // 011 -> 111
+                    calculateF_LJ(p, virtual_particle, cutoff); // 111
+                    virtual_particle.x[1] = p.x[1]; // 111 -> 101
+                    calculateF_LJ(p, virtual_particle, cutoff); // 101
+                    virtual_particle.x[0] = p.x[0]; // 101 -> 001
+                    calculateF_LJ(p, virtual_particle, cutoff); // 001
+                }
+            } else {
+                if (reflect & 4) {
+                    virtual_particle.x[2] = position[2]; // 100 -> 101
+                    calculateF_LJ(p, virtual_particle, cutoff); // 101
+                    virtual_particle.x[0] = p.x[0]; // 101 -> 001
+                    calculateF_LJ(p, virtual_particle, cutoff); // 001
+                }
+            }
+        } else {
+            if (reflect & 2) {
+                virtual_particle.x[1] = position[1]; // 000 -> 010
+                calculateF_LJ(p, virtual_particle, cutoff); // 010
+                if (reflect & 4) {
+                    virtual_particle.x[2] = position[2]; // 010 -> 011
+                    calculateF_LJ(p, virtual_particle, cutoff); // 011
+                    virtual_particle.x[1] = p.x[1]; // 011 -> 001
+                    calculateF_LJ(p, virtual_particle, cutoff); // 001
+                }
+            } else {
+                if (reflect & 4) {
+                    virtual_particle.x[2] = position[2]; // 000 -> 010
+                    calculateF_LJ(p, virtual_particle, cutoff); // 010
+                }
+            }
+        }
+    }
+
+    if (boundary_conditions[0] != 2 && boundary_conditions[1] != 2 && boundary_conditions[2] != 2) {
+        return;
+    }
+    std::array<int, 3> i = {0, 0, 0};
+    for (i[0] = 0; i[0] < cell_number[0]; ++i[0]) {
+        for (i[1] = 0; i[1] < cell_number[1]; ++i[1]) {
+            for (i[2] = 0; i[2] < cell_number[2]; ++i[2]) {
+                if (i[0] != 0 && i[0] != cell_number[0] &&
+                    i[1] != 0 && i[1] != cell_number[1] &&
+                    i[2] != 0 && i[2] != cell_number[2]) {
+                    continue;
+                }
+                auto &i_cell = cells[calcIndex(i[0], i[1], i[2])];
+                std::array<double, 3> displacement = {0, 0, 0};
+                for (int j = 0; j < 3; ++j) {
+                    if (boundary_conditions[j] == 2) {
+                        if (i[j] == 0) {
+                            displacement[j] = box_size[j];
+                        }
+                        if (i[j] == cell_number[j] - 1) {
+                            displacement[j] = -box_size[j];
+                        }
                     }
+                }
+                for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                    particles[*i_index].x = particles[*i_index].x + displacement;
+                }
+                applyBinaryToNeighbors([this](Particle &i_p, Particle&j_p){calculateF_LJ(i_p,j_p,cutoff);}, i[0], i[1], i[2]);
+                for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                    particles[*i_index].x = particles[*i_index].x - displacement;
                 }
             }
         }
@@ -370,17 +426,23 @@ void LinkedCellParticleContainer::reflect(Particle &p, const int boundary) {
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced reflect.",
                         p.getX()[0], p.getX()[1], p.getX()[2]);
     std::array<double, 3> counter_particle_X = p.x;
-    if (boundary == 0) { // left
+    if (boundary == 0) {
+        // left
         counter_particle_X[0] = 0 - counter_particle_X[0];
-    } else if (boundary == 1) { // bottom
+    } else if (boundary == 1) {
+        // bottom
         counter_particle_X[1] = 0 - counter_particle_X[1];
-    } else if (boundary == 2) { // back
+    } else if (boundary == 2) {
+        // back
         counter_particle_X[2] = 0 - counter_particle_X[2];
-    } else if (boundary == 3) { // right
+    } else if (boundary == 3) {
+        // right
         counter_particle_X[0] = box_size[0] + (box_size[0] - counter_particle_X[0]);
-    } else if (boundary == 4) { // top
+    } else if (boundary == 4) {
+        // top
         counter_particle_X[1] = box_size[1] + (box_size[1] - counter_particle_X[1]);
-    } else if (boundary == 5) { // front
+    } else if (boundary == 5) {
+        // front
         counter_particle_X[2] = box_size[2] + (box_size[2] - counter_particle_X[2]);
     }
     auto counter_particle = Particle(counter_particle_X, p.v, p.m, p.eps, p.sig, p.type);
@@ -391,11 +453,14 @@ void LinkedCellParticleContainer::periodic(Particle &p, const int boundary) {
     SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} experienced periodic.",
                         p.getX()[0], p.getX()[1], p.getX()[2]);
     std::array<double, 3> counter_particle_X = p.x;
-    if (boundary == 0) { // left
+    if (boundary == 0) {
+        // left
         counter_particle_X[0] = box_size[0] + counter_particle_X[0];
-    } else if (boundary == 1) { // bottom
+    } else if (boundary == 1) {
+        // bottom
         counter_particle_X[1] = box_size[1] + counter_particle_X[1];
-    } else if (boundary == 2) { // back
+    } else if (boundary == 2) {
+        // back
         counter_particle_X[2] = box_size[2] + counter_particle_X[2];
     }
     auto counter_particle = Particle(counter_particle_X, p.v, p.m, p.eps, p.sig, p.type);

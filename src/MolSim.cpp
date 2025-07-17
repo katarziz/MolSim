@@ -234,6 +234,7 @@ void calculateF() {
         });
     if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
         lcparticles->updateCells();
+        lcparticles->applyBoundaryConditions();
         lcparticles->deleteHalo();
     }
     if (force_flag == 1) {

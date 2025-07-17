@@ -161,6 +161,9 @@ public:
     */
     void updateCells();
 
+    //! A function that applies reflective and periodic forces to particles at the boundary
+    void applyBoundaryConditions();
+
     //! A function to apply a unary function to the particles in the boundary cells of the ParticleContainer
     /*!
      \param fun a unary function to be applied to the Particles in the boundary cells

@@ -27,7 +27,7 @@ void ParticleGenerator::generateCube(ParticleContainer &particles,
                     // y-coordinate starting from "lower"
                     base_coordinates[1] + spacing * j,
                     // z-coordinate starting from "front-side"
-                    base_coordinates[2] - spacing * k
+                    base_coordinates[2] + spacing * k
                 };
                 std::array<double, 3> particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
                 particles.addParticle({position, particle_velocity, mass, eps, sig, type});

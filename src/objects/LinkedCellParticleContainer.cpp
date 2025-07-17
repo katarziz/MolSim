@@ -144,9 +144,7 @@ void LinkedCellParticleContainer::applyBinaryToCells(const std::function<void(Pa
 }
 
 void LinkedCellParticleContainer::applyBinaryToNeighbors(const std::function<void(Particle &i, Particle &j)> &fun,
-                                                         const int &i_x, const int &i_y, const int &i_z) {
-    auto &i_cell = cells[calcIndex(i_x, i_y, i_z)];
-
+                                                         const int &i_x, const int &i_y, const int &i_z, const std::vector<int> &i_cell) {
     // the immediate and diagonal neighbors of i_cell are 26.
     // to avoid calculating twice, only one side of each pair of neighbors is used for the calculation.
     // a pair is such, that fun(a,a+offset) is the same as fun(b-offset,b) or fun(b,b-offset)
@@ -199,7 +197,7 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
                                 fun(particles.at(i_cell[i]), particles.at(i_cell[j]));
                             }
                         }
-                        applyBinaryToNeighbors(fun, i_x, i_y, i_z);
+                        applyBinaryToNeighbors(fun, i_x, i_y, i_z, i_cell);
                     }
                 }
             }
@@ -219,7 +217,7 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
                                 fun(particles.at(i_cell[i]), particles.at(i_cell[j]));
                             }
                         }
-                        applyBinaryToNeighbors(fun, i_x, i_y, i_z);
+                        applyBinaryToNeighbors(fun, i_x, i_y, i_z, i_cell);
                     }
                 }
             }
@@ -374,7 +372,7 @@ void LinkedCellParticleContainer::applyBoundaryConditions() {
                     if (boundary_conditions[j] == 2) {
                         if (i[j] == 0) {
                             displacement[j] = box_size[j];
-                            displacement_index[j] = cell_number[j] - 1;
+                            displacement_index[j] = cell_number[j];
                         }
                         if (i[j] == cell_number[j] - 1) {
                             displacement[j] = -box_size[j];
@@ -386,7 +384,7 @@ void LinkedCellParticleContainer::applyBoundaryConditions() {
                     particles[*i_index].x = particles[*i_index].x + displacement;
                 }
                 applyBinaryToNeighbors([this](Particle &i_p, Particle&j_p){calculateF_LJ(i_p,j_p,cutoff);},
-                    displacement_index[0], displacement_index[1], displacement_index[2]);
+                    displacement_index[0], displacement_index[1], displacement_index[2], i_cell);
                 for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
                     particles[*i_index].x = particles[*i_index].x - displacement;
                 }

@@ -101,6 +101,12 @@ public:
      */
     const std::vector<Membrane> &getMembranes() const override;
 
+    //! A getter for the cutoff radius
+    /*!
+     \return the cutoff radius used in the ParticleContainer
+     */
+    double getCutoff() const;
+
     //! A function to return the size of the ParticleContainer
     /*!
      \returns an int representing the number of Particles in the Container

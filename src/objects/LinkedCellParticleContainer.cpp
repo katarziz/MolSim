@@ -95,6 +95,11 @@ void LinkedCellParticleContainer::addParticles(const std::vector<Particle> &p) {
     }
 }
 
+double LinkedCellParticleContainer::getCutoff() const {
+    return cutoff;
+}
+
+
 int LinkedCellParticleContainer::size() const {
     int size = 0;
     for (auto &p: particles) {

@@ -170,6 +170,9 @@ int main(int argc, char *argsv[]) {
 
     // setup cells
     if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
+        if (lcparticles->getMembranes().size() > 0) {
+            r_c = lcparticles->getCutoff();
+        }
         lcparticles->updateCells();
     }
 

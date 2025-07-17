@@ -268,14 +268,12 @@ void LinkedCellParticleContainer::applyPerpForce(const Membrane &mem)
         particles[mem.get_force_particles()[i]].f=particles[mem.get_force_particles()[i]].f+mem.get_f_up();
     }
 }
-//TODO: What if pieces of Membrane are marked disabled???
-//TODO: Parallelize Rows??
+
 void LinkedCellParticleContainer::applyMembraneForces(const Membrane& mem)
 {
     int begin = mem.get_offset();
     int end = mem.get_offset() + mem.get_size();
     int width = mem.get_width();
-    //TODO: Check conditions & Decide wether to keep diag functions...
     for (auto i = begin; i < end; ++i)
     {
         if (i + 1 < end && (i - begin) / width == (i + 1 - begin) / width)

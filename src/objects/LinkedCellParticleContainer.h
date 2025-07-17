@@ -166,6 +166,7 @@ public:
      \param i_x The x index of the middle cell
      \param i_y The y index of the middle cell
      \param i_z The z index of the middle cell
+     \param i_cell
     */
     void applyBinaryToNeighbors(const std::function<void(Particle &i, Particle &j)> &fun,
                                 const int &i_x, const int &i_y, const int &i_z, const std::vector<int> &i_cell);

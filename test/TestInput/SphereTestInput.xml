@@ -35,28 +35,25 @@
         <delta_T>0</delta_T>
     </ThermostatParams>
     <Particles>
-        <cuboid>
-            <base_coordinates>
+        <disc>
+            <position>
                 <x-coordinate>0.0</x-coordinate>
                 <y-coordinate>0.0</y-coordinate>
                 <z-coordinate>0.0</z-coordinate>
-            </base_coordinates>
-            <number_particles>
-                <x-number>2</x-number>
-                <y-number>2</y-number>
-                <z-number>2</z-number>
-            </number_particles>
+            </position>
             <velocity>
                 <x-velocity>0.0</x-velocity>
                 <y-velocity>0.0</y-velocity>
                 <z-velocity>0.0</z-velocity>
             </velocity>
-            <spacing>1.0</spacing>
+            <radius>2</radius>
+            <sphere>true</sphere>
             <mass>1.0</mass>
             <type>0</type>
             <eps>5</eps>
             <sigma>1</sigma>
             <fixed>false</fixed>
-        </cuboid>
+            <spacing>1.0</spacing>
+        </disc>
     </Particles>
 </Molsim_Input>

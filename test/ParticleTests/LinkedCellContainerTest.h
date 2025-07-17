@@ -19,6 +19,6 @@ inline const std::array<double, 3> box_size={cutoff,cutoff,1.0};
 /**
  * cell_number to be used in tests
  */
-inline const std::array<int64_t, 3> cell_number={1,1,1};
+inline const std::array<int, 3> cell_number = {1, 1, 1};
 
 #endif //LINKEDCELLCONTAINERTEST_H

@@ -16,6 +16,7 @@ private:
     std::array<int, 3> cell_number;
     std::vector<std::vector<int> > cells;
     std::vector<Particle> particles;
+    std::vector<Membrane> membranes;
     std::vector<int> boundary;
     std::vector<int> halo;
     double cutoff;
@@ -86,6 +87,20 @@ public:
      */
     [[nodiscard]] const std::vector<Particle> &getParticles() const override;
 
+    //! A function to add a membrane of Particles to a ParticleContainer
+    /*!
+     \param mem a reference to an array of 3 int representing
+     the indices of the first particle,the last particle and
+     the width of the membrane
+     */
+    void addMembrane(Membrane &mem) override;
+
+    //! A function to get the Membranes of a ParticleContainer
+    /*!
+     \returns the internal vector of the membrane management object
+     */
+    const std::vector<Membrane> &getMembranes() const override;
+
     //! A function to return the size of the ParticleContainer
     /*!
      \returns an int representing the number of Particles in the Container
@@ -155,6 +170,11 @@ public:
     */
     void applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) override;
 
+    void applyUnarytoMembrane(const Membrane& mem, const std::function<void(Particle& i)>& fun) override;
+    void applyPerpForce(const Membrane& mem) override;
+
+    void applyMembraneForces(const Membrane& mem) override;
+
     //! A function to update the cells of the ParticleContainer
     /*!
         A function to update the cells of the ParticleContainer
@@ -203,4 +223,5 @@ public:
             0: left boundary, 1: bottom boundary, 2: back boundary
     */
     void periodic(Particle &p, int boundary);
+    void writeState(std::ofstream & vel_prof, std::ofstream & N_prof);
 };

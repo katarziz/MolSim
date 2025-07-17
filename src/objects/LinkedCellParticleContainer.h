@@ -201,27 +201,6 @@ public:
      This function deactivates all particles in the halo region by setting their state to 1
     */
     void deleteHalo();
-    
-    //! A function to implement outflow boundary condition for a particle
-    /*!
-     \param p reference to the Particle that will be deactivated due to outflow
-    */
-    void outflow(Particle &p);
-    
-    //! A function to implement reflective boundary condition for a particle
-    /*!
-     \param p reference to the Particle that will be reflected
-     \param boundary an integer indicating which boundary the particle is reflected at
-            0-2: left, bottom, back boundaries; 3-5: right, top, front boundaries
-    */
-    void reflect(Particle &p, int boundary);
-    
-    //! A function to implement periodic boundary condition for a particle
-    /*!
-     \param p reference to the Particle that experiences periodic boundary condition
-     \param boundary an integer indicating which boundary the particle is at
-            0: left boundary, 1: bottom boundary, 2: back boundary
-    */
-    void periodic(Particle &p, int boundary);
+
     void writeState(std::ofstream & vel_prof, std::ofstream & N_prof);
 };

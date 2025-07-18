@@ -16,7 +16,3 @@ void calculateF_G(Particle &i, Particle &j, double cutoff) {
     i.setF(i.getF() + force);
     j.setF(j.getF() - force);
 }
-
-void calculateF_GE(Particle &i, std::array<double,3> grav) {
-      i.f = i.f+i.m*grav;
-}

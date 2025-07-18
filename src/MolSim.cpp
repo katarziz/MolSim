@@ -179,10 +179,9 @@ int main(int argc, char *argsv[]) {
 
     std::ofstream vel_file;
     std::ofstream n_file;
-    if (stat_freq!=0)
-    {
-        vel_file.open ("vel_prof.csv", std::ofstream::out );
-        n_file.open("n_prof.csv",std::ofstream::out);
+    if (stat_freq != 0) {
+        vel_file.open("vel_prof.csv", std::ofstream::out);
+        n_file.open("n_prof.csv", std::ofstream::out);
     }
 
     // for this loop, we assume: current x, current f and current v are known
@@ -193,17 +192,14 @@ int main(int argc, char *argsv[]) {
         calculateF();
         // calculate new v
         calculateV();
-        if (f_therm!=0&&iteration % f_therm == 0) {
+        if (f_therm != 0 && iteration % f_therm == 0) {
             thermostat.scaleV(particles);
         }
-        if (particles->getMembranes().size()!=0)
-        {
-            for (auto mem=particles->getMembranes().begin(); mem<particles->getMembranes().end(); ++mem)
-            {
+        if (particles->getMembranes().size() != 0) {
+            for (auto mem = particles->getMembranes().begin(); mem < particles->getMembranes().end(); ++mem) {
                 particles->applyMembraneForces(*mem);
 
-                if (iteration<(1.0/delta_t)* 150)
-                {
+                if (iteration < (1.0 / delta_t) * 150) {
                     particles->applyPerpForce(*mem);
                 }
             }
@@ -212,10 +208,9 @@ int main(int argc, char *argsv[]) {
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
         iteration++;
         current_time += delta_t;
-        if (vel_file.is_open()&&n_file.is_open()&&iteration % stat_freq==0){
+        if (vel_file.is_open() && n_file.is_open() && iteration % stat_freq == 0) {
             if (auto *lcparticles = dynamic_cast<LinkedCellParticleContainer *>(particles)) {
-
-                lcparticles->writeState(vel_file,n_file);
+                lcparticles->writeState(vel_file, n_file);
             }
         }
         if (iteration % out_freq == 0) {
@@ -225,15 +220,14 @@ int main(int argc, char *argsv[]) {
                                          clock::now() - start_time_clock).count();
             plotParticles(iteration);
             std::cout << fmt::format(
-                    "\rProgress: {:.1f}%\tCurrent updates per second: {:.1f}MUPS/s\t",
-                    current_time / end_time * 100, MUPS_per_second) << std::flush;
+                "\rProgress: {:.1f}%\tCurrent updates per second: {:.1f}MUPS/s\t",
+                current_time / end_time * 100, MUPS_per_second) << std::flush;
         }
         if (checkpoint_freq != 0 && iteration % checkpoint_freq == 0) {
             FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
         }
     }
-    if (vel_file.is_open()&&n_file.is_open())
-    {
+    if (vel_file.is_open() && n_file.is_open()) {
         vel_file.close();
         n_file.close();
     }
@@ -269,11 +263,11 @@ void calculateF() {
     }
     if (force_flag == 1) {
         particles->applyBinary([](Particle &a, Particle &b) { calculateF_G(a, b, r_c); });
-        particles->applyUnary([](Particle &p) { calculateF_GE(p, grav); });
     } else {
         particles->applyBinary([](Particle &a, Particle &b) { calculateF_LJ(a, b, r_c); });
-        particles->applyUnary([](Particle &p) { calculateF_GE(p, grav); });
     }
+    // apply gravity
+    particles->applyUnary([](Particle &p) { p.f = p.f + p.m * grav; });
 }
 
 void calculateX() {
@@ -288,7 +282,7 @@ void calculateX() {
 
 void calculateV() {
     particles->applyUnary(
-        [](Particle& p) {
+        [](Particle &p) {
             if ((p.state & 2) == 2) {
                 return;
             }

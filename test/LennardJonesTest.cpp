@@ -5,10 +5,20 @@
 #include "LennardJonesTest.h"
 #include <gtest/gtest.h>
 
+#include "objects/BasicParticleContainer.h"
 
-TEST(TwoParticleLJTest,LJForceCalcTests)
-{ ParticleContainer particles=ParticleContainer(coll);
-    calculateF_LJ(particles);
+
+TEST(TwoParticleLJTest, LJForceCalcTests)
+{ BasicParticleContainer particles=BasicParticleContainer(coll);
+    for (auto p1=particles.begin();p1!=particles.end();++p1)
+    {
+        for (auto p2=particles.begin();p2!=p1;++p2)
+        {
+          calculateF_LJ(*p1,*p2);
+        }
+
+    }
+
 
     for (int i=0;i<particles.getParticles()[0].getF().size();i++)
     {
@@ -18,9 +28,15 @@ TEST(TwoParticleLJTest,LJForceCalcTests)
 }
 
 TEST(ThreeParticleLJTest,LJForceCalcTests)
-{ ParticleContainer particles=ParticleContainer(coll3);
-  calculateF_LJ(particles);
+{ BasicParticleContainer particles=BasicParticleContainer(coll3);
+    for (auto p1=particles.begin();p1!=particles.end();++p1)
+    {
+        for (auto p2=particles.begin();p2!=p1;++p2)
+        {
+            calculateF_LJ(*p1,*p2);
+        }
 
+    }
     for (int i=0;i<particles.getParticles()[0].getF().size();i++)
     {
         EXPECT_FLOAT_EQ(particles.getParticles()[0].getF()[i],check1[i]);

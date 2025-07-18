@@ -1,8 +1,8 @@
 
 #include "MolSim.h"
-#include "FileReader.h"
-#include "outputWriter/XYZWriter.h"
-#include "outputWriter/VTKWriter.h"
+#include "io/FileReader.h"
+#include "io/XYZWriter.h"
+#include "io/VTKWriter.h"
 #include "utils/ArrayUtils.h"
 
 #include <iostream>
@@ -10,8 +10,10 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include  <getopt.h>
-#include "LennardJones.h"
-#include "Grav.h"
+#include "simulation/LennardJones.h"
+#include "simulation/Grav.h"
+#include "io/XMLReader.h"
+#include "io/input.h"
 #include "spdlog/sinks/stdout_sinks.h"
 
 int main(int argc, char *argsv[]) {
@@ -53,7 +55,7 @@ int main(int argc, char *argsv[]) {
     {"delta_t", optional_argument, nullptr, 'd'},
     {"t_end",optional_argument, nullptr, 't'},
     {"writer",optional_argument,nullptr,'w'},
-        {"force",optional_argument,nullptr,'f' },
+    {"force",optional_argument,nullptr,'f'},
     {nullptr}
   };
 
@@ -139,8 +141,10 @@ int main(int argc, char *argsv[]) {
     exit(0);
   }
 
-  FileReader fileReader;
-  fileReader.readFile(particles, input_file);
+  XMLReader::readFile(particles, input_file);
+  if constexpr (std::is_same_v<decltype(particles), LinkedCellParticleContainer>) {
+    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).setParameters(box_dim,cell_num,r_c,bounds);
+  }
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particles generated:");
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG
@@ -167,13 +171,15 @@ int main(int argc, char *argsv[]) {
     calculateV();
 
     iteration++;
-    if (iteration % 50 == 0) {
+    if (iteration % out_freq == 0) {
       plotParticles(iteration);
       SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Iteration {} finished.", iteration);
+      std::cout << "\rProgress: " << std::ceil(1000*current_time/end_time)/10 << "%  " << std::flush;
     }
 
     current_time += delta_t;
   }
+  std::cout << std::endl;
 
   SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
   SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation finished. Terminating...");
@@ -181,46 +187,46 @@ int main(int argc, char *argsv[]) {
 }
 
 void calculateF() {
+  particles.applyUnary(
+    [](Particle &p) {
+      p.setOldF(p.getF());
+      p.setF({0,0,0});
+    });
+  if constexpr (std::is_same_v<decltype(particles), LinkedCellParticleContainer>) {
+    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).updateCells();
+    static_cast<LinkedCellParticleContainer&>(static_cast<ParticleContainer&>(particles)).deleteHalo();
+  }
   if (force_flag==1)
   {
-    calculateF_G(particles);
+    particles.applyBinary(calculateF_G);
   }else
   {
-    calculateF_LJ(particles);
+    particles.applyBinary(calculateF_LJ);
   }
 }
 
 void calculateX() {
-  for (auto &p : particles) {
-    std::array<double, 3> x = p.getX();
-    //calculations according to Stoermer-Verlet
-    for (int i = 0; i < 3; ++i) {
-      x[i] += delta_t * p.getV()[i] + delta_t * delta_t * p.getF()[i] / (2 * p.getM());
-    }
-    p.setX(x);
-  }
+  particles.applyUnary(
+    [](Particle &p) {
+      p.setX(p.getX() + delta_t*p.getV() + delta_t*delta_t/(2*p.getM())*p.getF());
+    });
 }
 
 void calculateV() {
-  for (auto &p : particles) {
-    std::array<double, 3> v = p.getV();
-    // calculations according to Stoermer-Verlet
-    for (int i = 0; i < 3; ++i) {
-      v[i] += delta_t * (p.getOldF()[i] + p.getF()[i]) / (2 * p.getM());
-    }
-    p.setV(v);
-  }
+  particles.applyUnary(
+    [](Particle &p) {
+      p.setV(p.getV() + delta_t/(2*p.getM())*(p.getOldF() + p.getF()));
+    });
 }
 
 void plotParticles(int iteration) {
-  std::string out_name("MD_vtk");
 
   if (writer_flag==1)  {
     outputWriter::XYZWriter writer;
     writer.plotParticles(particles, out_name, iteration);
   } else {
     outputWriter::VTKWriter writer;
-    writer.initializeOutput(static_cast<int>(particles.size()));
+    writer.initializeOutput(particles.size());
     for (auto &p : particles) {
       writer.plotParticle(p);
     }

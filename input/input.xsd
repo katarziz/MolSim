@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Molsim_Input">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Parameters">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="delta_t" default="0.0002" type="xs:decimal"  />
+                            <xs:element name="t_end" type="xs:decimal" default="5.0"/>
+                            <xs:element name="box_size">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="x-size" type="xs:decimal"  default="3.0"/>
+                                        <xs:element name="y-size" type="xs:decimal"  default="3.0"/>
+                                        <xs:element name="z-size" type="xs:decimal"  default="1.0"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="number_cells">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="x-number" type="xs:integer" default="1"/>
+                                        <xs:element name="y-number" type="xs:integer" default="1"/>
+                                        <xs:element name="z-number" type="xs:integer" default="1"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="boundary_conditions">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="top_bound" type="xs:string" default="out"/>
+                                        <xs:element name="right_bound" type="xs:string" default="out" />
+                                        <xs:element name="bottom_bound" type="xs:string" default="out"/>
+                                        <xs:element name="left_bound" type="xs:string" default="out"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="cutoff" type="xs:decimal" default="3.0"/>
+                            <xs:element name="writer" type="xs:string" default="vtk"/>
+                            <xs:element name="force" type="xs:string" default="lennard-jones"/>
+                            <xs:element name="output_name" type="xs:string" default="MD_vtk"/>
+                            <xs:element name="output_frequency" type="xs:integer" default="50"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="Particles">
+                    <xs:complexType>
+                        <xs:sequence maxOccurs="unbounded">
+                            <xs:element name="cuboid" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="base_coordinates">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="x-coordinate" type="xs:decimal"/>
+                                                    <xs:element name="y-coordinate" type="xs:decimal"/>
+                                                    <xs:element name="z-coordinate" type="xs:decimal"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="number_particles">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="x-number" type="xs:integer"/>
+                                                    <xs:element name="y-number" type="xs:integer"/>
+                                                    <xs:element name="z-number" type="xs:integer"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="velocity">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="x-velocity" type="xs:decimal"/>
+                                                    <xs:element name="y-velocity" type="xs:decimal"/>
+                                                    <xs:element name="z-velocity" type="xs:decimal"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="spacing" type="xs:decimal"/>
+                                        <xs:element name="mass" type="xs:decimal"/>
+                                        <xs:element name="brownian_vel" type="xs:decimal"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="particle" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="position">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="x-coordinate" type="xs:decimal"/>
+                                                    <xs:element name="y-coordinate" type="xs:decimal"/>
+                                                    <xs:element name="z-coordinate" type="xs:decimal"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="velocity">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="x-velocity" type="xs:decimal"/>
+                                                    <xs:element name="y-velocity" type="xs:decimal"/>
+                                                    <xs:element name="z-velocity" type="xs:decimal"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="mass" type="xs:decimal"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="disc" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="position">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="x-coordinate" type="xs:decimal"/>
+                                                    <xs:element name="y-coordinate" type="xs:decimal"/>
+                                                    <xs:element name="z-coordinate" type="xs:decimal"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="velocity">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="x-velocity" type="xs:decimal"/>
+                                                    <xs:element name="y-velocity" type="xs:decimal"/>
+                                                    <xs:element name="z-velocity" type="xs:decimal"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="radius" type="xs:integer"/>
+                                        <xs:element name="mass" type="xs:decimal"/>
+                                        <xs:element name="spacing" type="xs:decimal"/>
+                                        <xs:element name="brownian_vel" type="xs:decimal"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

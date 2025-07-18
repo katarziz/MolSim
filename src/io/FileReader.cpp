@@ -14,7 +14,7 @@
 #include <sstream>
 #include <spdlog/spdlog.h>
 
-#include "ParticleGenerator.h"
+#include "../objects/ParticleGenerator.h"
 
 FileReader::FileReader() = default;
 
@@ -90,9 +90,7 @@ void FileReader::readFile(ParticleContainer &particles, char *filename) {
         datastream >> h;
 
         // TODO MAGIC NUMBER 0.1 is hard coded Brownian Motion
-        auto cuboid = ParticleGenerator::generateParticleContainer(x, n, h, m, v, 0.1);
-
-        particles.addParticles(cuboid.getParticles());
+        ParticleGenerator::generateCube(particles, x, n, h, m, v, 0.1);
       }
       getline(input_file, tmp_string);
     }

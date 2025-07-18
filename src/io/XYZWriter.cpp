@@ -5,7 +5,7 @@
  *      Author: eckhardw
  */
 
-#include "outputWriter/XYZWriter.h"
+#include "io/XYZWriter.h"
 #include <iomanip>
 #include <sstream>
 
@@ -15,7 +15,7 @@ XYZWriter::XYZWriter() = default;
 
 XYZWriter::~XYZWriter() = default;
 
-void XYZWriter::plotParticles(ParticleContainer particles,
+void XYZWriter::plotParticles(ParticleContainer &particles,
                               const std::string &filename, int iteration) {
   std::ofstream file;
   std::stringstream strstr;

@@ -103,11 +103,10 @@ void Thermostat::scaleV(ParticleContainer* particles) const
         double beta = sqrt(temp_n / temp_c);
 
 
-        for (auto particle = particles->begin(); particle != particles->end(); ++particle) {
-            if ((particle->getState() & ParticleState::Fixed) != ParticleState::Fixed)
-            {
-                particle->setV((1-beta)*avg_vel + beta * particle->getV());
+        particles->applyUnary([beta, avg_vel](Particle &p) {
+            if ((p.getState() & ParticleState::Fixed) != ParticleState::Fixed) {
+                p.setV((1 - beta) * avg_vel + beta * p.getV());
             }
-        }
+        });
     }
 }

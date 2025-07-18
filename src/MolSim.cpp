@@ -215,13 +215,13 @@ int main(int argc, char *argsv[]) {
         }
         if (iteration % out_freq == 0) {
             // current MUPS/s
-            double MUPS_per_second = iteration * 1000000.0
+            double MMUPS_per_second = particles->getParticles().size() * iteration * 1.0
                                      / std::chrono::duration_cast<std::chrono::microseconds>(
                                          clock::now() - start_time_clock).count();
             plotParticles(iteration);
             std::cout << fmt::format(
-                "\rProgress: {:.1f}%\tCurrent updates per second: {:.1f}MUPS/s\t",
-                current_time / end_time * 100, MUPS_per_second) << std::flush;
+                "\rProgress: {:.1f}%\tCurrent updates per second: {:.1f}MMUPS/s\t",
+                current_time / end_time * 100, MMUPS_per_second) << std::flush;
         }
         if (checkpoint_freq != 0 && iteration % checkpoint_freq == 0) {
             FileReader::writeCheckpoint(current_time, *particles, checkpoint_name.data());
@@ -243,8 +243,8 @@ int main(int argc, char *argsv[]) {
     particles->~ParticleContainer();
 
     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Simulation finished. Terminating...");
-    SPDLOG_LOGGER_INFO(spdlog::get("default"), "Time taken: {:.1f}s\tAverage updates per second: {:.1f}MUPS/s",
-                       time_taken / 1000000.0, iteration * 1000000.0 / time_taken);
+    SPDLOG_LOGGER_INFO(spdlog::get("default"), "Time taken: {:.1f}s\tAverage updates per second: {:.1f}MMUPS/s",
+                       time_taken / 1000000.0, particles->getParticles().size() * iteration * 1.0 / time_taken);
     SPDLOG_LOGGER_INFO(spdlog::get("stdout"), "Simulation finished. Terminating...");
 
     return 0;

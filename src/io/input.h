@@ -36,8 +36,8 @@
  * @brief Generated from input.xsd.
  */
 
-#ifndef INPUT_INPUT_H
-#define INPUT_INPUT_H
+#ifndef CXX___INPUT_INPUT_H
+#define CXX___INPUT_INPUT_H
 
 #ifndef XSD_CXX11
 #define XSD_CXX11
@@ -620,6 +620,7 @@ class Molsim_Input;
 class Parameters;
 class ThermostatParams;
 class Particles;
+class Grav;
 class box_size;
 class boundary_conditions;
 class cuboid;
@@ -1052,9 +1053,9 @@ class Parameters: public ::xml_schema::type
   //@}
 
   /**
-   * @name grav
+   * @name Grav
    *
-   * @brief Accessor and modifier functions for the %grav
+   * @brief Accessor and modifier functions for the %Grav
    * required element.
    */
   //@{
@@ -1062,28 +1063,28 @@ class Parameters: public ::xml_schema::type
   /**
    * @brief Element type.
    */
-  typedef ::xml_schema::decimal grav_type;
+  typedef ::Grav Grav_type;
 
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< grav_type, char, ::xsd::cxx::tree::schema_type::decimal > grav_traits;
+  typedef ::xsd::cxx::tree::traits< Grav_type, char > Grav_traits;
 
   /**
    * @brief Return a read-only (constant) reference to the element.
    *
    * @return A constant reference to the element.
    */
-  const grav_type&
-  grav () const;
+  const Grav_type&
+  Grav () const;
 
   /**
    * @brief Return a read-write reference to the element.
    *
    * @return A reference to the element.
    */
-  grav_type&
-  grav ();
+  Grav_type&
+  Grav ();
 
   /**
    * @brief Set the element value.
@@ -1094,15 +1095,18 @@ class Parameters: public ::xml_schema::type
    * the new value of the element.
    */
   void
-  grav (const grav_type& x);
+  Grav (const Grav_type& x);
 
   /**
-   * @brief Return the default value for the element.
+   * @brief Set the element value without copying.
    *
-   * @return The element's default value.
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
    */
-  static grav_type
-  grav_default_value ();
+  void
+  Grav (::std::unique_ptr< Grav_type > p);
 
   //@}
 
@@ -1721,7 +1725,7 @@ class Parameters: public ::xml_schema::type
    */
   Parameters (const delta_t_type&,
               const t_end_type&,
-              const grav_type&,
+              const Grav_type&,
               const container_type&,
               const checkpoint_freq_type&,
               const box_size_type&,
@@ -1743,7 +1747,7 @@ class Parameters: public ::xml_schema::type
    */
   Parameters (const delta_t_type&,
               const t_end_type&,
-              const grav_type&,
+              ::std::unique_ptr< Grav_type >,
               const container_type&,
               const checkpoint_freq_type&,
               ::std::unique_ptr< box_size_type >,
@@ -1827,7 +1831,7 @@ class Parameters: public ::xml_schema::type
   protected:
   ::xsd::cxx::tree::one< delta_t_type > delta_t_;
   ::xsd::cxx::tree::one< t_end_type > t_end_;
-  ::xsd::cxx::tree::one< grav_type > grav_;
+  ::xsd::cxx::tree::one< Grav_type > Grav_;
   ::xsd::cxx::tree::one< container_type > container_;
   static const container_type container_default_value_;
   ::xsd::cxx::tree::one< checkpoint_freq_type > checkpoint_freq_;
@@ -2580,6 +2584,269 @@ class Particles: public ::xml_schema::type
   disc_sequence disc_;
   checkpoint_sequence checkpoint_;
   membrane_sequence membrane_;
+
+  //@endcond
+};
+
+/**
+ * @brief Class corresponding to the %Grav schema type.
+ *
+ * @nosubgrouping
+ */
+class Grav: public ::xml_schema::type
+{
+  public:
+  /**
+   * @name x-grav
+   *
+   * @brief Accessor and modifier functions for the %x-grav
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::double_ x_grav_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< x_grav_type, char, ::xsd::cxx::tree::schema_type::double_ > x_grav_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const x_grav_type&
+  x_grav () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  x_grav_type&
+  x_grav ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  x_grav (const x_grav_type& x);
+
+  /**
+   * @brief Return the default value for the element.
+   *
+   * @return The element's default value.
+   */
+  static x_grav_type
+  x_grav_default_value ();
+
+  //@}
+
+  /**
+   * @name y-grav
+   *
+   * @brief Accessor and modifier functions for the %y-grav
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::double_ y_grav_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< y_grav_type, char, ::xsd::cxx::tree::schema_type::double_ > y_grav_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const y_grav_type&
+  y_grav () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  y_grav_type&
+  y_grav ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  y_grav (const y_grav_type& x);
+
+  /**
+   * @brief Return the default value for the element.
+   *
+   * @return The element's default value.
+   */
+  static y_grav_type
+  y_grav_default_value ();
+
+  //@}
+
+  /**
+   * @name z-grav
+   *
+   * @brief Accessor and modifier functions for the %z-grav
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::double_ z_grav_type;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< z_grav_type, char, ::xsd::cxx::tree::schema_type::double_ > z_grav_traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const z_grav_type&
+  z_grav () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  z_grav_type&
+  z_grav ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  z_grav (const z_grav_type& x);
+
+  /**
+   * @brief Return the default value for the element.
+   *
+   * @return The element's default value.
+   */
+  static z_grav_type
+  z_grav_default_value ();
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  Grav (const x_grav_type&,
+        const y_grav_type&,
+        const z_grav_type&);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  Grav (const ::xercesc::DOMElement& e,
+        ::xml_schema::flags f = 0,
+        ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  Grav (const Grav& x,
+        ::xml_schema::flags f = 0,
+        ::xml_schema::container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual Grav*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  /**
+   * @brief Copy assignment operator.
+   *
+   * @param x An instance to make a copy of.
+   * @return A reference to itself.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  Grav&
+  operator= (const Grav& x);
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~Grav ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< x_grav_type > x_grav_;
+  ::xsd::cxx::tree::one< y_grav_type > y_grav_;
+  ::xsd::cxx::tree::one< z_grav_type > z_grav_;
 
   //@endcond
 };
@@ -8106,6 +8373,9 @@ void
 operator<< (::xercesc::DOMElement&, const Particles&);
 
 void
+operator<< (::xercesc::DOMElement&, const Grav&);
+
+void
 operator<< (::xercesc::DOMElement&, const box_size&);
 
 void
@@ -8154,4 +8424,4 @@ operator<< (::xercesc::DOMElement&, const Area&);
 //
 // End epilogue.
 
-#endif // INPUT_INPUT_H
+#endif // CXX___INPUT_INPUT_H

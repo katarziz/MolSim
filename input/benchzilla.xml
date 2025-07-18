@@ -5,7 +5,11 @@
     <Parameters>
         <delta_t>0.0005</delta_t>
         <t_end>0.5</t_end>
-        <grav>-12.44</grav>
+        <Grav>
+            <x-grav>0</x-grav>
+            <y-grav>-12.44</y-grav>
+            <z-grav>0.0</z-grav>
+        </Grav>
         <container>LinkedCell</container>
         <checkpoint_freq>2000</checkpoint_freq>
         <box_size>
@@ -26,6 +30,7 @@
         <force/>
         <output_name>benchzilla</output_name>
         <output_frequency>50</output_frequency>
+        <statistics_freq>0</statistics_freq>
     </Parameters>
     <ThermostatParams>
         <T_init>40</T_init>
@@ -55,6 +60,7 @@
             <type>0</type>
             <eps>1.0</eps>
             <sigma>1.2</sigma>
+            <fixed>false</fixed>
         </cuboid>
         <cuboid>
             <base_coordinates>
@@ -77,6 +83,7 @@
             <type>1</type>
             <eps>1.0</eps>
             <sigma>1.1</sigma>
+            <fixed>false</fixed>
         </cuboid>
     </Particles>
 </Molsim_Input>

@@ -32,9 +32,9 @@ void XMLReader::readFile(ParticleContainer *particles, const char *filename) {
         SPDLOG_LOGGER_INFO(spdlog::get("default"),
                            "Simulation Parameters:\n"
                            "Output Writer: {}\tOutput Name: {}\tOutput Frequency: {}\tCheckpoint Frequency: {}\n"
-                           "Delta t = {}\tEnd t = {}\tForce: {}\tGravitation: {}\tContainer: {}",
+                           "Delta t = {}\tEnd t = {}\tForce: {}\tGravitation: ({}, {}, {} )\tContainer: {}",
                            param.writer().c_str(), out_name, out_freq, checkpoint_freq, delta_t, end_time,
-                           param.force().c_str(), param.grav(), param.container().c_str());
+                           param.force().c_str(), param.Grav().x_grav(),param.Grav().y_grav(), param.Grav().z_grav(),param.container().c_str());
 
         //Set up initialization of Particle Container depending on param container
         //! int giving the number of dimensions based on the domain /box size
@@ -149,7 +149,10 @@ bool XMLReader::check_bounds(const std::array<int, 6> &bounds) {
 void XMLReader::readoutParams(Parameters &param) {
     //assign Parameters given in the XML
     delta_t = param.delta_t();
-    grav = param.grav();
+    double xg=param.Grav().x_grav();
+    double yg=param.Grav().y_grav();
+    double zg=param.Grav().z_grav();
+    grav = {xg,yg,zg};
     end_time = param.t_end();
     out_name = param.output_name().c_str();
     out_freq = param.output_frequency();

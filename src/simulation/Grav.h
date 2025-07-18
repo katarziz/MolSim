@@ -17,4 +17,4 @@ void calculateF_G(Particle &i, Particle &j, double cutoff);
 /*!
  \param i a particle
  */
-void calculateF_GE(Particle &i, double grav = 9.8);
+void calculateF_GE(Particle &i, std::array<double,3> grav);

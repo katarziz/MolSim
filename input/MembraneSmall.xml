@@ -5,7 +5,11 @@
     <Parameters>
         <delta_t>0.01</delta_t>
         <t_end>500</t_end>
-        <grav>-0.001</grav>
+        <Grav>
+            <x-grav>0</x-grav>
+            <y-grav>0</y-grav>
+            <z-grav>-0.001</z-grav>
+        </Grav>
         <container>LinkedCell</container>
         <checkpoint_freq>10000</checkpoint_freq>
         <box_size>

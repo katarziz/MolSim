@@ -5,7 +5,11 @@
     <Parameters>
         <delta_t>0.0005</delta_t>
         <t_end>40</t_end>
-        <grav>-12.44</grav>
+        <Grav>
+            <x-grav>0</x-grav>
+            <y-grav>-12.44</y-grav>
+            <z-grav>0.0</z-grav>
+        </Grav>
         <container>LinkedCell</container>
         <checkpoint_freq>2000</checkpoint_freq>
         <box_size>
@@ -55,6 +59,7 @@
             <type>0</type>
             <eps>1.0</eps>
             <sigma>1.2</sigma>
+            <fixed>false</fixed>
             <spacing>1.2</spacing>
         </disc>
     </Particles>

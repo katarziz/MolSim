@@ -8,7 +8,15 @@
                         <xs:sequence>
                             <xs:element name="delta_t" default="0.0002" type="xs:decimal"  />
                             <xs:element name="t_end" type="xs:decimal" default="5.0"/>
-                            <xs:element name="grav" type="xs:decimal" default="-9.81"/>
+                            <xs:element name="Grav">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="x-grav" type="xs:double"  default="0.0"/>
+                                        <xs:element name="y-grav" type="xs:double"  default="-0.01"/>
+                                        <xs:element name="z-grav" type="xs:double"  default="0.0"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
                             <xs:element name="container" type="xs:string" default="LinkedCell"/>
                             <xs:element name="checkpoint_freq" type="xs:int" default="0"/>
                             <xs:element name="box_size">

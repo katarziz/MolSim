@@ -167,28 +167,28 @@ t_end_default_value ()
   return t_end_type (5.0);
 }
 
-const Parameters::grav_type& Parameters::
-grav () const
+const Parameters::Grav_type& Parameters::
+Grav () const
 {
-  return this->grav_.get ();
+  return this->Grav_.get ();
 }
 
-Parameters::grav_type& Parameters::
-grav ()
+Parameters::Grav_type& Parameters::
+Grav ()
 {
-  return this->grav_.get ();
+  return this->Grav_.get ();
 }
 
 void Parameters::
-grav (const grav_type& x)
+Grav (const Grav_type& x)
 {
-  this->grav_.set (x);
+  this->Grav_.set (x);
 }
 
-Parameters::grav_type Parameters::
-grav_default_value ()
+void Parameters::
+Grav (::std::unique_ptr< Grav_type > x)
 {
-  return grav_type (-9.81);
+  this->Grav_.set (std::move (x));
 }
 
 const Parameters::container_type& Parameters::
@@ -647,6 +647,82 @@ void Particles::
 membrane (const membrane_sequence& s)
 {
   this->membrane_ = s;
+}
+
+
+// Grav
+// 
+
+const Grav::x_grav_type& Grav::
+x_grav () const
+{
+  return this->x_grav_.get ();
+}
+
+Grav::x_grav_type& Grav::
+x_grav ()
+{
+  return this->x_grav_.get ();
+}
+
+void Grav::
+x_grav (const x_grav_type& x)
+{
+  this->x_grav_.set (x);
+}
+
+Grav::x_grav_type Grav::
+x_grav_default_value ()
+{
+  return x_grav_type (.0);
+}
+
+const Grav::y_grav_type& Grav::
+y_grav () const
+{
+  return this->y_grav_.get ();
+}
+
+Grav::y_grav_type& Grav::
+y_grav ()
+{
+  return this->y_grav_.get ();
+}
+
+void Grav::
+y_grav (const y_grav_type& x)
+{
+  this->y_grav_.set (x);
+}
+
+Grav::y_grav_type Grav::
+y_grav_default_value ()
+{
+  return y_grav_type (-.01);
+}
+
+const Grav::z_grav_type& Grav::
+z_grav () const
+{
+  return this->z_grav_.get ();
+}
+
+Grav::z_grav_type& Grav::
+z_grav ()
+{
+  return this->z_grav_.get ();
+}
+
+void Grav::
+z_grav (const z_grav_type& x)
+{
+  this->z_grav_.set (x);
+}
+
+Grav::z_grav_type Grav::
+z_grav_default_value ()
+{
+  return z_grav_type (.0);
 }
 
 
@@ -2327,7 +2403,7 @@ const Parameters::output_name_type Parameters::output_name_default_value_ (
 Parameters::
 Parameters (const delta_t_type& delta_t,
             const t_end_type& t_end,
-            const grav_type& grav,
+            const Grav_type& Grav,
             const container_type& container,
             const checkpoint_freq_type& checkpoint_freq,
             const box_size_type& box_size,
@@ -2341,7 +2417,7 @@ Parameters (const delta_t_type& delta_t,
 : ::xml_schema::type (),
   delta_t_ (delta_t, this),
   t_end_ (t_end, this),
-  grav_ (grav, this),
+  Grav_ (Grav, this),
   container_ (container, this),
   checkpoint_freq_ (checkpoint_freq, this),
   box_size_ (box_size, this),
@@ -2358,7 +2434,7 @@ Parameters (const delta_t_type& delta_t,
 Parameters::
 Parameters (const delta_t_type& delta_t,
             const t_end_type& t_end,
-            const grav_type& grav,
+            ::std::unique_ptr< Grav_type > Grav,
             const container_type& container,
             const checkpoint_freq_type& checkpoint_freq,
             ::std::unique_ptr< box_size_type > box_size,
@@ -2372,7 +2448,7 @@ Parameters (const delta_t_type& delta_t,
 : ::xml_schema::type (),
   delta_t_ (delta_t, this),
   t_end_ (t_end, this),
-  grav_ (grav, this),
+  Grav_ (std::move (Grav), this),
   container_ (container, this),
   checkpoint_freq_ (checkpoint_freq, this),
   box_size_ (std::move (box_size), this),
@@ -2393,7 +2469,7 @@ Parameters (const Parameters& x,
 : ::xml_schema::type (x, f, c),
   delta_t_ (x.delta_t_, f, this),
   t_end_ (x.t_end_, f, this),
-  grav_ (x.grav_, f, this),
+  Grav_ (x.Grav_, f, this),
   container_ (x.container_, f, this),
   checkpoint_freq_ (x.checkpoint_freq_, f, this),
   box_size_ (x.box_size_, f, this),
@@ -2414,7 +2490,7 @@ Parameters (const ::xercesc::DOMElement& e,
 : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
   delta_t_ (this),
   t_end_ (this),
-  grav_ (this),
+  Grav_ (this),
   container_ (this),
   checkpoint_freq_ (this),
   box_size_ (this),
@@ -2465,13 +2541,16 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
-    // grav
+    // Grav
     //
-    if (n.name () == "grav" && n.namespace_ ().empty ())
+    if (n.name () == "Grav" && n.namespace_ ().empty ())
     {
-      if (!grav_.present ())
+      ::std::unique_ptr< Grav_type > r (
+        Grav_traits::create (i, f, this));
+
+      if (!Grav_.present ())
       {
-        this->grav_.set (grav_traits::create (i, f, this));
+        this->Grav_.set (::std::move (r));
         continue;
       }
     }
@@ -2621,10 +2700,10 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
-  if (!grav_.present ())
+  if (!Grav_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
-      "grav",
+      "Grav",
       "");
   }
 
@@ -2714,7 +2793,7 @@ operator= (const Parameters& x)
     static_cast< ::xml_schema::type& > (*this) = x;
     this->delta_t_ = x.delta_t_;
     this->t_end_ = x.t_end_;
-    this->grav_ = x.grav_;
+    this->Grav_ = x.Grav_;
     this->container_ = x.container_;
     this->checkpoint_freq_ = x.checkpoint_freq_;
     this->box_size_ = x.box_size_;
@@ -3032,6 +3111,141 @@ operator= (const Particles& x)
 
 Particles::
 ~Particles ()
+{
+}
+
+// Grav
+//
+
+Grav::
+Grav (const x_grav_type& x_grav,
+      const y_grav_type& y_grav,
+      const z_grav_type& z_grav)
+: ::xml_schema::type (),
+  x_grav_ (x_grav, this),
+  y_grav_ (y_grav, this),
+  z_grav_ (z_grav, this)
+{
+}
+
+Grav::
+Grav (const Grav& x,
+      ::xml_schema::flags f,
+      ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  x_grav_ (x.x_grav_, f, this),
+  y_grav_ (x.y_grav_, f, this),
+  z_grav_ (x.z_grav_, f, this)
+{
+}
+
+Grav::
+Grav (const ::xercesc::DOMElement& e,
+      ::xml_schema::flags f,
+      ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  x_grav_ (this),
+  y_grav_ (this),
+  z_grav_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
+    this->parse (p, f);
+  }
+}
+
+void Grav::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // x-grav
+    //
+    if (n.name () == "x-grav" && n.namespace_ ().empty ())
+    {
+      if (!x_grav_.present ())
+      {
+        this->x_grav_.set (x_grav_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // y-grav
+    //
+    if (n.name () == "y-grav" && n.namespace_ ().empty ())
+    {
+      if (!y_grav_.present ())
+      {
+        this->y_grav_.set (y_grav_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // z-grav
+    //
+    if (n.name () == "z-grav" && n.namespace_ ().empty ())
+    {
+      if (!z_grav_.present ())
+      {
+        this->z_grav_.set (z_grav_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!x_grav_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "x-grav",
+      "");
+  }
+
+  if (!y_grav_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "y-grav",
+      "");
+  }
+
+  if (!z_grav_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "z-grav",
+      "");
+  }
+}
+
+Grav* Grav::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class Grav (*this, f, c);
+}
+
+Grav& Grav::
+operator= (const Grav& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->x_grav_ = x.x_grav_;
+    this->y_grav_ = x.y_grav_;
+    this->z_grav_ = x.z_grav_;
+  }
+
+  return *this;
+}
+
+Grav::
+~Grav ()
 {
 }
 
@@ -6165,15 +6379,15 @@ operator<< (::xercesc::DOMElement& e, const Parameters& i)
     s << ::xml_schema::as_decimal(i.t_end ());
   }
 
-  // grav
+  // Grav
   //
   {
     ::xercesc::DOMElement& s (
       ::xsd::cxx::xml::dom::create_element (
-        "grav",
+        "Grav",
         e));
 
-    s << ::xml_schema::as_decimal(i.grav ());
+    s << i.Grav ();
   }
 
   // container
@@ -6410,6 +6624,45 @@ operator<< (::xercesc::DOMElement& e, const Particles& i)
         e));
 
     s << *b;
+  }
+}
+
+void
+operator<< (::xercesc::DOMElement& e, const Grav& i)
+{
+  e << static_cast< const ::xml_schema::type& > (i);
+
+  // x-grav
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "x-grav",
+        e));
+
+    s << ::xml_schema::as_double(i.x_grav ());
+  }
+
+  // y-grav
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "y-grav",
+        e));
+
+    s << ::xml_schema::as_double(i.y_grav ());
+  }
+
+  // z-grav
+  //
+  {
+    ::xercesc::DOMElement& s (
+      ::xsd::cxx::xml::dom::create_element (
+        "z-grav",
+        e));
+
+    s << ::xml_schema::as_double(i.z_grav ());
   }
 }
 

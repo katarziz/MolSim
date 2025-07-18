@@ -14,7 +14,7 @@ void ParticleGenerator::generateCube(ParticleContainer &particles,
                                      const double eps, const double sig,
                                      const std::array<double, 3> &velocity,
                                      const int type, const int dim,
-                                     const double brownian_motion_avg_velocity,int state) {
+                                     const double brownian_motion_avg_velocity,ParticleState state) {
     // 3D-iteration over the cuboid
     for (int i = 0; i < number_of_particles[0]; ++i) {
         for (int j = 0; j < number_of_particles[1]; ++j) {
@@ -31,7 +31,7 @@ void ParticleGenerator::generateCube(ParticleContainer &particles,
                     base_coordinates[2] + spacing * k
                 };
                 std::array<double, 3> particle_velocity={0,0,0};
-                if (state!=2)
+                if (state!=ParticleState::Fixed)
                 {
                 particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
                 }
@@ -47,7 +47,7 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
                                      const double eps, const double sig,
                                      const std::array<double, 3> &velocity,
                                      const int type, const int dim,
-                                     const double &brownian_motion_avg_velocity,int state) {
+                                     const double &brownian_motion_avg_velocity,ParticleState state) {
     // iteration over the Disc
     for (int i = 0; i <= radius; ++i) {
         for (int j = 0; j <= radius; ++j) {
@@ -58,7 +58,7 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
                     // all particles are set up in a disc with a base velocity and an initial velocity-offset
                     // based on brownian motion and the Maxwell-Boltzmann Distribution
                     std::array<double, 3> particle_velocity={0,0,0};
-                    if (state!=2)
+                    if (state!=ParticleState::Fixed)
                     {
                         particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
                     }
@@ -71,7 +71,7 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
 
                     if (j != 0) {
                         particle_velocity={0,0,0};
-                        if (state!=2)
+                        if (state!=ParticleState::Fixed)
                         {
                             particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
                         }
@@ -83,7 +83,7 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
                     }
                     if (i != 0) {
                         particle_velocity={0,0,0};
-                        if (state!=2)
+                        if (state!=ParticleState::Fixed)
                         {
                             particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
                         }
@@ -95,7 +95,7 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
                     }
                     if (i != 0 && j != 0) {
                         particle_velocity={0,0,0};
-                        if (state!=2)
+                        if (state!=ParticleState::Fixed)
                         {
                             particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
                         }
@@ -108,7 +108,7 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
                 if (k!=0)
                 {
                     particle_velocity={0,0,0};
-                    if (state!=2)
+                    if (state!=ParticleState::Fixed)
                     {
                         particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
                     }
@@ -120,7 +120,7 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
 
                     if (j != 0) {
                         particle_velocity={0,0,0};
-                        if (state!=2)
+                        if (state!=ParticleState::Fixed)
                         {
                             particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
                         }
@@ -132,7 +132,7 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
                     }
                     if (i != 0) {
                         particle_velocity={0,0,0};
-                        if (state!=2)
+                        if (state!=ParticleState::Fixed)
                         {
                             particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
                         }
@@ -144,7 +144,7 @@ void ParticleGenerator::generateDisc(ParticleContainer &particles, const std::ar
                     }
                     if (i != 0 && j != 0) {
                         particle_velocity={0,0,0};
-                        if (state!=2)
+                        if (state!=ParticleState::Fixed)
                         {
                             particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
                         }
@@ -191,7 +191,7 @@ void ParticleGenerator::generateMembrane(ParticleContainer& particles, std::arra
           position[(k+2)%3] =base_coordinates[(k+2)%3];
 
           std::array<double, 3> particle_velocity = generateInitVel(velocity, dim, brownian_motion_avg_velocity);
-          particles.addParticle(Particle(position, particle_velocity, mass, eps, sig, type, 4));
+          particles.addParticle(Particle(position, particle_velocity, mass, eps, sig, type, ParticleState::Membrane));
       }
   }
 

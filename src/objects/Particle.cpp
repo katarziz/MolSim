@@ -37,7 +37,7 @@ Particle::Particle(const Particle &other) {
 
 
 Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg, double eps_arg,
-                   double sig_arg, int type_arg, int state_arg) {
+                   double sig_arg, int type_arg, ParticleState state_arg) {
     x = x_arg;
     v = v_arg;
     m = m_arg;
@@ -54,34 +54,6 @@ Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, dou
 
 Particle::~Particle() {
 }
-
-const std::array<double, 3> &Particle::getX() const { return x; }
-
-void Particle::setX(const std::array<double, 3> &x_arg) { x = x_arg; }
-
-const std::array<double, 3> &Particle::getV() const { return v; }
-
-void Particle::setV(const std::array<double, 3> &v_arg) { v = v_arg; }
-
-const std::array<double, 3> &Particle::getF() const { return f; }
-
-void Particle::setF(const std::array<double, 3> &f_arg) { f = f_arg; }
-
-const std::array<double, 3> &Particle::getOldF() const { return old_f; }
-
-void Particle::setOldF(const std::array<double, 3> &old_f_arg) { old_f = old_f_arg; }
-
-double Particle::getM() const { return m; }
-
-double Particle::getEps() const { return eps; }
-
-double Particle::getSig() const { return sig; }
-
-int Particle::getType() const { return type; }
-
-int Particle::getState() const { return state; }
-
-void Particle::setState(int state_arg) { state = state_arg; }
 
 std::string Particle::toString() const {
     std::stringstream stream;

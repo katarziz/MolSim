@@ -66,7 +66,7 @@ void FileReader::readFile(ParticleContainer &particles, char *filename) {
                     }
                     datastream >> m;
 
-                    particles.addParticle(Particle(x, v, m, 5.0, 1.0, 0, 0));
+                    particles.addParticle(Particle(x, v, m, 5.0, 1.0, 0, ParticleState::None));
 
                     getline(input_file, tmp_string);
                     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Read line: {}", tmp_string);

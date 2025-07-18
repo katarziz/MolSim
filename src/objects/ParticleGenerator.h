@@ -28,13 +28,13 @@ public:
      \param type int to denote the type of the particles
      \param dim int denoting the dimensions of the simulation to apply correct MB velocity
      \param brownian_motion_avg_velocity The mean-value of the velocity of the Brownian Motion
-     \param state_arg int giving the state of the particles: Default 0; Fixed: 2
+     \param state_arg ParticleState giving the state of the particles: Default 0; Fixed: 2
      */
     static void generateCube(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
                              const std::array<int64_t, 3> &number_of_particles, double spacing,
                              double mass, double eps, double sig,
                              const std::array<double, 3> &velocity, int type, int dim,
-                             double brownian_motion_avg_velocity, int state_arg=0);
+                             double brownian_motion_avg_velocity, ParticleState state_arg=ParticleState::None);
 
 
     //! A Function which adds a disc of Particles with passed parameters to a Particle Container
@@ -50,14 +50,14 @@ public:
      \param type int to denote the type of the particles
      \param dim int denoting the dimensions of the simulation to apply correct MB velocity
      \param brownian_motion_avg_velocity The mean-value of the velocity of the Brownian Motion
-     \param state_arg int giving the state of the particles: Default 0; Fixed: 2
+     \param state_arg ParticleState giving the state of the particles: Default 0; Fixed: 2
      */
     static void generateDisc(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
                              const int &radius,  const bool sphere, const double &spacing, const double &mass,
                              double eps, double sig,
                              const std::array<double, 3> &velocity,
                              int type, int dim,
-                             const double &brownian_motion_avg_velocity,int state_arg=0);
+                             const double &brownian_motion_avg_velocity,ParticleState state_arg=ParticleState::None);
 
     //! A FUnction to generate the particles belonging to a membrane
     /*!

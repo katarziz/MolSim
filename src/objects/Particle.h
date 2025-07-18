@@ -11,7 +11,7 @@
 #include <string>
 
 class Particle {
-public:
+private:
     /**
      * Position of the particle
      */
@@ -59,6 +59,7 @@ public:
      */
     int state;
 
+public:
     explicit Particle(int type = 0);
 
     //! Constructor for a Particle from another Particle
@@ -86,86 +87,93 @@ public:
     /*!
      \return array of three doubles containing the x-,y-&z- position of the Particle
     */
-    const std::array<double, 3> &getX() const;
+    const std::array<double, 3> &getX() const { return x; }
 
     //! Setter for the current position values of the Particle
     /*!
      \param x_arg reference to an array of three doubles containing the new x-,y-&z-position of the Particle
     */
-    void setX(const std::array<double, 3> &x_arg);
+    void setX(const std::array<double, 3> &x_arg) { x = x_arg; }
+
+    //! Setter for a specific part of the current position values of the Particle
+    /*!
+     \param i int denoting the index of the position to be set
+     \param x_arg double containing the new value of the position
+    */
+    void setX(int i, double x_arg) { x[i] = x_arg; }
 
     //! Getter for the velocity values of the Particle
     /*!
      \return array of three doubles containing the x-,y-&z- velocity of the Particle
     */
-    const std::array<double, 3> &getV() const;
+    const std::array<double, 3> &getV() const { return v; }
 
     //! Setter for the current velocity values of the Particle
     /*!
      \param v_arg reference to an array of three doubles containing the new x-,y-&z- velocity of the Particle
     */
-    void setV(const std::array<double, 3> &v_arg);
+    void setV(const std::array<double, 3> &v_arg) { v = v_arg; }
 
     //! Getter for the current force values of the Particle
     /*!
      \return array of three doubles containing the current x-,y-&z- forces of the Particle
     */
-    const std::array<double, 3> &getF() const;
+    const std::array<double, 3> &getF() const { return f; }
 
     //! Setter for the current force values of the Particle
     /*!
      \param f_arg reference to an array of three doubles containing the new x-,y-&z- forces of the Particle
     */
-    void setF(const std::array<double, 3> &f_arg);
+    void setF(const std::array<double, 3> &f_arg) { f = f_arg; }
 
     //! Getter for the previous force values of the Particle
     /*!
      \return array of three doubles containing the previous x-,y-&z- forces of the Particle
     */
 
-    const std::array<double, 3> &getOldF() const;
+    const std::array<double, 3> &getOldF() const { return old_f; }
 
     //! Setter for the previous force values of the Particle
     /*!
      \param old_f_arg reference to an array of three doubles containing the new x-,y-&z- forces of the Particle
     */
-    void setOldF(const std::array<double, 3> &old_f_arg);
+    void setOldF(const std::array<double, 3> &old_f_arg) { old_f = old_f_arg; }
 
     //! Getter for the mass of the Particle
     /*!
      \return double representing the mass of the Particle
     */
-    double getM() const;
+    double getM() const { return m; }
 
     //! Getter for the Lennard-Jones parameter epsilon of the Particle
     /*!
      \return double representing the Lennard-Jones parameter epsilonof the Particle
     */
-    double getEps() const;
+    double getEps() const { return eps; }
 
     //! Getter for the Lennard-Jones parameter sigma of the Particle
     /*!
      \return double representing the Lennard-Jones parameter sigma of the Particle
     */
-    double getSig() const;
+    double getSig() const { return sig; }
 
     //! Getter for the type of the Particle
     /*!
      \return int representing the type of the Particle
     */
-    int getType() const;
+    int getType() const { return type; }
 
     //! Getter for the state of the Particle
     /*!
      \return int representing the state of the Particle
      */
-    int getState() const;
+    int getState() const { return state; }
 
     //! Setter for the state of the Particle
     /*!
      \param state_arg int representing the new state of the Particle
      */
-    void setState(int state_arg);
+    void setState(int state_arg) { state = state_arg; }
 
     //! Equality operator between Particles
     /*!

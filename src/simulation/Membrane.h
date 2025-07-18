@@ -37,7 +37,6 @@ public:
     }
     void calculateF_Harm(Particle &i, Particle &j) const;
     void calculateF_Harm_Diag(Particle &i, Particle &j) const ;
-    void calculateF_LJ_Trunc(Particle &i, Particle &j) const;
 
     [[nodiscard]] std::vector<int> get_force_particles() const
     {

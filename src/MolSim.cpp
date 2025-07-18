@@ -267,26 +267,26 @@ void calculateF() {
         particles->applyBinary([](Particle &a, Particle &b) { calculateF_LJ(a, b, r_c); });
     }
     // apply gravity
-    particles->applyUnary([](Particle &p) { p.f = p.f + p.m * grav; });
+    particles->applyUnary([](Particle &p) { p.setF(p.getF() + p.getM() * grav); });
 }
 
 void calculateX() {
     particles->applyUnary(
         [](Particle &p) {
-            if ((p.state & 2) == 2) {
+            if ((p.getState() & 2) == 2) {
                 return;
             }
-            p.x = p.x + delta_t * p.v + delta_t * delta_t / (2 * p.m) * p.f;
+            p.setX(p.getX() + delta_t * p.getV() + delta_t * delta_t / (2 * p.getM()) * p.getF());
         });
 }
 
 void calculateV() {
     particles->applyUnary(
         [](Particle &p) {
-            if ((p.state & 2) == 2) {
+            if ((p.getState() & 2) == 2) {
                 return;
             }
-            p.v = p.v + delta_t / (2 * p.m) * (p.old_f + p.f);
+            p.setV(p.getV() + delta_t / (2 * p.getM()) * (p.getOldF() + p.getF()));
         });
 }
 

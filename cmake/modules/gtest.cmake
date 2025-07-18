@@ -32,7 +32,7 @@ target_include_directories(Test
 )
 target_link_libraries(Test
         PUBLIC
-        xerces-c
+        XercesC::XercesC
         GTest::gtest_main
         spdlog::spdlog
 )

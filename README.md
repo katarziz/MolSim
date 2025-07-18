@@ -48,33 +48,34 @@ xsi:noNamespaceSchemaLocation="input.xsd">
 
 [Parameters]
 <Particles>
-[Sequence of cuboids, particles and discs]
+[Sequence of cuboids, particles, discs and checkpoints]
 </Particles>
 
 </Molsim_Input>
 ```
-- The document must contain single Parameters object, passing the parameters of the simulation:
+- The document must contain a single Parameters object, passing the parameters of the simulation:
   * Parameters that are changed from the default value are set with `<param> new_value </param>`
   * Parameters that remain at the default value are denoted with `<param/>`
+    * If the third (z-) component of the box_size is set to 0 the simulation is executed in 2D
 ```shell
 <Parameters>
         <delta_t/>
         <t_end/>
+        <grav/>   
+        <container/>
+        <checkpoint_freq/>
         <box_size>
             <x-size/>
             <y-size/>
             <z-size/>
         </box_size>
-        <number_cells>
-            <x-number/>
-            <y-number/>
-            <z-number/>
-        </number_cells>
         <boundary_conditions>
             <top_bound/>
             <right_bound/>
             <bottom_bound/>
             <left_bound/>
+            <front_bound/>
+            <back_bound/>     
         </boundary_conditions>
         <cutoff/>
         <writer/>
@@ -83,14 +84,34 @@ xsi:noNamespaceSchemaLocation="input.xsd">
         <output_frequency/>
     </Parameters>
 ```
-- The Parameters object is followed by a Particles object, representing a seqence of cuboid, disc and particle objects
-- - CUBOID data consists of
+-  The Parameters object is followed by a ThermostatParams Object:
+-  Thermostat Parameters are:
+  * initial temperature of the simulation 
+  * target temperature which the system should be brought to
+  * frequency of how often the temperature is adjusted [1/x iteration]
+  * maximal difference of the temperature allowed at each adjustment
+    * If delta_T is set to 0 the thermostat is turned off
+    * If delta_T is set to INF the temperature change is immediate
+- Example Thermostat:
+```shell
+<ThermostatParams>
+    <T_init>10</T_init>
+    <T_targ>50</T_targ>
+    <f_therm>1000</f_therm>
+    <delta_T>INF</delta_T>
+</ThermostatParams>
+    
+```
+-  Particles object, representing a sequence of cuboid, disc and particle objects
+- CUBOID data consists of
   * xyz-coordinates of the lower left front-side corner (3 double values)
   * velocities (3 double values)
   * mass of one particle (1 double value)
   * number of particles per dimension (3 double values)
   * distance of the particles (mesh width of the grid) (1 double value)
-  * borwnian-velocity (1 double value)
+  * type of the particles (int value)
+  * Lennard-Jones parameter epsilon of the particles (1 double value)
+  * Lennard-Jones parameter sigma of the particles (1 double value)
 - Example cuboid:
 ```shell
  <cuboid>
@@ -111,13 +132,18 @@ xsi:noNamespaceSchemaLocation="input.xsd">
             </velocity>
             <spacing>1.1225</spacing>
             <mass>1.0</mass>
-            <brownian_vel>0.1</brownian_vel>
+            <type/>
+            <eps/>
+            <sigma/>
         </cuboid>
 ```
 - PARTICLE data consists of
   * xyz-coordinates (3 double values)
   * velocities (3 double values)
   * mass (1 double value)
+  * type of the particles (int value)
+  * Lennard-Jones parameter epsilon of the particles (1 double value)
+  * Lennard-Jones parameter sigma of the particles (1 double value)
 - Example particle:
 ```shell
 <particle>
@@ -132,6 +158,9 @@ xsi:noNamespaceSchemaLocation="input.xsd">
                 <z-velocity>0.0</z-velocity>
             </velocity>
             <mass>2.0</mass>
+            <type/>
+            <eps/>
+            <sigma/>
         </particle>
 ```
 - DISC data consists of
@@ -140,7 +169,9 @@ xsi:noNamespaceSchemaLocation="input.xsd">
   * radius in particles from center(1 integer value)
   * mass (1 double value)
   * spacing( 1 double value)
-  * brownian_velocity (1 double value)
+  * type of the particles (int value)
+  * Lennard-Jones parameter epsilon of the particles (1 double value)
+  * Lennard-Jones parameter sigma of the particles (1 double value)
 - Example disc:
 ```shell
 <disc>
@@ -154,13 +185,22 @@ xsi:noNamespaceSchemaLocation="input.xsd">
                 <y-velocity>0.0</y-velocity>
                 <z-velocity>0.0</z-velocity>
             </velocity>
-            <radius>2</radius>
-            <mass>1.0</mass>
-            <spacing>1.0</spacing>
-            <brownian_vel>0.1</brownian_vel>
+            <radius>2 </radius>
+            <mass>1.0 </mass>
+            <type/>
+            <eps/>
+            <sigma/>
+            <spacing>1.0 </spacing>           
 </disc>
 ```
-
+- CHECKPOINT data contains:
+  * name of the checkpoint file (string)
+- Example Checkpoint:
+```shell
+<checkpoint>
+            <checkpoint_file>checkpoint_filename</checkpoint_file>
+ </checkpoint>
+```
 ### Logging
 
 logs are placed at project_root/build/logs

@@ -28,6 +28,9 @@ void XYZWriter::plotParticles(ParticleContainer &particles,
        << std::endl;
 
   for (auto &p : particles) {
+    if ((p.getState() & ParticleState::InActive) == ParticleState::InActive) {
+      continue;
+    }
     std::array<double, 3> x = p.getX();
     file << "Ar ";
     file.setf(std::ios_base::showpoint);

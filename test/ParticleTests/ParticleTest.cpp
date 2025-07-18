@@ -11,7 +11,7 @@ TEST(InitTest, ParticleTests)
 {
     std::array<double, 3> x_t = {1.0, 0.0, 0.0};
     std::array<double, 3> v_t = {0.0, 0.0, 0.0};
-    Particle t=Particle(x_t,v_t,1.0,0);
+    Particle t=Particle(x_t,v_t,1.0,5,1,0);
    for (int i=0;i<3;i++)
    {
        EXPECT_EQ(x_t[i],t.getX()[i]);
@@ -29,7 +29,7 @@ TEST(GetterSetterTest, ParticleTests)
     std::array<double, 3> x_t = {1.0, 7.0, 13.0};
     std::array<double, 3> v_t = {8.0, 2.0, 9.0};
     std::array<double, 3> f_t = {5.0,1.0,3.0};
-    Particle t=Particle({0.0,0.0,0.0},{0.0,0.0,0.0},1.0,0);
+    Particle t=Particle({0.0,0.0,0.0},{0.0,0.0,0.0},1.0,5,1,0);
 
     EXPECT_EQ(t.getM(),1.0);
     EXPECT_EQ(t.getType(),0);
@@ -52,7 +52,7 @@ TEST(GetterSetterTest, ParticleTests)
 }
 
 TEST(SemEqTest, ParticleTests)
-{ Particle t=Particle(p1.getX(),p1.getV(),p1.getM(),p1.getType());
+{ Particle t=Particle(p1.getX(),p1.getV(),p1.getM(),p1.getEps(),p1.getSig(),p1.getType());
     t.setF(p1.getF());
     t.setOldF(p1.getOldF());
     EXPECT_TRUE(particle_sem_eq(p1,t));

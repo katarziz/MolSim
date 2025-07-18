@@ -216,8 +216,8 @@ int main(int argc, char *argsv[]) {
         if (iteration % out_freq == 0) {
             // current MUPS/s
             double MMUPS_per_second = particles->getParticles().size() * iteration * 1.0
-                                     / std::chrono::duration_cast<std::chrono::microseconds>(
-                                         clock::now() - start_time_clock).count();
+                                      / std::chrono::duration_cast<std::chrono::microseconds>(
+                                          clock::now() - start_time_clock).count();
             plotParticles(iteration);
             std::cout << fmt::format(
                 "\rProgress: {:.1f}%\tCurrent updates per second: {:.1f}MMUPS/s\t",

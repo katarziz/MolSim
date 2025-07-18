@@ -18,11 +18,11 @@ enum class ParticleState : int {
 };
 
 inline ParticleState operator|(ParticleState a, ParticleState b) {
- return static_cast<ParticleState>(static_cast<int>(a) | static_cast<int>(b));
+    return static_cast<ParticleState>(static_cast<int>(a) | static_cast<int>(b));
 }
 
 inline ParticleState operator&(ParticleState a, ParticleState b) {
- return static_cast<ParticleState>(static_cast<int>(a) & static_cast<int>(b));
+    return static_cast<ParticleState>(static_cast<int>(a) & static_cast<int>(b));
 }
 
 class Particle {

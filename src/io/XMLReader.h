@@ -26,7 +26,7 @@ private:
 
     static void readInParticles(Particles &particle_in, ParticleContainer &particles, int dim, double T_init);
 
-    static void readInMembranes(const Particles& particle_in, ParticleContainer& particles, int dim, double T_init);
+    static void readInMembranes(const Particles &particle_in, ParticleContainer &particles, int dim, double T_init);
 
     static int parse_bound(const std::string &bound);
 };

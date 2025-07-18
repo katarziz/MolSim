@@ -42,7 +42,7 @@ inline std::array<int, 3> cell_num = {1, 1, 1};
 inline std::array<int, 6> bounds = {0, 0, 0, 0, 0, 0};
 
 //!double representing the downward (y-dir) gravitational acceleration
-inline std::array<double,3> grav = {0.0,0.0,0.0};
+inline std::array<double, 3> grav = {0.0, 0.0, 0.0};
 //! int giving the frequency of velocity scaling by the thermostat
 inline int f_therm = 0;
 //! Thermostat object

@@ -34,7 +34,7 @@ public:
                              const std::array<int64_t, 3> &number_of_particles, double spacing,
                              double mass, double eps, double sig,
                              const std::array<double, 3> &velocity, int type, int dim,
-                             double brownian_motion_avg_velocity, ParticleState state_arg=ParticleState::None);
+                             double brownian_motion_avg_velocity, ParticleState state_arg = ParticleState::None);
 
 
     //! A Function which adds a disc of Particles with passed parameters to a Particle Container
@@ -53,11 +53,11 @@ public:
      \param state_arg ParticleState giving the state of the particles: Default 0; Fixed: 2
      */
     static void generateDisc(ParticleContainer &particles, const std::array<double, 3> &base_coordinates,
-                             const int &radius,  const bool sphere, const double &spacing, const double &mass,
+                             const int &radius, const bool sphere, const double &spacing, const double &mass,
                              double eps, double sig,
                              const std::array<double, 3> &velocity,
                              int type, int dim,
-                             const double &brownian_motion_avg_velocity,ParticleState state_arg=ParticleState::None);
+                             const double &brownian_motion_avg_velocity, ParticleState state_arg = ParticleState::None);
 
     //! A FUnction to generate the particles belonging to a membrane
     /*!
@@ -77,9 +77,12 @@ public:
      \param f the force acting perpendicular to the membrane on particles in f_part
      \param f_part the indices of the particles on which the force f acts
      */
-    static void generateMembrane(ParticleContainer& particles, std::array<double, 3> base_coordinates, const std::array<int64_t, 3>& number_of_particles, double spacing,double mass, double eps,
-                        double sig, const std::array<double, 3>& velocity, int type, int dim, double  brownian_motion_avg_velocity
-                        , const double k,const double r_0,std::array<double,3> f,std::vector<int> f_part);
+    static void generateMembrane(ParticleContainer &particles, std::array<double, 3> base_coordinates,
+                                 const std::array<int64_t, 3> &number_of_particles, double spacing, double mass,
+                                 double eps,
+                                 double sig, const std::array<double, 3> &velocity, int type, int dim,
+                                 double brownian_motion_avg_velocity
+                                 , const double k, const double r_0, std::array<double, 3> f, std::vector<int> f_part);
 
     //! A constructor for a Particle Generator from given Parameters
     /*!
@@ -90,5 +93,4 @@ public:
      */
     static auto generateInitVel(const std::array<double, 3> &velocity, int dim,
                                 const double &brownian_motion_avg_velocity) -> std::array<double, 3>;
-
 };

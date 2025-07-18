@@ -176,24 +176,26 @@ public:
         \param fun a binary function to be applied pairwise to the Particles in neighboring cells of the ParticleContainer
     */
     void applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) override;
-   //! A function to apply a unary function to Particles of a Membrane
-   /*!
-    *\param mem reference to a Membrane
-     \param fun a binary function to be applied pairwise to the Particles in neighboring cells of the ParticleContainer
-  */
-    void applyUnarytoMembrane(const Membrane& mem, const std::function<void(Particle& i)>& fun) override;
- //! A function to apply the Membranes perpendicular force to the selected Particles of a Membrane
- /*!
-  *\param mem reference to a Membrane
-*/
-    void applyPerpForce(const Membrane& mem) override;
 
- //! A function to apply the Harmonic force to neighboring Particles of a Membrane
- /*!
-  *\param mem reference to a Membrane
-*/
+    //! A function to apply a unary function to Particles of a Membrane
+    /*!
+     *\param mem reference to a Membrane
+      \param fun a binary function to be applied pairwise to the Particles in neighboring cells of the ParticleContainer
+   */
+    void applyUnarytoMembrane(const Membrane &mem, const std::function<void(Particle &i)> &fun) override;
 
-    void applyMembraneForces(const Membrane& mem) override;
+    //! A function to apply the Membranes perpendicular force to the selected Particles of a Membrane
+    /*!
+     *\param mem reference to a Membrane
+   */
+    void applyPerpForce(const Membrane &mem) override;
+
+    //! A function to apply the Harmonic force to neighboring Particles of a Membrane
+    /*!
+     *\param mem reference to a Membrane
+   */
+
+    void applyMembraneForces(const Membrane &mem) override;
 
     //! A function to update the cells of the ParticleContainer
     /*!
@@ -209,24 +211,24 @@ public:
      \param fun a unary function to be applied to the Particles in the boundary cells
     */
     void applyUnaryToBoundary(const std::function<void(Particle &i)> &fun);
-    
+
     //! A function to apply a unary function to the particles in the halo region of the ParticleContainer
     /*!
      \param fun a unary function to be applied to the Particles in the halo region
     */
     void applyUnaryToHalo(const std::function<void(Particle &i)> &fun);
-    
+
     //! A function to delete all particles in the halo region
     /*!
      This function deactivates all particles in the halo region by setting their state to 1
     */
     void deleteHalo();
 
- //! A function to write out the Density and Velocity Profile of the Simulation to .csv files
- /*!
-  *\param vel_prof of stream to write velocity to
-  *\param N_prof of stream to write the Number of particles to
-*/
+    //! A function to write out the Density and Velocity Profile of the Simulation to .csv files
+    /*!
+     *\param vel_prof of stream to write velocity to
+     *\param N_prof of stream to write the Number of particles to
+   */
 
-    void writeState(std::ofstream & vel_prof, std::ofstream & N_prof);
+    void writeState(std::ofstream &vel_prof, std::ofstream &N_prof);
 };

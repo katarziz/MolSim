@@ -445,6 +445,14 @@ void LinkedCellParticleContainer::applyBoundaryConditions() {
                     }
                 }
 
+                // this decision tree works similar to the one used for the reflective boundary.
+                // the only difference is, that changes don't affect one particle, but every particle in the cell,
+                // so offsets need to be applied uniformly
+                // it still follows a kind of grey code to cover every possible direction, while changing the least
+                // values possible.
+                // the structure uses the basic pattern of "offset - apply - offset back", except nested and in a
+                // decision tree that can recover from any taken path.
+
                 if (boundary_conditions[0] == 2) {
                     for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
                         particles[*i_index].setX(0, particles[*i_index].getX()[0] + displacement[0]);

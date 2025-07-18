@@ -103,7 +103,7 @@ double LinkedCellParticleContainer::getCutoff() const {
 int LinkedCellParticleContainer::size() const {
     int size = 0;
     for (auto &p: particles) {
-        if ((p.getState() & 1) != 1) {
+        if ((p.getState() & ParticleState::InActive) != ParticleState::InActive) {
             size++;
         }
     }
@@ -143,7 +143,7 @@ std::vector<Particle>::const_iterator LinkedCellParticleContainer::end() const {
 void LinkedCellParticleContainer::applyUnary(const std::function<void(Particle &i)> &fun) {
     for (auto &particle: particles) {
         // skip if deactivated
-        if ((particle.getState() & 1) == 1) {
+        if ((particle.getState() & ParticleState::InActive) == ParticleState::InActive) {
             continue;
         }
         fun(particle);
@@ -317,7 +317,7 @@ void LinkedCellParticleContainer::updateCells() {
     boundary.clear();
     for (int i = 0; i < particles.size(); ++i) {
         Particle &p = particles[i];
-        if ((p.getState() & 1)  == 1) {
+        if ((p.getState() & ParticleState::InActive) == ParticleState::InActive) {
             continue;
         }
         bool in_boundary = false;
@@ -344,7 +344,7 @@ void LinkedCellParticleContainer::updateCells() {
                     SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} moved to halo.",
                                        p.getX()[0], p.getX()[1], p.getX()[2]);
                     halo.push_back(i);
-                    p.setState(p.getState() | 1);
+                    p.setState(p.getState() | ParticleState::InActive);
                     break;
                 }
             }
@@ -355,7 +355,7 @@ void LinkedCellParticleContainer::updateCells() {
             }
         }
         // if a particle is active, it is added back to the pool of particles.
-        if ((p.getState() & 1) == 0) {
+        if ((p.getState() & ParticleState::InActive) != ParticleState::InActive) {
             cells[calcIndex(indices[0], indices[1], indices[2])].push_back(i);
         }
     }
@@ -601,7 +601,7 @@ void LinkedCellParticleContainer::deleteHalo() {
     applyUnaryToHalo([](Particle &i) {
         SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{}. applied unary to halo.",
                             i.getX()[0], i.getX()[1], i.getX()[2]);
-        i.setState(1);
+        i.setState(ParticleState::InActive);
     });
 }
 
@@ -614,7 +614,7 @@ void LinkedCellParticleContainer::writeState(std::ofstream &vel_prof, std::ofstr
         vel[i]={0,0,0};
     }
     for (auto p=particles.begin();p!=particles.end();++p)
-    {   if ((p->getState() & 1)==1){continue;}
+    {   if ((p->getState() & ParticleState::InActive)==ParticleState::InActive){continue;}
         int index=floor(p->getX()[0] / (box_size[0] / 50));
         N[index]++;
         vel[index]=vel[index]+p->getV();

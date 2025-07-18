@@ -273,7 +273,7 @@ void calculateF() {
 void calculateX() {
     particles->applyUnary(
         [](Particle &p) {
-            if ((p.getState() & 2) == 2) {
+            if ((p.getState() & ParticleState::Fixed) == ParticleState::Fixed) {
                 return;
             }
             p.setX(p.getX() + delta_t * p.getV() + delta_t * delta_t / (2 * p.getM()) * p.getF());
@@ -283,7 +283,7 @@ void calculateX() {
 void calculateV() {
     particles->applyUnary(
         [](Particle &p) {
-            if ((p.getState() & 2) == 2) {
+            if ((p.getState() & ParticleState::Fixed) == ParticleState::Fixed) {
                 return;
             }
             p.setV(p.getV() + delta_t / (2 * p.getM()) * (p.getOldF() + p.getF()));
@@ -298,7 +298,7 @@ void plotParticles(int iteration) {
         outputWriter::VTKWriter writer;
         writer.initializeOutput(particles->size());
         for (auto &p: *particles) {
-            if ((p.getState() & 1) == 1) {
+            if ((p.getState() & ParticleState::InActive) == ParticleState::InActive) {
                 continue;
             }
             writer.plotParticle(p);

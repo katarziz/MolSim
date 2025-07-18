@@ -10,6 +10,21 @@
 #include <array>
 #include <string>
 
+enum class ParticleState : int {
+    None = 0,
+    InActive = 1 << 0,
+    Fixed = 1 << 1,
+    Membrane = 1 << 2
+};
+
+inline ParticleState operator|(ParticleState a, ParticleState b) {
+ return static_cast<ParticleState>(static_cast<int>(a) | static_cast<int>(b));
+}
+
+inline ParticleState operator&(ParticleState a, ParticleState b) {
+ return static_cast<ParticleState>(static_cast<int>(a) & static_cast<int>(b));
+}
+
 class Particle {
 private:
     /**
@@ -57,7 +72,7 @@ private:
      * second-lowest bit: fixed 1, free 0
      * third-lowest bit: membrane 1, free 0
      */
-    int state;
+    ParticleState state;
 
 public:
     explicit Particle(int type = 0);
@@ -79,7 +94,7 @@ public:
      \param state_arg int denoting the particle's state
     */
     Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg,
-             double eps_arg, double sig_arg, int type_arg, int state_arg = 0);
+             double eps_arg, double sig_arg, int type_arg, ParticleState state_arg = ParticleState::None);
 
     virtual ~Particle();
 
@@ -167,13 +182,13 @@ public:
     /*!
      \return int representing the state of the Particle
      */
-    int getState() const { return state; }
+    ParticleState getState() const { return state; }
 
     //! Setter for the state of the Particle
     /*!
      \param state_arg int representing the new state of the Particle
      */
-    void setState(int state_arg) { state = state_arg; }
+    void setState(ParticleState state_arg) { state = state_arg; }
 
     //! Equality operator between Particles
     /*!

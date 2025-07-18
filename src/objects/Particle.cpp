@@ -37,7 +37,7 @@ Particle::Particle(const Particle &other) {
 
 
 Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg, double eps_arg,
-                   double sig_arg, int type_arg, int state_arg) {
+                   double sig_arg, int type_arg, ParticleState state_arg) {
     x = x_arg;
     v = v_arg;
     m = m_arg;

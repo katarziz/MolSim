@@ -20,7 +20,7 @@ Membrane::Membrane(int offset_arg, int size_arg, int width_arg, double k_arg, do
 
 
 void Membrane::calculateF_Harm(Particle& i, Particle& j) const
-{   if ((i.getState() &1)==1||(j.getState() &1) ==1){return;}
+{   if ((i.getState() & ParticleState::InActive)==ParticleState::InActive||(j.getState() &ParticleState::InActive) ==ParticleState::InActive){return;}
     const std::array<double, 3> dist = i.getX() - j.getX();
     const double norm =ArrayUtils::L2Norm(dist);
     const double factor=k*(norm-r_0)/norm;
@@ -31,7 +31,7 @@ void Membrane::calculateF_Harm(Particle& i, Particle& j) const
 }
 
 void Membrane::calculateF_Harm_Diag(Particle& i, Particle& j) const
-{   if ((i.getState() &1)==1||(j.getState() &1) ==1){return;}
+{   if ((i.getState() &ParticleState::InActive)==ParticleState::InActive||(j.getState() &ParticleState::InActive) ==ParticleState::InActive){return;}
     const std::array<double, 3> dist = i.getX() - j.getX();
     const double norm = ArrayUtils::L2Norm(dist);
     const double factor=k*(1-r_0_root/norm);

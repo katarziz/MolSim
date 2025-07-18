@@ -5,108 +5,120 @@
 #include "LinkedCellParticleContainer.h"
 
 #include <cmath>
+#include <fstream>
 #include <spdlog/spdlog.h>
+#include <omp.h>
 
 #include "simulation/LennardJones.h"
 #include "utils/ArrayUtils.h"
 
+
 LinkedCellParticleContainer::LinkedCellParticleContainer(const std::array<double, 3> &box_size_arg,
-                                                         const std::array<int64_t, 3> &cell_number_arg,
+                                                         const std::array<int, 3> &cell_number_arg,
                                                          const double &cutoff_arg,
-                                                         const std::array<int, 4> &bounds_arg) {
+                                                         const std::array<int, 6> &bounds_arg) {
     box_size = box_size_arg;
+    //What is box size?
     cell_number = cell_number_arg;
     const int size =
             cell_number[0] *
             cell_number[1] *
             cell_number[2];
-    cells = std::vector<std::vector<std::unique_ptr<Particle>>>(size);
+    cells = std::vector<std::vector<int> >(size);
     for (int i = 0; i < size; i++) {
-        cells[i] = std::vector<std::unique_ptr<Particle>>();
+        cells[i] = std::vector<int>();
     }
     particles = std::vector<Particle>();
-    halo = std::vector<Particle>();
+    boundary = std::vector<int>();
+    halo = std::vector<int>();
     cutoff = cutoff_arg;
     boundary_conditions = bounds_arg;
+    membranes = {};
 }
 
 LinkedCellParticleContainer::LinkedCellParticleContainer(const std::vector<Particle> &particles_arg,
                                                          const std::array<double, 3> &box_size_arg,
-                                                         const std::array<int64_t, 3> &cell_number_arg,
+                                                         const std::array<int, 3> &cell_number_arg,
                                                          const double &cutoff_arg,
-                                                         const std::array<int, 4> &bounds_arg) {
+                                                         const std::array<int, 6> &bounds_arg) {
     box_size = box_size_arg;
     cell_number = cell_number_arg;
     const int size =
             cell_number[0] *
             cell_number[1] *
             cell_number[2];
-    cells = std::vector<std::vector<std::unique_ptr<Particle>>>(size);
+    cells = std::vector<std::vector<int> >(size);
     for (int i = 0; i < size; i++) {
-        cells[i] = std::vector<std::unique_ptr<Particle>>();
+        cells[i] = std::vector<int>();
     }
     particles = particles_arg;
-    for (auto p : particles) {
-        std::array<int, 3> indices;
-        for (int i = 0; i < 3; ++i) {
-            indices[i] = std::floor(p.getX()[i]+0.5*box_size[i])/(box_size[i]/cell_number[i]);
-        }
-        cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(std::make_unique<Particle>(p));
-    }
-    halo = std::vector<Particle>();
+    // particles are not assigned to the correct cells until updateCells() is called
+    boundary = std::vector<int>();
+    halo = std::vector<int>();
     cutoff = cutoff_arg;
     boundary_conditions = bounds_arg;
+    membranes = {};
 }
 
+
 void LinkedCellParticleContainer::setParameters(const std::array<double, 3> &box_size_arg,
-                                                const std::array<int64_t, 3> &cell_number_arg,
+                                                const std::array<int, 3> &cell_number_arg,
                                                 const double &cutoff_arg,
-                                                const std::array<int, 4> &bounds_arg) {
+                                                const std::array<int, 6> &bounds_arg) {
     box_size = box_size_arg;
     cell_number = cell_number_arg;
     const int size =
             cell_number[0] *
             cell_number[1] *
             cell_number[2];
-    auto temp = std::vector<std::vector<std::unique_ptr<Particle>>>(size);
-    for (int i = 0; i < size; ++i) {
-        temp[i] = std::vector<std::unique_ptr<Particle>>();
+    cells = std::vector<std::vector<int> >(size);
+    for (int i = 0; i < size; i++) {
+        cells[i] = std::vector<int>();
     }
-    for (int i = 0; i < cells.size(); ++i) {
-        for (int j = 0; i < cells[i].size(); ++j) {
-            std::array<int, 3> indices;
-            for (int k = 0; k < 3; ++k) {
-                indices[k] = std::floor(cells[i][j]->getX()[k]+0.5*box_size[k])/(box_size[k]/cell_number[k]);
-            }
-            temp[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(std::move(cells[i][j]));
-        }
-    }
-    cells = std::move(temp);
     cutoff = cutoff_arg;
     boundary_conditions = bounds_arg;
 }
 
+void LinkedCellParticleContainer::setOMPStrategy(const int &omp_strategy_arg) {
+    omp_strategy = omp_strategy_arg;
+}
+
+
 void LinkedCellParticleContainer::addParticle(const Particle &p) {
-    particles.emplace_back(p);
-    std::array<int, 3> indices;
-    for (int k = 0; k < 3; ++k) {
-        indices[k] = std::floor(p.getX()[k]+0.5*box_size[k])/(box_size[k]/cell_number[k]);
-    }
-    cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(std::make_unique<Particle>(particles.back()));
+    particles.push_back(p);
 }
 
 void LinkedCellParticleContainer::addParticles(const std::vector<Particle> &p) {
-    for (auto particle : p) {
+    for (const auto &particle: p) {
         addParticle(particle);
     }
 }
 
+double LinkedCellParticleContainer::getCutoff() const {
+    return cutoff;
+}
+
+
 int LinkedCellParticleContainer::size() const {
-    return particles.size();
+    int size = 0;
+    for (auto &p: particles) {
+        if ((p.getState() & ParticleState::InActive) != ParticleState::InActive) {
+            size++;
+        }
+    }
+    return size;
 }
 
 const std::vector<Particle> &LinkedCellParticleContainer::getParticles() const {
     return particles;
+}
+
+void LinkedCellParticleContainer::addMembrane(Membrane &mem) {
+    membranes.push_back(mem);
+}
+
+const std::vector<Membrane> &LinkedCellParticleContainer::getMembranes() const {
+    return membranes;
 }
 
 std::vector<Particle>::iterator LinkedCellParticleContainer::begin() {
@@ -125,42 +137,456 @@ std::vector<Particle>::const_iterator LinkedCellParticleContainer::end() const {
     return particles.cend();
 }
 
-void LinkedCellParticleContainer::applyUnary(const std::function<void(Particle &i)> fun) {
-    for (auto i = particles.begin(); i != particles.end(); ++i) {
-        fun(*i);
+void LinkedCellParticleContainer::applyUnary(const std::function<void(Particle &i)> &fun) {
+    for (auto &particle: particles) {
+        // skip if deactivated
+        if ((particle.getState() & ParticleState::InActive) == ParticleState::InActive) {
+            continue;
+        }
+        fun(particle);
     }
 }
 
-void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle &i, Particle &j)> fun) {
-    for (int i_x = 0; i_x < cell_number[0]; ++i_x) {
-        for (int i_y = 0; i_y < cell_number[1]; ++i_y) {
-            for (int i_z = 0; i_z < cell_number[2]; ++i_z) {
-                const int index = i_x + i_y * cell_number[0] + i_z * cell_number[0] * cell_number[1];
-                auto &i_cell = cells[index];
-                // calculations within i_cell to avoid duplicate calculations.
-                for (auto i = 0; i < i_cell.size(); ++i) {
-                    for (auto j = 0; j < i; ++j) {
-                        fun(*i_cell[i], *i_cell[j]);
+inline int LinkedCellParticleContainer::calcIndex(const int &i_x, const int &i_y, const int &i_z) const {
+    return i_x + i_y * cell_number[0] + i_z * cell_number[0] * cell_number[1];
+}
+
+
+void LinkedCellParticleContainer::applyBinaryToCells(const std::function<void(Particle &i, Particle &j)> &fun,
+                                                     const std::vector<int> &i_cell, const std::vector<int> &j_cell) {
+    for (unsigned int i = 0; i < i_cell.size(); ++i) {
+        for (unsigned int j = 0; j < j_cell.size(); ++j) {
+            fun(particles.at(i_cell[i]), particles.at(j_cell[j]));
+        }
+    }
+}
+
+void LinkedCellParticleContainer::applyBinaryToNeighbors(const std::function<void(Particle &i, Particle &j)> &fun,
+                                                         const int &i_x, const int &i_y, const int &i_z,
+                                                         const std::vector<int> &i_cell) {
+    // the immediate and diagonal neighbors of i_cell are 26.
+    // to avoid calculating twice, only one side of each pair of neighbors is used for the calculation.
+    // a pair is such, that fun(a,a+offset) is the same as fun(b-offset,b) or fun(b,b-offset)
+    // we only need to calculate either +offset or -offset.
+    // were one to replace j = i - 1 with j = i + 1, this would calculate the other half.
+    int j_x = i_x - 1, j_y, j_z;
+    for (j_y = i_y - 1; j_y < i_y + 2; ++j_y) {
+        for (j_z = i_z - 1; j_z < i_z + 2; ++j_z) {
+            if (j_x >= 0 && j_x < cell_number[0] &&
+                j_y >= 0 && j_y < cell_number[1] &&
+                j_z >= 0 && j_z < cell_number[2]) {
+                auto &j_cell = cells[calcIndex(j_x, j_y, j_z)];
+                applyBinaryToCells(fun, i_cell, j_cell);
+            }
+        }
+    }
+    j_x = i_x;
+    j_y = i_y - 1;
+    for (j_z = i_z - 1; j_z < i_z + 2; ++j_z) {
+        if (j_x >= 0 && j_x < cell_number[0] &&
+            j_y >= 0 && j_y < cell_number[1] &&
+            j_z >= 0 && j_z < cell_number[2]) {
+            auto &j_cell = cells[calcIndex(j_x, j_y, j_z)];
+            applyBinaryToCells(fun, i_cell, j_cell);
+        }
+    }
+    j_y = i_y;
+    j_z = i_z - 1;
+    if (j_x >= 0 && j_x < cell_number[0] &&
+        j_y >= 0 && j_y < cell_number[1] &&
+        j_z >= 0 && j_z < cell_number[2]) {
+        auto &j_cell = cells[calcIndex(j_x, j_y, j_z)];
+        applyBinaryToCells(fun, i_cell, j_cell);
+    }
+}
+
+void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) {
+    if (omp_strategy < 2) {
+        for (int even = 0; even < 2; ++even) {
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic) if(omp_strategy == 1)
+#endif
+            for (int i_x = even; i_x < cell_number[0]; i_x += 2) {
+                for (int i_y = 0; i_y < cell_number[1]; ++i_y) {
+                    for (int i_z = 0; i_z < cell_number[2]; ++i_z) {
+                        auto &i_cell = cells[calcIndex(i_x, i_y, i_z)];
+                        // calculations within i_cell to avoid duplicate calculations.
+                        for (unsigned int i = 0; i < i_cell.size(); ++i) {
+                            for (unsigned int j = 0; j < i; ++j) {
+                                fun(particles.at(i_cell[i]), particles.at(i_cell[j]));
+                            }
+                        }
+                        applyBinaryToNeighbors(fun, i_x, i_y, i_z, i_cell);
                     }
                 }
-                // calculations for cells with higher x,y,z to avoid duplicate calculations.
-                for (int j_x = i_x; j_x < cell_number[0] && j_x <= std::ceil(
-                                        i_x + cutoff / (box_size[0] / cell_number[0])); ++j_x) {
-                    for (int j_y = i_y; j_y < cell_number[1] && j_y <= std::ceil(
-                                            i_y + cutoff / (box_size[1] / cell_number[1])); ++j_y) {
-                        for (int j_z = i_z; j_z < cell_number[2] && j_z <= std::ceil(
-                                                i_z + cutoff / (box_size[2] / cell_number[2])); ++j_z) {
-                            auto &j_cell = cells[j_x + j_y * cell_number[0] + j_z * cell_number[0] * cell_number[1]];
-                            // skip the already computed i_cell
-                            if (i_cell == j_cell) {
-                                continue;
+            }
+        }
+    } else {
+        for (int color = 0; color < 18; ++color) {
+#ifdef _OPENMP
+#pragma omp parallel for collapse(3) schedule(dynamic)
+#endif
+            for (int i_x = color & 1; i_x < cell_number[0]; i_x += 2) {
+                for (int i_y = (color >> 1) % 3; i_y < cell_number[1]; i_y += 3) {
+                    for (int i_z = (color / 6) % 3; i_z < cell_number[2]; i_z += 3) {
+                        auto &i_cell = cells[calcIndex(i_x, i_y, i_z)];
+                        // calculations within i_cell to avoid duplicate calculations.
+                        for (unsigned int i = 0; i < i_cell.size(); ++i) {
+                            for (unsigned int j = 0; j < i; ++j) {
+                                fun(particles.at(i_cell[i]), particles.at(i_cell[j]));
                             }
-                            //calculations between i_cell and j_cell are guaranteed to be distinct
-                            for (auto i = 0; i < i_cell.size(); ++i) {
-                                for (auto j = 0; j < j_cell.size(); ++j) {
-                                    fun(*i_cell[i], *j_cell[j]);
-                                }
-                            }
+                        }
+                        applyBinaryToNeighbors(fun, i_x, i_y, i_z, i_cell);
+                    }
+                }
+            }
+        }
+    }
+}
+
+//TODO: Make Main Force not Apply to Membrane amongst itself (??? )and All Forces not apply on fixed Particles!!
+/**
+ *
+ * @param mem
+ * @param fun
+ */
+void LinkedCellParticleContainer::applyUnarytoMembrane(const Membrane &mem,
+                                                       const std::function<void(Particle &i)> &fun) {
+    for (auto i = mem.get_offset(); i < mem.get_offset() + mem.get_size(); ++i) {
+        fun(particles[i]);
+    }
+}
+
+void LinkedCellParticleContainer::applyPerpForce(const Membrane &mem) {
+    for (int i = 0; i < mem.get_force_particles().size(); ++i) {
+        particles[mem.get_force_particles()[i]].setF(particles[mem.get_force_particles()[i]].getF() + mem.get_f_up());
+    }
+}
+
+void LinkedCellParticleContainer::applyMembraneForces(const Membrane &mem) {
+    int begin = mem.get_offset();
+    int end = mem.get_offset() + mem.get_size();
+    int width = mem.get_width();
+    for (auto i = begin; i < end; ++i) {
+        if (i + 1 < end && (i - begin) / width == (i + 1 - begin) / width) {
+            mem.calculateF_Harm(particles[i], particles[i + 1]);
+        }
+        if (i + width < end) {
+            mem.calculateF_Harm(particles[i], particles[i + width]);
+        }
+        if (i + width + 1 < end && (i - begin) / width + 1 == (i + width + 1 - begin) / width) {
+            mem.calculateF_Harm_Diag(particles[i], particles[i + width + 1]);
+        }
+        if (i + width - 1 < end && (i - begin) / width + 1 == (i + width - 1 - begin) / width) {
+            mem.calculateF_Harm_Diag(particles[i], particles[i + width - 1]);
+        }
+    }
+}
+
+
+void LinkedCellParticleContainer::updateCells() {
+    // cells is cleared by being reinitialized and particles are assigned the correct cell.
+    // this is resource intensive, but more efficient than removing and adding a Particle each time they change cells.
+    const int64_t size =
+            cell_number[0] *
+            cell_number[1] *
+            cell_number[2];
+    if (cells.size() != size) {
+        cells = std::vector<std::vector<int> >(size);
+        for (int i = 0; i < size; ++i) {
+            cells[i] = std::vector<int>();
+        }
+    } else {
+        for (int i = 0; i < size; ++i) {
+            cells[i].clear();
+        }
+    }
+    boundary.clear();
+    for (int i = 0; i < particles.size(); ++i) {
+        Particle &p = particles[i];
+        if ((p.getState() & ParticleState::InActive) == ParticleState::InActive) {
+            continue;
+        }
+        bool in_boundary = false;
+        std::array<int, 3> indices = {0, 0, 0};
+        for (int j = 0; j < 3; ++j) {
+            indices[j] = std::floor(p.getX()[j] / (box_size[j] / cell_number[j]));
+            // particles outside the domain are deactivated
+            if (indices[j] < 0 || indices[j] >= cell_number[j]) {
+                if (indices[j] < 0 && boundary_conditions[j] == 2) {
+                    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
+                                        p.getX()[0], p.getX()[1], p.getX()[2]);
+                    indices[j] += cell_number[j];
+                    auto p_x = p.getX();
+                    p_x[j] += box_size[j];
+                    p.setX(p_x);
+                } else if (indices[j] >= cell_number[j] && boundary_conditions[j + 3] == 2) {
+                    SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{} moved by periodic.",
+                                        p.getX()[0], p.getX()[1], p.getX()[2]);
+                    indices[j] -= cell_number[j];
+                    auto p_x = p.getX();
+                    p_x[j] -= box_size[j];
+                    p.setX(p_x);
+                } else {
+                    SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} moved to halo.",
+                                       p.getX()[0], p.getX()[1], p.getX()[2]);
+                    halo.push_back(i);
+                    p.setState(p.getState() | ParticleState::InActive);
+                    break;
+                }
+            }
+            // boundary conditions are applied to particles in the boundary
+            if ((indices[j] == 0 || indices[j] == cell_number[j] - 1) && cell_number[j] > 1 && !in_boundary) {
+                boundary.push_back(i);
+                in_boundary = true;
+            }
+        }
+        // if a particle is active, it is added back to the pool of particles.
+        if ((p.getState() & ParticleState::InActive) != ParticleState::InActive) {
+            cells[calcIndex(indices[0], indices[1], indices[2])].push_back(i);
+        }
+    }
+}
+
+void LinkedCellParticleContainer::applyBoundaryConditions() {
+    // this handling of reflective boundaries is particle based.
+    // this means, that everything is calculated, regardless of location being corner/edge/face
+    // on the other hand this is far more parallelizable and less complex
+    for (auto p_index = boundary.begin(); p_index != boundary.end(); ++p_index) {
+        Particle &p = particles.at(*p_index);
+        std::array<int, 3> indices = {0, 0, 0};
+        // precomputing the mirrored x values avoids recomputation and the need to differentiate x==0 and x==max
+        std::array<double, 3> position = {0, 0, 0};
+        int reflect = 0; // this will be a combined indicator for the boundary conditions.
+        for (int dim = 0; dim < 3; ++dim) {
+            indices[dim] = std::floor(p.getX()[dim] / (box_size[dim] / cell_number[dim]));
+            if ((indices[dim] == 0 && boundary_conditions[dim] == 1) || (
+                    indices[dim] == cell_number[dim] - 1 && boundary_conditions[dim + 3] == 1)) {
+                position[dim] = -p.getX()[dim] + 2 * box_size[dim] * (indices[dim] / (cell_number[dim] - 1));
+                reflect |= 1 << dim;
+            }
+        }
+
+        // combinations of reflective boundaries are ordered/executed based on Grey Code.
+        // therefore all combinations are accounted for and only one value needs to be changed between computations.
+        auto virtual_particle = Particle(p);
+        if (reflect & 1) {
+            virtual_particle.setX(0, position[0]); // 000 -> 100
+            calculateF_LJ(p, virtual_particle, cutoff); // 100
+            if (reflect & 2) {
+                virtual_particle.setX(1, position[1]); // 100 -> 110
+                calculateF_LJ(p, virtual_particle, cutoff); // 110
+                virtual_particle.setX(0, p.getX()[0]); // 110 -> 010
+                calculateF_LJ(p, virtual_particle, cutoff); // 010
+                if (reflect & 4) {
+                    virtual_particle.setX(2, position[2]); // 010 -> 011
+                    calculateF_LJ(p, virtual_particle, cutoff); // 011
+                    virtual_particle.setX(0, position[0]); // 011 -> 111
+                    calculateF_LJ(p, virtual_particle, cutoff); // 111
+                    virtual_particle.setX(1, p.getX()[1]); // 111 -> 101
+                    calculateF_LJ(p, virtual_particle, cutoff); // 101
+                    virtual_particle.setX(0, p.getX()[0]); // 101 -> 001
+                    calculateF_LJ(p, virtual_particle, cutoff); // 001
+                }
+            } else {
+                if (reflect & 4) {
+                    virtual_particle.setX(2, position[2]); // 100 -> 101
+                    calculateF_LJ(p, virtual_particle, cutoff); // 101
+                    virtual_particle.setX(0, p.getX()[0]); // 101 -> 001
+                    calculateF_LJ(p, virtual_particle, cutoff); // 001
+                }
+            }
+        } else {
+            if (reflect & 2) {
+                virtual_particle.setX(1, position[1]); // 000 -> 010
+                calculateF_LJ(p, virtual_particle, cutoff); // 010
+                if (reflect & 4) {
+                    virtual_particle.setX(2, position[2]); // 010 -> 011
+                    calculateF_LJ(p, virtual_particle, cutoff); // 011
+                    virtual_particle.setX(1, p.getX()[1]); // 011 -> 001
+                    calculateF_LJ(p, virtual_particle, cutoff); // 001
+                }
+            } else {
+                if (reflect & 4) {
+                    virtual_particle.setX(2, position[2]); // 000 -> 010
+                    calculateF_LJ(p, virtual_particle, cutoff); // 010
+                }
+            }
+        }
+    }
+
+    if (boundary_conditions[0] != 2 && boundary_conditions[1] != 2 && boundary_conditions[2] != 2) {
+        return;
+    }
+    std::array<int, 3> i = {0, 0, 0};
+    for (i[0] = 0; i[0] < cell_number[0]; ++i[0]) {
+        for (i[1] = 0; i[1] < cell_number[1]; ++i[1]) {
+            for (i[2] = 0; i[2] < cell_number[2]; ++i[2]) {
+                if (!(
+                    ((i[0] == 0 || i[0] == cell_number[0] - 1) && boundary_conditions[0] == 2) ||
+                    ((i[1] == 0 || i[1] == cell_number[1] - 1) && boundary_conditions[1] == 2) ||
+                    ((i[2] == 0 || i[2] == cell_number[2] - 1) && boundary_conditions[2] == 2)
+                )) {
+                    continue;
+                }
+                auto &i_cell = cells[calcIndex(i[0], i[1], i[2])];
+                std::array<double, 3> displacement = {0, 0, 0};
+                std::array<int, 3> displacement_index = {i[0], i[1], i[2]};
+                for (int j = 0; j < 3; ++j) {
+                    if (boundary_conditions[j] == 2) {
+                        if (i[j] == 0) {
+                            displacement[j] = box_size[j];
+                            displacement_index[j] = cell_number[j];
+                        }
+                        if (i[j] == cell_number[j] - 1) {
+                            displacement[j] = -box_size[j];
+                            displacement_index[j] = 0;
+                        }
+                    }
+                }
+
+                // this decision tree works similar to the one used for the reflective boundary.
+                // the only difference is, that changes don't affect one particle, but every particle in the cell,
+                // so offsets need to be applied uniformly
+                // it still follows a kind of grey code to cover every possible direction, while changing the least
+                // values possible.
+                // the structure uses the basic pattern of "offset - apply - offset back", except nested and in a
+                // decision tree that can recover from any taken path.
+
+                if (boundary_conditions[0] == 2) {
+                    for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                        particles[*i_index].setX(0, particles[*i_index].getX()[0] + displacement[0]);
+                    } // 000 -> 100
+                    applyBinaryToNeighbors([this](Particle &i_p, Particle &j_p) { calculateF_LJ(i_p, j_p, cutoff); },
+                                           displacement_index[0], i[1], i[2], i_cell); // 100
+                    if (boundary_conditions[1] == 2) {
+                        for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                            particles[*i_index].setX(1, particles[*i_index].getX()[1] + displacement[1]);
+                        } // 100 -> 110
+                        applyBinaryToNeighbors(
+                            [this](Particle &i_p, Particle &j_p) { calculateF_LJ(i_p, j_p, cutoff); },
+                            displacement_index[0], displacement_index[1], i[2], i_cell); // 110
+                        for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                            particles[*i_index].setX(0, particles[*i_index].getX()[0] - displacement[0]);
+                        } // 110 -> 010
+                        applyBinaryToNeighbors(
+                            [this](Particle &i_p, Particle &j_p) { calculateF_LJ(i_p, j_p, cutoff); },
+                            i[0], displacement_index[1], i[2], i_cell); // 010
+                        if (boundary_conditions[2] == 2) {
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(2, particles[*i_index].getX()[2] + displacement[2]);
+                            } // 010 -> 011
+                            applyBinaryToNeighbors([this](Particle &i_p, Particle &j_p) {
+                                                       calculateF_LJ(i_p, j_p, cutoff);
+                                                   },
+                                                   i[0], displacement_index[1], displacement_index[2], i_cell); // 011
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(0, particles[*i_index].getX()[0] + displacement[0]);
+                            } // 011 -> 111
+                            applyBinaryToNeighbors([this](Particle &i_p, Particle &j_p) {
+                                                       calculateF_LJ(i_p, j_p, cutoff);
+                                                   },
+                                                   displacement_index[0], displacement_index[1], displacement_index[2],
+                                                   i_cell); // 111
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(1, particles[*i_index].getX()[1] - displacement[1]);
+                            } // 111 -> 101
+                            applyBinaryToNeighbors([this](Particle &i_p, Particle &j_p) {
+                                                       calculateF_LJ(i_p, j_p, cutoff);
+                                                   },
+                                                   displacement_index[0], i[1], displacement_index[2], i_cell); // 101
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(0, particles[*i_index].getX()[0] - displacement[0]);
+                            } // 101 -> 001
+                            applyBinaryToNeighbors([this](Particle &i_p, Particle &j_p) {
+                                                       calculateF_LJ(i_p, j_p, cutoff);
+                                                   },
+                                                   i[0], i[1], displacement_index[2], i_cell); // 001
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(1, particles[*i_index].getX()[1] + displacement[1]);
+                            } // 001 -> 011
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(2, particles[*i_index].getX()[2] - displacement[2]);
+                            } // 011 -> 010
+                        }
+                        for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                            particles[*i_index].setX(0, particles[*i_index].getX()[0] + displacement[0]);
+                        } // 010 -> 110
+                        for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                            particles[*i_index].setX(1, particles[*i_index].getX()[1] - displacement[1]);
+                        } // 110 -> 100
+                    } else {
+                        if (boundary_conditions[2] == 2) {
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(2, particles[*i_index].getX()[2] + displacement[2]);
+                            } // 100 -> 101
+                            applyBinaryToNeighbors([this](Particle &i_p, Particle &j_p) {
+                                                       calculateF_LJ(i_p, j_p, cutoff);
+                                                   },
+                                                   displacement_index[0], i[1], displacement_index[2], i_cell); // 101
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(0, particles[*i_index].getX()[0] - displacement[0]);
+                            } // 101 -> 001
+                            applyBinaryToNeighbors([this](Particle &i_p, Particle &j_p) {
+                                                       calculateF_LJ(i_p, j_p, cutoff);
+                                                   },
+                                                   i[0], i[1], displacement_index[2], i_cell); // 001
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(0, particles[*i_index].getX()[0] + displacement[0]);
+                            } // 001 -> 101
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(2, particles[*i_index].getX()[2] - displacement[2]);
+                            } // 101 -> 100
+                        }
+                    }
+                    for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                        particles[*i_index].setX(0, particles[*i_index].getX()[0] - displacement[0]);
+                    } // 100 -> 000
+                } else {
+                    if (boundary_conditions[1] == 2) {
+                        for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                            particles[*i_index].setX(1, particles[*i_index].getX()[1] + displacement[1]);
+                        } // 000 -> 010
+                        applyBinaryToNeighbors(
+                            [this](Particle &i_p, Particle &j_p) { calculateF_LJ(i_p, j_p, cutoff); },
+                            i[0], displacement_index[1], i[2], i_cell); // 010
+                        if (boundary_conditions[2] == 2) {
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(2, particles[*i_index].getX()[2] + displacement[2]);
+                            } // 010 -> 011
+                            applyBinaryToNeighbors([this](Particle &i_p, Particle &j_p) {
+                                                       calculateF_LJ(i_p, j_p, cutoff);
+                                                   },
+                                                   i[0], displacement_index[1], displacement_index[2], i_cell); // 011
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(1, particles[*i_index].getX()[1] - displacement[1]);
+                            } // 011 -> 001
+                            applyBinaryToNeighbors([this](Particle &i_p, Particle &j_p) {
+                                                       calculateF_LJ(i_p, j_p, cutoff);
+                                                   },
+                                                   i[0], i[1], displacement_index[2], i_cell); // 001
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(1, particles[*i_index].getX()[1] + displacement[1]);
+                            } // 001 -> 011
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(2, particles[*i_index].getX()[2] - displacement[2]);
+                            } // 011 -> 010
+                        }
+                        for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                            particles[*i_index].setX(1, particles[*i_index].getX()[1] - displacement[1]);
+                        } // 010 -> 000
+                    } else {
+                        if (boundary_conditions[2] == 2) {
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(2, particles[*i_index].getX()[2] + displacement[2]);
+                            } // 000 -> 001
+                            applyBinaryToNeighbors([this](Particle &i_p, Particle &j_p) {
+                                                       calculateF_LJ(i_p, j_p, cutoff);
+                                                   },
+                                                   i[0], i[1], displacement_index[2], i_cell); // 001
+                            for (auto i_index = i_cell.begin(); i_index != i_cell.end(); ++i_index) {
+                                particles[*i_index].setX(2, particles[*i_index].getX()[2] - displacement[2]);
+                            } // 001 -> 000
                         }
                     }
                 }
@@ -169,121 +595,55 @@ void LinkedCellParticleContainer::applyBinary(const std::function<void(Particle 
     }
 }
 
-void LinkedCellParticleContainer::updateCells() {
-    const int size =
-        cell_number[0] *
-        cell_number[1] *
-        cell_number[2];
-    cells = std::vector<std::vector<std::unique_ptr<Particle>>>(size);
-    for (int i = 0; i < size; ++i) {
-        cells[i] = std::vector<std::unique_ptr<Particle>>();
-    }
-    for (int i = 0; i < particles.size(); ++i) {
-        Particle &p = particles[i];
-        if (p.getX()[i]+box_size[i]/2 < 0 || p.getX()[i]+box_size[i] >= box_size[i]) {
-            SPDLOG_LOGGER_INFO(spdlog::get("default"), "Particle at {},{},{} moved to halo.",
-                               p.getX()[0], p.getX()[1], p.getX()[2]);
-            halo.push_back(p);
-            goto SKIP;
-        }
-        std::array<int, 3> indices;
-        for (int k = 0; k < 3; ++k) {
-            indices[k] = std::floor(p.getX()[k]+0.5*box_size[k])/(box_size[k]/cell_number[k]);
-        }
-        cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]].push_back(std::make_unique<Particle>(p));
-        SKIP:;
-    }
-    for (auto p = halo.begin(); p != halo.end(); ++p) {
-        particles.erase(std::find(particles.begin(), particles.end(), *p));
-    }
-    for (int i = 0; i < cells.size(); ++i) {
-        if (i < cell_number[0]) {
-            for (auto j = cells[i].begin(); j != cells[i].end(); ++j) {
-                if (boundary_conditions[2] == 1) {
-                    reflect(j->get(),2);
-                } else if (boundary_conditions[2] == 0) {
-                    outflow(j->get());
-                }
-            }
-        }
-        if (i >= cell_number[0]*(cell_number[1]-1)) {
-            for (auto j = cells[i].begin(); j != cells[i].end(); ++j) {
-                if (boundary_conditions[0] == 1) {
-                    reflect(j->get(),0);
-                } else if (boundary_conditions[0] == 0) {
-                    outflow(j->get());
-                }
-            }
-        }
-        if (i % cell_number[0] == 0) {
-            for (auto j = cells[i].begin(); j != cells[i].end(); ++j) {
-                if (boundary_conditions[3] == 1) {
-                    reflect(j->get(),3);
-                } else if (boundary_conditions[3] == 0) {
-                    outflow(j->get());
-                }
-            }
-        }
-        if (i % cell_number[0] == cell_number[0] - 1) {
-            for (auto j = cells[i].begin(); j != cells[i].end(); ++j) {
-                if (boundary_conditions[1] == 1) {
-                    reflect(j->get(),1);
-                } else if (boundary_conditions[1] == 0) {
-                    outflow(j->get());
-                }
-            }
-        }
-    }
-}
-
 void LinkedCellParticleContainer::applyUnaryToBoundary(const std::function<void(Particle &i)> &fun) {
-    for (int i = 0; i < cells.size(); ++i) {
-        if (i < cell_number[0] || i >= cell_number[0]*(cell_number[1]-1) || i % cell_number[0] == 0 || i % cell_number[0] == cell_number[0] - 1) {
-            for (auto j = cells[i].begin(); j != cells[i].end(); ++j) {
-                fun(**j);
-            }
-        }
+    for (auto i = boundary.begin(); i != boundary.end(); ++i) {
+        Particle &p = particles.at(*i);
+        SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{}. applied unary to boundary.",
+                            p.getX()[0], p.getX()[1], p.getX()[2]);
+        fun(p);
     }
 }
 
 
 void LinkedCellParticleContainer::applyUnaryToHalo(const std::function<void(Particle &i)> &fun) {
     for (auto i = halo.begin(); i != halo.end(); ++i) {
-        fun(*i);
+        Particle &p = particles.at(*i);
+        SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{}. applied unary to halo.",
+                            p.getX()[0], p.getX()[1], p.getX()[2]);
+        fun(p);
     }
 }
 
 void LinkedCellParticleContainer::deleteHalo() {
-    halo = std::vector<Particle>();
-}
-
-void LinkedCellParticleContainer::outflow(const Particle *p) {
-    particles.erase(std::find(particles.begin(), particles.end(), *p));
-    std::array<int, 3> indices;
-    for (int k = 0; k < 3; ++k) {
-        indices[k] = std::floor(p->getX()[k]+0.5*box_size[k])/(box_size[k]/cell_number[k]);
-    }
-    auto &cell = cells[indices[0] + indices[1]*cell_number[0] + indices[2]*cell_number[0]*cell_number[1]];
-    const auto it = std::find_if(cell.begin(), cell.end(),
-    [&p](const std::unique_ptr<Particle>& ptr) {
-        return ptr.get() == p;
+    applyUnaryToHalo([](Particle &i) {
+        SPDLOG_LOGGER_DEBUG(spdlog::get("default"), "Particle at {},{},{}. applied unary to halo.",
+                            i.getX()[0], i.getX()[1], i.getX()[2]);
+        i.setState(ParticleState::InActive);
     });
-    if (it != cell.end()) {
-        cell.erase(it);
-    }
 }
 
-void LinkedCellParticleContainer::reflect(Particle *p, const int boundary) {
-    std::array<double, 3> counter_particle_X = p->getX();
-    if (boundary == 0) {
-        counter_particle_X[1] = box_size[1] + (box_size[1] - counter_particle_X[0]);
-    } else if (boundary == 1) {
-        counter_particle_X[0] = box_size[0] + (box_size[0] - counter_particle_X[0]);
-    } else if (boundary == 2) {
-        counter_particle_X[1] = 0 - counter_particle_X[1];
-    } else if (boundary == 3) {
-        counter_particle_X[0] = 0 - counter_particle_X[0];
+void LinkedCellParticleContainer::writeState(std::ofstream &vel_prof, std::ofstream &N_prof) {
+    std::array<int, 50> N;
+    std::array<std::array<double, 3>, 50> vel;
+    for (auto i = 0; i < N.size(); ++i) {
+        N[i] = 0;
+        vel[i] = {0, 0, 0};
     }
-    auto counter_particle = Particle(counter_particle_X, p->getV(), p->getM(), p->getType());
-    calculateF_LJ(*p, counter_particle);
+    for (auto p = particles.begin(); p != particles.end(); ++p) {
+        if ((p->getState() & ParticleState::InActive) == ParticleState::InActive) { continue; }
+        int index = floor(p->getX()[0] / (box_size[0] / 50));
+        N[index]++;
+        vel[index] = vel[index] + p->getV();
+    }
+    for (auto i = 0; i < N.size(); ++i) {
+        if (N[i] != 0) { vel[i] = (1.0 / N[i]) * vel[i]; }
+        if (i != 0) {
+            vel_prof << ",";
+            N_prof << ",";
+        }
+        vel_prof << vel[i][0] << "," << vel[i][1] << "," << vel[i][2];
+        N_prof << N[i];
+    }
+    vel_prof << std::endl;
+    N_prof << std::endl;
 }

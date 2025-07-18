@@ -8,6 +8,7 @@
 #include <functional>
 
 #include "Particle.h"
+#include "simulation/Membrane.h"
 
 class ParticleContainer {
 public:
@@ -16,6 +17,16 @@ public:
     virtual void addParticle(const Particle &p) = 0;
 
     virtual void addParticles(const std::vector<Particle> &p) = 0;
+
+    virtual void addMembrane(Membrane &mem) = 0;
+
+    virtual const std::vector<Membrane> &getMembranes() const = 0;
+
+    virtual void applyUnarytoMembrane(const Membrane &mem, const std::function<void(Particle &i)> &fun) = 0;
+
+    virtual void applyPerpForce(const Membrane &mem) =0;
+
+    virtual void applyMembraneForces(const Membrane &mem) = 0;
 
     virtual const std::vector<Particle> &getParticles() const = 0;
 
@@ -29,7 +40,7 @@ public:
 
     virtual std::vector<Particle>::const_iterator end() const = 0;
 
-    virtual void applyUnary(std::function<void(Particle &i)> fun) = 0;
+    virtual void applyUnary(const std::function<void(Particle &i)> &fun) = 0;
 
-    virtual void applyBinary(std::function<void(Particle &i, Particle &j)> fun) = 0;
+    virtual void applyBinary(const std::function<void(Particle &i, Particle &j)> &fun) = 0;
 };
